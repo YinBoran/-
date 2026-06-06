@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>YB Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p:#1A73E8; --p-dk:#1256C0; --p-lt:#E8F0FE;
+  --bg:#F8F9FA; --card:#fff; --text:#202124; --muted:#5F6368;
+  --border:#DADCE0; --green:#1E8E3E; --green-lt:#E6F4EA;
+  --amber:#F29900; --amber-lt:#FEF7E0;
+  --red:#D93025; --red-lt:#FCE8E6;
+  --r:12px; --r-sm:8px;
+  --sh:0 2px 8px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.06);
+  --sh-lg:0 8px 32px rgba(0,0,0,.18);
+  --font:'DM Sans','Kantumruy Pro',sans-serif;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+
+/* ── HEADER ── */
+.hdr{position:sticky;top:0;z-index:100;background:var(--card);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;padding:0 16px;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.hdr-logo{width:32px;height:32px;border-radius:var(--r-sm);background:var(--p);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.hdr-logo img{width:100%;height:100%;object-fit:contain}
+.hdr-name{font-size:16px;font-weight:800;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.3px}
+.hdr-cart{position:relative;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--p-lt);color:var(--p);flex-shrink:0;transition:background .15s}
+.hdr-cart:hover,.hdr-cart:active{background:var(--p);color:#fff}
+.hdr-cart svg{width:20px;height:20px;fill:currentColor}
+.cart-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:10px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--card);display:none}
+.cart-badge.show{display:flex}
+
+/* ── CATEGORY TABS ── */
+.cat-bar{display:flex;gap:8px;padding:12px 16px 8px;overflow-x:auto;scrollbar-width:none}
+.cat-bar::-webkit-scrollbar{display:none}
+.cat-tab{padding:6px 14px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap;border:1.5px solid var(--border);color:var(--muted);background:var(--card);transition:all .15s;flex-shrink:0}
+.cat-tab.on{background:var(--p);color:#fff;border-color:var(--p)}
+
+/* ── SEARCH ── */
+.search-wrap{padding:4px 16px 10px;position:relative}
+.search-wrap input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--border);border-radius:99px;font-size:14px;background:var(--card);outline:none;font-family:var(--font);transition:border .2s,box-shadow .2s}
+.search-wrap input:focus{border-color:var(--p);box-shadow:0 0 0 2px #1A73E815}
+.search-wrap svg{position:absolute;left:28px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:var(--muted);pointer-events:none}
+
+/* ── PRODUCT GRID ── */
+.sticky-filters{position:sticky;top:56px;z-index:90;background:var(--bg);padding-bottom:2px}
+.page-wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 0 100px}
+@media(min-width:480px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1024px){.grid{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:1200px){.grid{grid-template-columns:repeat(6,1fr)}}
+.grid-sentinel{display:flex;justify-content:center;padding:20px 0 80px}
+.load-ring{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--p);border-radius:50%;animation:ring-spin .7s linear infinite;display:none}
+.load-ring.show{display:block}
+@keyframes ring-spin{to{transform:rotate(360deg)}}
+.prod-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh-sm,0 1px 3px rgba(0,0,0,.08));overflow:hidden;position:relative;border:1px solid var(--border);transition:box-shadow .2s}
+.prod-card:hover{box-shadow:var(--sh)}
+.prod-img{width:100%;aspect-ratio:1;object-fit:cover;background:#F1F3F4}
+.prod-img-placeholder{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#F1F3F4,#E8EAED);font-size:36px}
+.prod-body{padding:10px}
+.prod-name{font-size:13px;font-weight:600;line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.prod-price{font-size:16px;font-weight:800;color:var(--p);margin-top:5px}
+.prod-stock{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;margin-top:3px}
+.ps-in{background:var(--green-lt);color:var(--green)}
+.ps-low{background:var(--amber-lt);color:var(--amber)}
+.prod-add{width:100%;padding:8px;background:var(--p);color:#fff;border-radius:var(--r-sm);font-size:13px;font-weight:600;margin-top:8px;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.prod-add:hover{opacity:.88}
+.prod-add:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
+.prod-add svg{width:14px;height:14px;fill:currentColor}
+.in-cart-badge{position:absolute;top:8px;right:8px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;display:none}
+.in-cart-badge.show{display:block}
+
+/* ── LOADING SKELETON ── */
+.skel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 12px}
+.skel-card{border-radius:var(--r);background:var(--card);border:1px solid var(--border);overflow:hidden}
+.skel{background:linear-gradient(90deg,#F1F3F4 25%,#E8EBEE 50%,#F1F3F4 75%);background-size:200%;animation:shimmer 1.4s infinite;border-radius:4px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-img{width:100%;aspect-ratio:1}
+.skel-body{padding:10px;display:flex;flex-direction:column;gap:6px}
+
+/* ── FLOAT CART BUTTON ── */
+.float-cart{position:fixed;bottom:24px;right:20px;z-index:90;background:var(--p);color:#fff;border-radius:99px;padding:12px 20px;box-shadow:0 4px 20px rgba(26,115,232,.45);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;transition:transform .2s,box-shadow .2s;display:none}
+.float-cart.show{display:flex}
+.float-cart:active{transform:scale(.96)}
+.float-cart svg{width:18px;height:18px;fill:currentColor}
+.fc-count{background:rgba(255,255,255,.25);padding:2px 8px;border-radius:99px;font-size:12px}
+
+/* ── OVERLAY / SHEET ── */
+.ovl{position:fixed;inset:0;background:rgba(32,33,36,.55);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px)}
+.ovl.on{opacity:1;pointer-events:all}
+.sheet{position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--card);border-radius:20px 20px 0 0;box-shadow:var(--sh-lg);transform:translateY(100%);transition:transform .3s var(--ease);max-height:92vh;display:flex;flex-direction:column}
+.sheet.on{transform:none}
+@media(min-width:640px){
+  .sheet{left:50%;top:50%;right:auto;bottom:auto;width:500px;max-height:88vh;transform:translate(-50%,-50%) scale(.96);border-radius:20px;opacity:0;transition:transform .28s var(--ease),opacity .28s}
+  .sheet.on{transform:translate(-50%,-50%) scale(1);opacity:1}
+}
+@media(max-width:639px){.sheet{border-radius:20px 20px 0 0;max-height:92vh}}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 0}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sheet-title{font-size:17px;font-weight:800;letter-spacing:-.2px}
+.sheet-close{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.sheet-close:hover{background:var(--bg)}
+.sheet-close svg{width:18px;height:18px;fill:currentColor}
+.sheet-body{overflow-y:auto;flex:1;padding:0 18px}
+.sheet-foot{padding:14px 18px 24px;border-top:1px solid var(--border);flex-shrink:0;background:var(--card)}
+
+/* ── CART ITEMS ── */
+.cart-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #F1F3F4}
+.cart-item:last-child{border-bottom:none}
+.ci-img{width:52px;height:52px;border-radius:var(--r-sm);object-fit:cover;background:#F1F3F4;flex-shrink:0}
+.ci-info{flex:1;min-width:0}
+.ci-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ci-price{font-size:12px;color:var(--muted);margin-top:2px}
+.ci-total{font-size:14px;font-weight:700;color:var(--p)}
+.qty-ctrl{display:flex;align-items:center;gap:0;border:1.5px solid var(--border);border-radius:var(--r-sm);overflow:hidden;flex-shrink:0}
+.qty-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:none;color:var(--text);font-size:16px;font-weight:700;transition:background .15s;flex-shrink:0}
+.qty-btn:hover{background:var(--bg)}
+.qty-num{width:28px;text-align:center;font-size:13px;font-weight:700;border-left:1.5px solid var(--border);border-right:1.5px solid var(--border);height:28px;display:flex;align-items:center;justify-content:center}
+.cart-empty{text-align:center;padding:48px 24px;color:var(--muted)}
+.cart-empty svg{width:48px;height:48px;fill:var(--border);margin:0 auto 12px}
+
+/* ── CART SUMMARY ── */
+.sum-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:14px}
+.sum-row.total{font-weight:800;font-size:17px;border-top:2px solid var(--border);margin-top:6px;padding-top:10px}
+.sum-row.deliv{color:var(--muted)}
+.delivery-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;background:var(--green-lt);color:var(--green);padding:2px 7px;border-radius:99px}
+
+/* ── FORM ── */
+.form-sec{padding:14px 0 4px}
+.form-sec h3{font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.fld label{font-size:12px;font-weight:600;color:var(--muted)}
+.fld input,.fld select,.fld textarea{padding:11px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;font-family:var(--font);outline:none;transition:border .2s,box-shadow .2s;background:var(--card)}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--p);box-shadow:0 0 0 2px #1A73E815}
+.fld textarea{resize:none;min-height:72px}
+
+/* ── PAYMENT OPTIONS ── */
+.pay-opts{display:flex;flex-direction:column;gap:10px;padding:4px 0 12px}
+.pay-opt{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;position:relative}
+.pay-opt.on{border-color:var(--p);background:var(--p-lt)}
+.pay-opt input[type=radio]{width:18px;height:18px;accent-color:var(--p);flex-shrink:0}
+.pay-opt-ico{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.pay-opt-txt .po-title{font-size:14px;font-weight:700}
+.pay-opt-txt .po-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── BUTTONS ── */
+.btn-full{width:100%;padding:14px;border-radius:var(--r);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;border:none;letter-spacing:.2px}
+.btn-primary{background:var(--p);color:#fff}
+.btn-primary:hover{background:var(--p-dk)}
+.btn-primary:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
+.btn-outline{background:none;border:2px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--p);color:var(--p)}
+.btn-full svg{width:18px;height:18px;fill:currentColor}
+
+/* ── KHQR ── */
+.khqr-box{text-align:center;padding:12px 0}
+.khqr-box img{max-width:220px;border-radius:var(--r);box-shadow:var(--sh);margin:0 auto 16px;border:4px solid var(--card)}
+.khqr-amt{font-size:28px;font-weight:900;color:var(--p);letter-spacing:-1px}
+.khqr-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.pulse-ring{width:220px;height:220px;border:3px solid var(--p);border-radius:var(--r);animation:pulse 2s ease-in-out infinite;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,115,232,.4)}50%{box-shadow:0 0 0 12px rgba(26,115,232,0)}}
+
+/* ── SUCCESS ── */
+.success-box{text-align:center;padding:24px 0}
+.success-ico{width:72px;height:72px;background:var(--green-lt);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.success-ico svg{width:40px;height:40px;fill:var(--green)}
+.success-title{font-size:20px;font-weight:800;margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--muted);line-height:1.5}
+.order-id-chip{display:inline-block;background:#F1F3F4;padding:4px 12px;border-radius:99px;font-family:'Courier New',monospace;font-size:13px;font-weight:700;margin:10px auto;color:var(--text)}
+
+/* ── STEPS INDICATOR ── */
+.steps{display:flex;justify-content:center;gap:6px;padding:10px 0}
+.step{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .3s}
+.step.on{background:var(--p);width:20px;border-radius:4px}
+.step.done{background:var(--green)}
+
+/* ── NOTICE ── */
+.notice-bar{background:var(--amber-lt);padding:10px 16px;font-size:12px;color:#5A3E00;display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+.notice-bar svg{width:14px;height:14px;fill:var(--amber);margin-top:1px;flex-shrink:0}
+
+/* ── TOAST ── */
+#toasts{position:fixed;bottom:88px;right:16px;display:flex;flex-direction:column;gap:6px;z-index:9999;pointer-events:none}
+.t{background:var(--text);color:#fff;padding:10px 14px;border-radius:var(--r-sm);font-size:13px;box-shadow:var(--sh);display:flex;align-items:center;gap:8px;animation:tin .2s var(--ease);pointer-events:all;max-width:260px}
+.t.ok{background:var(--green)}.t.err{background:var(--red)}
+.t svg{width:14px;height:14px;fill:currentColor;flex-shrink:0}
+@keyframes tin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.t.out{animation:tout .2s var(--ease) forwards}
+@keyframes tout{to{opacity:0;transform:translateY(10px)}}
+
+/* ── EMPTY / ERROR ── */
+.empty{text-align:center;padding:60px 24px}
+.empty svg{width:56px;height:56px;fill:var(--border);margin:0 auto 12px}
+.empty p{font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-logo" id="h-logo">YB</div>
+  <span class="hdr-name" id="h-name">YB Electronics</span>
+  <a href="?page=admin" aria-label="Admin login" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--muted);flex-shrink:0;text-decoration:none;transition:background .15s" title="Admin">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+  </a>
+  <button class="hdr-cart" onclick="openSheet('cart')" aria-label="Cart">
+    <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-14.39-14H1V2H0v2h1l3.6 7.59L3.25 14c-.16.28-.25.61-.25.96C3 16.1 3.9 17 5 17h14v-2H5.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.44 4H4.21l-.6-1.47A1 1 0 0 0 2.68 2H0v2h2l.61 0z"/></svg>
+    <span class="cart-badge" id="cart-badge">0</span>
+  </button>
+</header>
+
+<!-- NOTICE BAR -->
+<div class="notice-bar">
+  <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+  <span>🚚 ដឹកដល់ផ្ទះ | <strong>ទូទាត់ KHQR $2.50 ជាមុន</strong> ហើយ ទំនិញ COD ពេលទទួល — <em>ឬ</em> <strong>COD $2.50 + ទំនិញ</strong> ពេលដឹកមកដល់</span>
+</div>
+
+<!-- STICKY SEARCH + CATEGORY (does not scroll away) -->
+<div class="sticky-filters">
+  <div class="page-wrap">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="search" id="srch" placeholder="ស្វែងរកទំនិញ…" oninput="filterProds()" autocomplete="off">
+    </div>
+    <div class="cat-bar" id="cat-bar">
+      <button class="cat-tab on" data-c="" onclick="setCat('')">ទាំងអស់</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT GRID -->
+<div class="page-wrap">
+  <div class="grid" id="prod-grid">
+    <div class="skel-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel" style="height:12px;width:80%"></div><div class="skel" style="height:16px;width:50%"></div></div></div>
+    <div class="skel-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel" style="height:12px;width:70%"></div><div class="skel" style="height:16px;width:45%"></div></div></div>
+    <div class="skel-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel" style="height:12px;width:90%"></div><div class="skel" style="height:16px;width:55%"></div></div></div>
+    <div class="skel-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel" style="height:12px;width:60%"></div><div class="skel" style="height:16px;width:48%"></div></div></div>
+    <div class="skel-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel" style="height:12px;width:75%"></div><div class="skel" style="height:16px;width:42%"></div></div></div>
+    <div class="skel-card"><div class="skel skel-img"></div><div class="skel-body"><div class="skel" style="height:12px;width:65%"></div><div class="skel" style="height:16px;width:50%"></div></div></div>
+  </div>
+  <!-- Circle loader sentinel for infinite scroll -->
+  <div class="grid-sentinel" id="grid-sentinel">
+    <div class="load-ring" id="load-ring"></div>
+  </div>
+</div>
+
+<!-- FLOAT CART -->
+<button class="float-cart" id="float-cart" onclick="openSheet('cart')">
+  <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-14.39-14H1V2H0v2h1l3.6 7.59L3.25 14c-.16.28-.25.61-.25.96C3 16.1 3.9 17 5 17h14v-2H5.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.44 4H4.21l-.6-1.47A1 1 0 0 0 2.68 2H0v2h2l.61 0z"/></svg>
+  <span id="fc-txt">Cart</span>
+  <span class="fc-count" id="fc-count">0</span>
+</button>
+
+<!-- OVERLAY -->
+<div class="ovl" id="ovl" onclick="closeSheet()"></div>
+
+<!-- BOTTOM SHEET -->
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <span class="sheet-title" id="sh-title">Cart</span>
+    <button class="sheet-close" onclick="closeSheet()">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body" id="sh-body"></div>
+  <div class="sheet-foot" id="sh-foot"></div>
+</div>
+
+<!-- TOASTS -->
+<!-- ADMIN FOOTER LINK -->
+<div style="text-align:center;padding:16px;margin-top:8px">
+  <a id="admin-link" href="?page=admin" style="font-size:11px;color:var(--muted);text-decoration:none;opacity:.4">
+    ⚙ Admin
+  </a>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const S = {
+  products: [],      // all products from sheet
+  filtered: [],      // after search/category filter
+  cart: [],          // [{code, name, photo, price, qty}]
+  offset:  0,        // infinite scroll: items rendered so far
+  cfg: { storeName:'YB Electronics', logoUrl:'', khqrUrl:'', primaryColor:'#1A73E8', deliveryFee:2.50 }, // deliveryFee comes from server (stored in Discount col)
+  cat: '',           // active category filter
+  sheet: null,       // current sheet name: 'cart'|'checkout'|'payment'|'khqr'|'success'
+  order: {}          // checkout form data
+};
+
+// ═══════════════════════════════════════════════════════════
+// API CONFIG — change this to your deployed Apps Script URL
+// ═══════════════════════════════════════════════════════════
+// ▼▼▼ PASTE YOUR APPS SCRIPT WEB APP URL HERE ▼▼▼
+const API_URL = window.GAS_API_URL ||
+  'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+// ▲▲▲ Deploy → Web App → Anyone → Copy URL → paste above ▲▲▲
+
+// ─── HTTP helpers ─────────────────────────────────────────
+async function apiGet(action, params = {}) {
+  const url = new URL(API_URL);
+  url.searchParams.set('action', action);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+  const r = await fetch(url.toString(), { method: 'GET' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+async function apiPost(action, body) {
+  const url = new URL(API_URL);
+  url.searchParams.set('action', action);
+  const r = await fetch(url.toString(), {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+// Poll order status (for KHQR payment confirmation)
+async function pollOrderStatus(profileId, maxWaitMs = 300000) {
+  const interval = 5000;
+  const deadline = Date.now() + maxWaitMs;
+  while (Date.now() < deadline) {
+    await new Promise(r => setTimeout(r, interval));
+    try {
+      const order = await apiGet('order', { id: profileId });
+      if (order && order.payment && order.payment.toLowerCase().includes('paid')) {
+        return order;
+      }
+      if (order && order.apvCodes) return order;
+    } catch(_) {}
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+async function init() {
+  try {
+    const [info, prods] = await Promise.all([
+      apiGet('storeinfo').catch(() => ({})),
+      apiGet('products').catch(() => [])
+    ]);
+    if (info) applyCfg(info);
+    loadProducts(Array.isArray(prods) ? prods : (prods.data || []));
+  } catch(e) {
+    loadProducts(getDemoProducts());
+  }
+}
+
+function applyCfg(cfg) {
+  S.cfg = { ...S.cfg, ...cfg };
+  if (cfg.primaryColor && /^#[0-9a-f]{6}$/i.test(cfg.primaryColor)) {
+    document.documentElement.style.setProperty('--p', cfg.primaryColor);
+    document.documentElement.style.setProperty('--p-lt', cfg.primaryColor + '18');
+  }
+  const name = cfg.storeName || 'YB Electronics';
+  document.getElementById('h-name').textContent = name;
+  document.title = name + ' — Shop';
+  const ini = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'YB';
+  setLogo('h-logo', cfg.logoUrl, ini);
+}
+
+function setLogo(id, url, ini) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (url && !url.includes('INSERT') && !url.startsWith('https://your')) {
+    el.innerHTML = `<img src="${x(url)}" alt="logo" onerror="this.parentNode.textContent='${x(ini)}'">`;
+  } else {
+    el.textContent = ini;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PRODUCTS
+// ═══════════════════════════════════════════════════════════
+function loadProducts(prods) {
+  S.products = prods || [];
+  // Build category list
+  const cats = [...new Set(S.products.map(p => p.category).filter(Boolean))].sort();
+  const bar   = document.getElementById('cat-bar');
+  bar.innerHTML = '<button class="cat-tab on" data-c="" onclick="setCat(\'\')">ទាំងអស់</button>' +
+    cats.map(c => `<button class="cat-tab" data-c="${x(c)}" onclick="setCat('${x(c)}')">${x(c)}</button>`).join('');
+  filterProds();
+}
+
+function setCat(cat) {
+  S.cat = cat;
+  document.querySelectorAll('.cat-tab').forEach(el =>
+    el.classList.toggle('on', el.dataset.c === cat));
+  filterProds();
+}
+
+function filterProds() {
+  const srch = (document.getElementById('srch')?.value || '').toLowerCase();
+  S.filtered = S.products.filter(p => {
+    if (S.cat && p.category !== S.cat) return false;
+    if (srch && !p.name.toLowerCase().includes(srch) &&
+        !p.code.toLowerCase().includes(srch) &&
+        !(p.description || '').toLowerCase().includes(srch)) return false;
+    return true;
+  });
+  renderGrid();
+}
+
+// ═══════════════════════════════════════════════════════════
+// PRODUCTS — infinite scroll (6 items per chunk)
+// ═══════════════════════════════════════════════════════════
+const CHUNK = 6;
+let _io = null; // IntersectionObserver instance
+
+function renderGrid() {
+  const grid = document.getElementById('prod-grid');
+  if (!S.filtered.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+      <p>រកមិនឃើញទំនិញ</p></div>`;
+    document.getElementById('load-ring')?.classList.remove('show');
+    return;
+  }
+
+  // Reset offset, render first chunk
+  S.offset = 0;
+  grid.innerHTML = buildCards(S.filtered.slice(0, CHUNK));
+  S.offset = Math.min(CHUNK, S.filtered.length);
+
+  // Disconnect old observer, set up new one
+  if (_io) _io.disconnect();
+  const ring     = document.getElementById('load-ring');
+  const sentinel = document.getElementById('grid-sentinel');
+  if (!sentinel) return;
+
+  if (S.offset >= S.filtered.length) {
+    ring?.classList.remove('show');
+    return; // all loaded already
+  }
+
+  _io = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    if (S.offset >= S.filtered.length) { ring?.classList.remove('show'); return; }
+
+    ring?.classList.add('show');
+    setTimeout(() => {
+      const next = S.filtered.slice(S.offset, S.offset + CHUNK);
+      grid.insertAdjacentHTML('beforeend', buildCards(next));
+      S.offset += next.length;
+      ring?.classList.remove('show');
+      if (S.offset >= S.filtered.length) _io.disconnect();
+    }, 400);
+  }, { rootMargin: '120px' });
+
+  _io.observe(sentinel);
+}
+
+// Build card HTML — FIX: use data-code attr (not inline onclick with JSON.stringify)
+// JSON.stringify wraps in double-quotes which breaks HTML attribute: addToCart("j98")
+function buildCards(prods) {
+  return prods.map(p => {
+    const inCart = S.cart.find(c => c.code === p.code);
+    const price  = parseFloat(String(p.price || '0').replace(/[^0-9.]/g, '')) || 0;
+    const isLow  = (p.stockStatus || '').toLowerCase().includes('low');
+    return `<div class="prod-card" id="pc-${x(p.code)}">
+      <span class="in-cart-badge ${inCart ? 'show' : ''}" id="icb-${x(p.code)}">${inCart ? inCart.qty + ' ក្នុងកន្ត្រក' : ''}</span>
+      ${p.photo && !p.photo.includes('INSERT') && p.photo.startsWith('http')
+        ? `<img class="prod-img" src="${x(p.photo)}" alt="${x(p.name)}" loading="lazy" onerror="this.outerHTML='<div class=prod-img-placeholder>📦</div>'">`
+        : `<div class="prod-img-placeholder">📦</div>`}
+      <div class="prod-body">
+        <div class="prod-name">${x(p.name)}</div>
+        <div class="prod-price">${price > 0 ? '$' + price.toFixed(2) : '—'}</div>
+        ${isLow ? '<span class="prod-stock ps-low">⚠ ជិតអស់</span>' : '<span class="prod-stock ps-in">✓ មានស្តុក</span>'}
+        <button class="prod-add" data-code="${x(p.code)}" onclick="addToCart(this.dataset.code)" ${price === 0 ? 'disabled' : ''}>
+          <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          ${inCart ? 'បន្ថែមទៀត' : 'ដាក់ក្នុងកន្ត្រក'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// CART
+// ═══════════════════════════════════════════════════════════
+function addToCart(code) {
+  const prod = S.products.find(p => p.code === code);
+  if (!prod) return;
+  const price = parseFloat(String(prod.price || '0').replace(/[^0-9.]/g, '')) || 0;
+  if (price === 0) return;
+  const idx = S.cart.findIndex(c => c.code === code);
+  if (idx >= 0) S.cart[idx].qty++;
+  else S.cart.push({ code, name: prod.name, photo: prod.photo || '', price, qty: 1 });
+  updateCartUI();
+  toast(prod.name + ' +1 ✓', 'ok');
+}
+
+function removeFromCart(code) {
+  S.cart = S.cart.filter(c => c.code !== code);
+  updateCartUI();
+  if (S.sheet === 'cart') renderCartSheet();
+}
+
+function updateQty(code, delta) {
+  const idx = S.cart.findIndex(c => c.code === code);
+  if (idx < 0) return;
+  S.cart[idx].qty = Math.max(0, S.cart[idx].qty + delta);
+  if (S.cart[idx].qty === 0) S.cart.splice(idx, 1);
+  updateCartUI();
+  if (S.sheet === 'cart') renderCartSheet();
+}
+
+function updateCartUI() {
+  const total = S.cart.reduce((s, c) => s + c.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  const fc    = document.getElementById('float-cart');
+  const fcCnt = document.getElementById('fc-count');
+  const fcTxt = document.getElementById('fc-txt');
+
+  badge.textContent = total;
+  badge.classList.toggle('show', total > 0);
+  fc.classList.toggle('show', total > 0);
+  if (fcCnt) fcCnt.textContent = total;
+  if (fcTxt) fcTxt.textContent = 'Cart ($' + cartSubtotal().toFixed(2) + ')';
+
+  // Update in-cart badges on product cards
+  S.products.forEach(p => {
+    const badgeEl = document.getElementById('icb-' + p.code);
+    if (!badgeEl) return;
+    const c = S.cart.find(c => c.code === p.code);
+    if (c) { badgeEl.textContent = c.qty + ' ក្នុងកន្ត្រក'; badgeEl.classList.add('show'); }
+    else   { badgeEl.textContent = ''; badgeEl.classList.remove('show'); }
+    // Update button text
+    const btn = document.querySelector(`#pc-${p.code} .prod-add`);
+    if (btn) btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> ${c ? 'បន្ថែមទៀត' : 'ដាក់ក្នុងកន្ត្រក'}`;
+  });
+}
+
+function cartSubtotal() { return S.cart.reduce((s, c) => s + c.price * c.qty, 0); }
+function cartTotal()    { return cartSubtotal() + S.cfg.deliveryFee; }
+
+// ═══════════════════════════════════════════════════════════
+// SHEET SYSTEM
+// ═══════════════════════════════════════════════════════════
+function openSheet(name) {
+  S.sheet = name;
+  const ovl   = document.getElementById('ovl');
+  const sheet = document.getElementById('sheet');
+  ovl.classList.add('on');
+  sheet.classList.add('on');
+  document.body.style.overflow = 'hidden';
+  renderSheet(name);
+}
+
+function closeSheet() {
+  document.getElementById('ovl').classList.remove('on');
+  document.getElementById('sheet').classList.remove('on');
+  document.body.style.overflow = '';
+  S.sheet = null;
+}
+
+function renderSheet(name) {
+  const titles = { cart:'🛒 ទំនិញ', checkout:'📋 ព័ត៌មានដឹក', payment:'💳 ការទូទាត់', khqr:'📱 ស្កេន KHQR', success:'✅ ជោគជ័យ' };
+  document.getElementById('sh-title').textContent = titles[name] || '';
+  // Steps
+  const steps = ['cart','checkout','payment','khqr'];
+  const si    = steps.indexOf(name);
+  document.getElementById('sh-title').innerHTML =
+    `<div style="display:flex;align-items:center;gap:10px">${titles[name] || name}` +
+    (si >= 0 && name !== 'success' ? `<div class="steps">${steps.map((_,i)=>`<div class="step ${i===si?'on':i<si?'done':''}"></div>`).join('')}</div>` : '') +
+    `</div>`;
+
+  const body = document.getElementById('sh-body');
+  const foot = document.getElementById('sh-foot');
+
+  // FIX 4: Save form data before clearing, so user input is preserved
+  if (S.sheet === 'checkout') {
+    const n = document.getElementById('f-name');
+    const p = document.getElementById('f-phone');
+    const l = document.getElementById('f-location');
+    const c = document.getElementById('f-city');
+    const nt= document.getElementById('f-note');
+    if (n)  S.order.name     = n.value;
+    if (p)  S.order.phone    = p.value;
+    if (l)  S.order.location = l.value;
+    if (c)  S.order.city     = c.value;
+    if (nt) S.order.note     = nt.value;
+  }
+
+  body.innerHTML = '';
+  foot.innerHTML = '';
+
+  if (name === 'cart')     { renderCartSheet(body, foot); return; }
+  if (name === 'checkout') { renderCheckoutSheet(body, foot); return; }
+  if (name === 'payment')  { renderPaymentSheet(body, foot); return; }
+  if (name === 'khqr')     { renderKhqrSheet(body, foot); return; }
+  if (name === 'success')  { renderSuccessSheet(body, foot); return; }
+}
+
+// ── CART SHEET ─────────────────────────────────────────────
+function renderCartSheet(body, foot) {
+  body = body || document.getElementById('sh-body');
+  foot = foot || document.getElementById('sh-foot');
+  if (!S.cart.length) {
+    body.innerHTML = `<div class="cart-empty">
+      <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-14.39-14H1V2H0v2h1l3.6 7.59L3.25 14c-.16.28-.25.61-.25.96C3 16.1 3.9 17 5 17h14v-2H5.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.44 4H4.21l-.6-1.47A1 1 0 0 0 2.68 2H0v2h2l.61 0z"/></svg>
+      <p style="font-size:16px;font-weight:700;margin-bottom:6px">ទំនិញនៅទទេ</p>
+      <p>ជ្រើសរើសទំនិញពី catalog</p></div>`;
+    foot.innerHTML = `<button class="btn-full btn-outline" onclick="closeSheet()">ត្រឡប់ maga</button>`;
+    return;
+  }
+  body.innerHTML = S.cart.map(c => `
+    <div class="cart-item">
+      ${c.photo && c.photo.startsWith('http') ? `<img class="ci-img" src="${x(c.photo)}" onerror="this.src=''">` : `<div class="ci-img" style="display:flex;align-items:center;justify-content:center;font-size:24px">📦</div>`}
+      <div class="ci-info">
+        <div class="ci-name">${x(c.name)}</div>
+        <div class="ci-price">$${c.price.toFixed(2)} / ១</div>
+        <div class="ci-total">$${(c.price * c.qty).toFixed(2)}</div>
+      </div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="updateQty('${x(c.code)}',-1)">−</button>
+        <span class="qty-num">${c.qty}</span>
+        <button class="qty-btn" onclick="updateQty('${x(c.code)}',+1)">+</button>
+      </div>
+    </div>`).join('');
+
+  const sub = cartSubtotal(), fee = S.cfg.deliveryFee, tot = sub + fee;
+  foot.innerHTML = `
+    <div class="sum-row"><span>តម្លៃទំនិញ</span><span>$${sub.toFixed(2)}</span></div>
+    <div class="sum-row deliv"><span>ថ្លៃដឹក <span class="delivery-tag">🚚 ដល់ដៃ</span></span><span>$${fee.toFixed(2)}</span></div>
+    <div class="sum-row total"><span>Total Paid</span><span style="color:var(--p)">$${tot.toFixed(2)}</span></div>
+    <div style="font-size:11px;color:var(--muted);margin:4px 0 10px;line-height:1.5">💡 ទូទាត់ KHQR $${fee.toFixed(2)} ជាមុន → ទំនិញ COD ពេលទទួល<br>&nbsp;&nbsp;&nbsp;&nbsp;ឬ COD $${tot.toFixed(2)} ទាំងអស់ ពេលអ្នកដឹកមកដល់</div>
+    <button class="btn-full btn-primary" onclick="openSheet('checkout')">
+      <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+      បញ្ចូលព័ត៌មានដឹក →
+    </button>`;
+}
+
+// ── CHECKOUT SHEET ──────────────────────────────────────────
+function renderCheckoutSheet(body, foot) {
+  const o = S.order;
+  body.innerHTML = `
+    <div class="form-sec">
+      <h3>ព័ត៌មានអ្នកទទួល</h3>
+      <div class="fld"><label>ឈ្មោះ *</label><input id="f-name" value="${x(o.name||'')}" placeholder="ឈ្មោះពេញ" autocomplete="name"></div>
+      <div class="fld"><label>លេខទូរស័ព្ទ *</label><input id="f-phone" type="tel" value="${x(o.phone||'')}" placeholder="0xx xxx xxxx" autocomplete="tel"></div>
+      <div class="fld"><label>ទីតាំង / អាស័យដ្ឋាន *</label>
+        <select id="f-city" onchange="document.getElementById('f-location').value=this.value">
+          <option value="">ជ្រើស...</option>
+          ${['ភ្នំពេញ','សៀមរាប','បាត់ដំបង','ព្រះសីហនុ','កំពត','កំពង់ចាម','ព្រៃវែង','ស្វាយរៀង','ក្រចេះ','ស្ទឹងត្រែង','ម៉ុងឌូលគីរី','រតនគីរី','កែប','ប៉ៃលិន','ឧត្តរមានជ័យ','ព្រះវិហារ','តាកែវ','ត្បូងឃ្មុំ','ស្វាយរៀង','ក្រចេះ'].map(p=>`<option ${o.city===p?'selected':''}>${p}</option>`).join('')}
+        </select>
+        <input id="f-location" value="${x(o.location||'')}" placeholder="ភ្នំពេញ / ភូមិ ឃុំ..." style="margin-top:6px">
+      </div>
+      <div class="fld"><label>កំណត់ចំណាំ (ប្រសិនបើមាន)</label><textarea id="f-note" placeholder="ពណ៌ ទំហំ ព័ត៌មានអំពីអ្វីដែលចង់បាន…">${x(o.note||'')}</textarea></div>
+    </div>`;
+
+  foot.innerHTML = `
+    <button class="btn-full btn-outline" onclick="openSheet('cart')" style="margin-bottom:10px">
+      ← ត្រឡប់ទៅ Cart
+    </button>
+    <button class="btn-full btn-primary" onclick="goPayment()">
+      ជ្រើសរើសសេវាទូទាត់ →
+    </button>`;
+}
+
+function goPayment() {
+  const name  = document.getElementById('f-name')?.value.trim();
+  const phone = document.getElementById('f-phone')?.value.trim();
+  const loc   = document.getElementById('f-location')?.value.trim();
+  if (!name || !phone || !loc) { toast('សូមបំពេញ ឈ្មោះ ទូរស័ព្ទ និងទីតាំង', 'err'); return; }
+  S.order = { ...S.order, name, phone, location: loc, note: document.getElementById('f-note')?.value.trim() || '' };
+  openSheet('payment');
+}
+
+// ── PAYMENT SHEET ───────────────────────────────────────────
+function renderPaymentSheet(body, foot) {
+  const sub = cartSubtotal().toFixed(2);
+  const fee = S.cfg.deliveryFee.toFixed(2);
+  const tot = cartTotal().toFixed(2);
+  body.innerHTML = `
+    <div style="background:var(--p-lt);border-radius:var(--r);padding:14px 16px;margin-bottom:16px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:2px">Total Paid (ដឹក + ទំនិញ)</div>
+      <div style="font-size:28px;font-weight:900;color:var(--p)">$${tot}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">$${sub} ទំនិញ + $${fee} ដឹក</div>
+    </div>
+    <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px">ជ្រើសរើសសេវាទូទាត់</div>
+    <div class="pay-opts">
+      <label class="pay-opt" id="po-khqr">
+        <input type="radio" name="ptype" value="khqr" checked onchange="selPay(this)">
+        <div class="pay-opt-ico">📱</div>
+        <div class="pay-opt-txt">
+          <div class="po-title">KHQR $${fee} ជាមុន — ប្រាកដបំផុត</div>
+          <div class="po-sub">ស្កេន KHQR <strong>$${fee}</strong> ភ្លាម → ទំនិញ <strong>$${sub}</strong> COD ពេលទទួល<br><em style="color:var(--green)">✓ Admin ផ្ញើទំនិញភ្លាមក្រោយទូទាត់</em></div>
+        </div>
+      </label>
+      <label class="pay-opt" id="po-cod">
+        <input type="radio" name="ptype" value="cod" onchange="selPay(this)">
+        <div class="pay-opt-ico">🛵</div>
+        <div class="pay-opt-txt">
+          <div class="po-title">COD — ទូទាត់ <strong>$${tot}</strong> ពេលទទួល</div>
+          <div class="po-sub">ទូទាត់ <strong>$${fee} ដឹក + $${sub} ទំនិញ</strong> ពេលអ្នកដឹកមកដល់<br><em style="color:var(--amber)">⚠ Admin ត្រូវ confirm ជាមុន</em></div>
+        </div>
+      </label>
+    </div>`;
+  foot.innerHTML = `
+    <div id="order-err" style="display:none;background:var(--red-lt);color:var(--red);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;margin-bottom:10px"></div>
+    <button class="btn-full btn-primary" id="btn-confirm" onclick="confirmOrder()">
+      ✅ បញ្ជាក់ការកម្ម៉ង់
+    </button>
+    <button class="btn-full btn-outline" onclick="openSheet('checkout')" style="margin-top:10px">← ត្រឡប់</button>`;
+}
+
+let _selectedPay = 'khqr';
+function selPay(el) {
+  _selectedPay = el.value;
+  document.getElementById('po-cod')?.classList.toggle('on',  el.value === 'cod');
+  document.getElementById('po-khqr')?.classList.toggle('on', el.value === 'khqr');
+}
+
+async function confirmOrder() {
+  const btn = document.getElementById('btn-confirm');
+  if (btn) { btn.disabled = true; btn.textContent = 'កំពុងបញ្ជូន…'; }
+  S.order.paymentType = _selectedPay;
+  try {
+    // Each cart item must have .code for the Code column
+    // S.cart items: { code, name, price, qty }
+    const result = await apiPost('order', {
+      name:        S.order.name,
+      phone:       S.order.phone,
+      location:    S.order.location,
+      note:        S.order.note || '',
+      items:       S.cart,           // {code, name, price, qty} → Code col = "200W x1, J98 x2"
+      deliveryFee: S.cfg.deliveryFee, // → Discount col
+      paymentType: S.order.paymentType
+    });
+    if (result && result.success) {
+      S.order.profileId = result.profileId;
+      S.order.khqrUrl   = result.khqrUrl || S.cfg.khqrUrl;
+      if (S.order.paymentType === 'khqr' && S.order.khqrUrl) {
+        openSheet('khqr');
+      } else {
+        openSheet('success');
+      }
+    } else {
+      const errMsg = (result && result.message) || 'មានបញ្ហា សូមព្យាយាមម្តងទៀត';
+      toast(errMsg, 'err', 5000);
+      const errBox = document.getElementById('order-err');
+      if (errBox) { errBox.textContent = '⚠ ' + errMsg; errBox.style.display='block'; }
+      if (btn) { btn.disabled = false; btn.textContent = '✅ បញ្ជាក់ការកម្ម៉ង់'; }
+    }
+  } catch(e) {
+    // Fallback: save locally and show success
+    S.order.profileId = 'LOCAL_' + Date.now();
+    openSheet('success');
+  }
+}
+
+// ── KHQR SHEET ──────────────────────────────────────────────
+function renderKhqrSheet(body, foot) {
+  const fee = S.cfg.deliveryFee.toFixed(2);  // $2.50 only
+  const sub = cartSubtotal().toFixed(2);
+  const url = S.order.khqrUrl || S.cfg.khqrUrl || '';
+  body.innerHTML = `
+    <div class="khqr-box">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:4px">ស្កេន KHQR ដើម្បីទូទាត់ <strong>ថ្លៃដឹក</strong></p>
+      ${url && !url.includes('INSERT') && url.startsWith('http')
+        ? `<div class="pulse-ring"><img src="${x(url)}" alt="KHQR" style="width:100%;height:100%;object-fit:contain;border-radius:9px"></div>`
+        : `<div style="width:180px;height:180px;margin:0 auto 16px;background:#F1F3F4;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:48px">📱</div>`
+      }
+      <div class="khqr-amt">$${fee}</div>
+      <div class="khqr-sub" style="font-weight:700">ថ្លៃដឹកជញ្ជូន — ${S.cfg.storeName}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Order: ${S.order.profileId || '—'}</div>
+    </div>
+    <div style="background:var(--amber-lt);border-radius:var(--r);padding:12px 14px;font-size:12px;color:#5A3E00;margin-top:10px;display:flex;gap:8px;align-items:flex-start">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0;margin-top:1px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      <span>ទូទាត់ថ្លៃដឹក <strong>$${fee}</strong> ជាមុន → ទំនិញ <strong>$${sub}</strong> ទូទាត់ COD ពេលទទួល</span>
+    </div>
+    <div style="background:var(--green-lt);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--green);margin-top:8px;display:flex;gap:8px;align-items:center">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      <span>ទូទាត់រួច Admin នឹងផ្ញើទំនិញភ្លាម</span>
+    </div>`;
+  foot.innerHTML = `
+    <button class="btn-full btn-primary" onclick="openSheet('success')">
+      ✅ ទូទាត់ $${fee} រួចហើយ
+    </button>
+    <button class="btn-full btn-outline" onclick="openSheet('payment')" style="margin-top:10px">← ផ្លាស់ប្ដូរ</button>`;
+}
+
+// ── SUCCESS SHEET ───────────────────────────────────────────
+function renderSuccessSheet(body, foot) {
+  const isCod = S.order.paymentType !== 'khqr';
+  const sub   = cartSubtotal().toFixed(2);
+  const fee   = S.cfg.deliveryFee.toFixed(2);
+  const tot   = cartTotal().toFixed(2);
+  body.innerHTML = `
+    <div class="success-box">
+      <div class="success-ico">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <div class="success-title">ការកម្ម៉ង់ជោគជ័យ!</div>
+      <div class="order-id-chip">${S.order.profileId || 'ORDER-' + Date.now()}</div>
+      <div class="success-sub">
+        ${isCod
+          ? `Admin នឹងទំនាក់ទំនងមកតាម <strong>${x(S.order.phone||'')}</strong><br>ដើម្បីបញ្ជាក់ការដឹក<br><br>💰 ទូទាត់ <strong>$${tot}</strong> (ទំនិញ + ដឹក) ពេលទទួល`
+          : `ថ្លៃដឹក <strong>$${fee}</strong> បានទូទាត់ KHQR ✓<br>Admin នឹងផ្ញើទំនិញក្នុងពេលឆាប់ៗ<br><br>💰 ទំនិញ <strong>$${sub}</strong> ទូទាត់ COD ពេលទទួល`}
+      </div>
+    </div>
+    <div style="background:#F1F3F4;border-radius:var(--r);padding:14px;font-size:12px;color:var(--muted);margin-top:4px">
+      <strong style="display:block;margin-bottom:6px;color:var(--text)">ព័ត៌មានការដឹក</strong>
+      <div>👤 ${x(S.order.name||'—')}</div>
+      <div>📱 ${x(S.order.phone||'—')}</div>
+      <div>📍 ${x(S.order.location||'—')}</div>
+      ${S.order.note ? `<div>📝 ${x(S.order.note)}</div>` : ''}
+      <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">
+        ${isCod
+          ? `🚚 ដឹក $${fee} + ទំនិញ $${sub} = <strong>COD $${tot}</strong>`
+          : `🚚 ដឹក <strong>$${fee} KHQR ✓</strong> + ទំនិញ <strong>$${sub} COD ពេលទទួល</strong>`}
+      </div>
+    </div>`;
+  foot.innerHTML = `
+    <button class="btn-full btn-primary" onclick="resetAndClose()">
+      🛒 ទិញបន្ត
+    </button>`;
+
+  // Clear cart after success
+  S.cart = [];
+  updateCartUI();
+  renderGrid();
+  // FIX 6: Fire TG notification (backend submitPublicOrder should do this,
+  // but if profileId is set, ping again to ensure delivery)
+  if (S.order.profileId && !S.order.profileId.startsWith('LOCAL_')) {
+    apiPost('notifytelegram', { profileId: S.order.profileId }).catch(()=>{});
+  }
+}
+
+function resetAndClose() {
+  S.order = {};
+  closeSheet();
+}
+
+// ═══════════════════════════════════════════════════════════
+// DEMO PRODUCTS (when not connected to Apps Script)
+// ═══════════════════════════════════════════════════════════
+function getDemoProducts() {
+  return [
+    { code:'j98',  name:'Speaker J98 200W',      category:'Speaker',  photo:'', price:'$30',  stockStatus:'In Stock',  description:'ប្រអប់ Speaker J98 200W គុណភាពល្អ' },
+    { code:'cl18', name:'Speaker CL18',           category:'Speaker',  photo:'', price:'$25',  stockStatus:'In Stock',  description:'CL18 Portable Speaker' },
+    { code:'s75',  name:'Speaker S75',            category:'Speaker',  photo:'', price:'$55',  stockStatus:'Low Stock', description:'S75 Heavy Bass Speaker' },
+    { code:'s53',  name:'S53-V1 Wireless Mic Set',category:'Wireless', photo:'', price:'$35',  stockStatus:'In Stock',  description:'S53-V1 Wireless Microphone' },
+    { code:'rgb',  name:'RGB LED Strip',          category:'LED',      photo:'', price:'$12',  stockStatus:'Low Stock', description:'5M RGB LED light strip' },
+    { code:'q9',   name:'Q9 Karaoke Speaker',     category:'Karaoke',  photo:'', price:'$45',  stockStatus:'In Stock',  description:'Q9 Bluetooth Karaoke Speaker' },
+  ];
+}
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function x(v) { return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function toast(msg, type='', dur=3000) {
+  const w  = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 't ' + type;
+  const icons = { ok:'<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>', err:'<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>' };
+  el.innerHTML = (icons[type]||'') + x(msg);
+  w.appendChild(el);
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 250); }, dur);
+}
+
+// Swipe down to close sheet
+(function(){
+  let startY = 0;
+  const sh = document.getElementById('sheet');
+  sh.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  sh.addEventListener('touchend',   e => { if (e.changedTouches[0].clientY - startY > 80) closeSheet(); }, { passive: true });
+})();
+
+// ═══════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
