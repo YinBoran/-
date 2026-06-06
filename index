@@ -281,7 +281,7 @@
 
 <script>
 const tg  = window.Telegram.WebApp;
-const API = "<?= ScriptApp.getService().getUrl() ?>";
+onst API = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbzed-sl6kTHLqf5JKBp7vxl2v89hF_--hMAf33E3gceROoUsZp092rmQILFa4YmEITj/exec";
 
 // Expand to full height
 tg.expand();
