@@ -303,7 +303,7 @@ const S = {
 // ═══════════════════════════════════════════════════════════
 // ▼▼▼ PASTE YOUR APPS SCRIPT WEB APP URL HERE ▼▼▼
 const API_URL = window.GAS_API_URL ||
-  'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+  'https://script.google.com/macros/s/AKfycbzed-sl6kTHLqf5JKBp7vxl2v89hF_--hMAf33E3gceROoUsZp092rmQILFa4YmEITj/exec';
 // ▲▲▲ Deploy → Web App → Anyone → Copy URL → paste above ▲▲▲
 
 // ─── HTTP helpers ─────────────────────────────────────────
