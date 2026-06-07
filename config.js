@@ -1,2 +1,2 @@
-const API = "https://mr.yinboran.workers.dev";
+const API = "https://mr.yinboran.workers.dev/";
 window.API = API;
