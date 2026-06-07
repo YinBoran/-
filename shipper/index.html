@@ -214,16 +214,28 @@ function gs(fn, arg) {
 }
 
 // ── Init ──────────────────────────────────────────────────
-async function init() {
-  try {
-    const data = await gs("handleShipperLogin", tgId);
-    if (data.error) { showNotRegistered(); return; }
-    shipperData = data;
-    document.getElementById("header-sub").textContent = data.name || tgName.trim();
-    await loadOrders();
-  } catch(e) {
-    showError("Connection error: " + e.message);
-  }
+function showPhoneLogin() {
+  document.getElementById("app-content").innerHTML = `
+    <div class="register-prompt">
+      <h3>🚚 Shipper Login</h3>
+      <p style="margin-bottom:12px">បញ្ចូល Shipper Phone Number</p>
+      <input id="phone-input" type="tel" placeholder="076 9999 380"
+        style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);
+        background:var(--surface);color:var(--text);font-size:14px;margin-bottom:12px">
+      <button onclick="loginByPhone()"
+        style="width:100%;padding:10px;background:var(--accent);color:#000;
+        border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px">
+        Login
+      </button>
+    </div>`;
+}
+
+async function loginByPhone() {
+  const phone = document.getElementById("phone-input")?.value.trim();
+  if (!phone) return;
+  shipperData = { phone: phone.replace(/\D/g,""), name: "Shipper" };
+  document.getElementById("header-sub").textContent = phone;
+  await loadOrders();
 }
 
 // ── Load Orders ───────────────────────────────────────────
