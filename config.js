@@ -1,31 +1,33 @@
-// YB Store — config.js v2
-// Update WORKER_URL below after redeploying Worker
+// YB Store — config.js v3
+// Updated Worker URL: yinboran.workers.dev
 
 window.YB_CONFIG = {
-  WORKER_URL: "https://yinboran-github-io.boranyin24.workers.dev",
+  WORKER_URL: "https://yinboran-github-io.yinboran.workers.dev",
 
-  // Telegram
-  TG_BOT_TOKEN: "",        // set in Apps Script (server-side only)
-  TG_ORDER_CHAT: "",       // your admin chat ID
-
-  // Shipper Mini App
-  SHIPPER_URL: "https://yinboran-github-io.boranyin24.workers.dev/shipper",
-
-  // Feature flags
   ENABLE_KHQR: true,
   ENABLE_COD: true,
-  DELIVERY_FEE: 2.5,       // USD
+  DELIVERY_FEE: 2.5,
 
-  // Helper
-  api(action, payload = {}) {
-    const url = `${this.WORKER_URL}?action=${action}`;
-    if (Object.keys(payload).length === 0) {
-      return fetch(url).then(r => r.json());
-    }
-    return fetch(url, {
+  // Universal API helper
+  // GET:  YB_CONFIG.get("getPublicProducts", { category: "phone" })
+  // POST: YB_CONFIG.post("submitOrder", { name: "...", ... })
+
+  get(fn, params = {}) {
+    const url = new URL(this.WORKER_URL);
+    url.searchParams.set("action", "gs");
+    url.searchParams.set("fn", fn);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+    return fetch(url.toString()).then(r => r.json());
+  },
+
+  post(fn, body = {}) {
+    const url = new URL(this.WORKER_URL);
+    url.searchParams.set("action", "gs");
+    url.searchParams.set("fn", fn);
+    return fetch(url.toString(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action, ...payload }),
+      body: JSON.stringify(body),
     }).then(r => r.json());
   },
 };
