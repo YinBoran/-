@@ -727,7 +727,13 @@ async function confirmOrder() {
     // Each cart item must have .code for the Code column
     // S.cart items: { code, name, price, qty }
     // ❌ Current (URL too long):
-      const result = await GS('submitPublicOrder', orderData);
+      // ✅ Replace:
+      const res = await fetch(window.API + "?action=order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "order", ...orderData })
+      });
+      const result = await res.json();
       
       // ✅ Fix — POST directly:
       const res = await fetch(window.API + "?action=order", {
