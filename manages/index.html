@@ -482,12 +482,21 @@ body.modal-open{overflow:hidden}
           </div>
         </div>
         <div class="fbar">
-          <select id="c-pm" onchange="renderCust()"><option value="cod">COD</option><option value="paid">Paid</option><option value="unpaid">Unpaid</option></select>
+          <select id="c-pm" onchange="renderCust()"><option value="">All</option><option value="cod">COD</option><option value="paid">Paid</option></select>
           <div style="display:flex;align-items:center;gap:8px;white-space:nowrap">
             <span style="font-size:13px;font-weight:500;color:var(--text)">Date between</span>
             <input type="date" id="c-df" onchange="renderCust()">
             <input type="date" id="c-dt" onchange="renderCust()">
           </div>
+          <select id="c-loc" onchange="renderCust()">
+            <option value="">All Location</option>
+            <option value="ភ្នំពេញ">ភ្នំពេញ</option>
+            <option value="សៀមរាប">សៀមរាប</option>
+            <option value="បាត់ដំបង">បាត់ដំបង</option>
+            <option value="ព្រះសីហនុ">ព្រះសីហនុ</option>
+            <option value="កំពត">កំពត</option>
+            <option value="កំពង់ចាម">កំពង់ចាម</option>
+          </select>
           <button class="btn btn-o" onclick="clearCF()" style="height:34px">Clear</button>
         </div>
         <div class="tbl-wrap">
@@ -954,6 +963,9 @@ function renderCust(){
   const pm=(document.getElementById('c-pm')?.value||'').toLowerCase();
   const df=document.getElementById('c-df')?.value;
   const dt=document.getElementById('c-dt')?.value;
+  const loc=(document.getElementById('c-loc')?.value||'').toLowerCase();
+  const od=s(r,hm,'Order Date'); if(df&&od&&pd(od)<new Date(df)) return false;
+  if(loc && !s(r,hm,'Location').toLowerCase().includes(loc)) return false;
 
   D.cust.filtered = data.filter(r=>{
     if(srch&&![s(r,hm,'Name'),s(r,hm,'Phone Number'),s(r,hm,'Ordered'),s(r,hm,'Location')].some(v=>v.toLowerCase().includes(srch))) return false;
@@ -1003,9 +1015,10 @@ function buildCustTable(rows, headers){
       if(c==='Phone Number') return `<td><a href="javascript:void(0)" onclick='printInvoiceA5(${JSON.stringify(pid)});return false;' style="color:var(--p);font-weight:500" title="Print invoice">${v||'—'}</a></td>`;
       return `<td title="${e(v)}">${t(v,22)||'—'}</td>`;
     }).join('');
+    const isCompleted = s(r,hm,'Status').toLowerCase().includes('complet');
     return `<tr>${cells}<td><div class="ra">
-      <button class="rb e" onclick='editCust(${JSON.stringify(pid)})' title="Edit"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
-      <button class="rb d" onclick='delCustConfirm(${JSON.stringify(pid)})' title="Delete"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+      ${isCompleted ? '' : `<button class="rb e" onclick='editCust(${JSON.stringify(pid)})' title="Edit"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+      <button class="rb d" onclick='delCustConfirm(${JSON.stringify(pid)})' title="Delete"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>`}
     </div></td></tr>`;
   }).join('');
   return `<table class="tbl"><thead><tr>${th}<th></th></tr></thead><tbody>${tb}</tbody></table>`;
@@ -1054,7 +1067,16 @@ function sortCust(col){
   if(D.cust.sortC===col) D.cust.sortD*=-1; else{ D.cust.sortC=col; D.cust.sortD=1; }
   renderCust();
 }
-function clearCF(){ document.getElementById('c-s').value=''; document.getElementById('c-pm').value='cod'; document.getElementById('c-df').value=''; document.getElementById('c-dt').value=''; renderCust(); }
+function clearCF(){
+  const cs = document.getElementById('c-s');
+  if(cs) cs.value='';
+  document.getElementById('c-pm').value='';
+  document.getElementById('c-df').value='';
+  document.getElementById('c-dt').value='';
+  const cl = document.getElementById('c-loc');
+  if(cl) cl.value='';
+  renderCust();
+}
 
 // ═══════════════════════════════════════════════════════════
 // PRODUCTS — infinite scroll
