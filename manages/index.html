@@ -657,12 +657,57 @@ async function GS(fn, ...args) {
   return json;
 }
 
-// ═══════════════════════════════════════════════════════════
-// AUTH
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// SESSION FIX — Replace these 3 functions in manages/index.html
+// ═══════════════════════════════════════════════════════
+ 
+// REPLACE function chkAuth() { ... }
 function chkAuth() {
-  ss('ybauth') === '1' ? showApp() : showAuth();
+  const auth    = localStorage.getItem("ybauth");
+  const ts      = parseInt(localStorage.getItem("ybauth_ts") || "0");
+  const expired = Date.now() - ts > 8 * 60 * 60 * 1000; // 8 hours
+  if (auth === "1" && !expired) {
+    showApp();
+  } else {
+    localStorage.removeItem("ybauth");
+    localStorage.removeItem("ybauth_ts");
+    showAuth();
+  }
 }
+// REPLACE async function doLogin() { ... }
+async function doLogin() {
+  const pw  = document.getElementById('pw').value.trim();
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('auth-err');
+  if (!pw) { if(err) err.textContent = 'Enter password'; return; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+  try {
+    const r = await GS('verifyPassword', pw);
+    if (r === true || r === 'true' || r) {
+      // ✅ Save session + timestamp
+      localStorage.setItem("ybauth",    "1");
+      localStorage.setItem("ybauth_ts", Date.now().toString());
+      showApp();
+    } else {
+      if (err) err.textContent = 'Wrong password';
+      document.getElementById('pw').value = '';
+      document.getElementById('pw').focus();
+      if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
+    }
+  } catch(e) {
+    if (err) err.textContent = 'Error: ' + e.message;
+    if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
+  }
+}
+ 
+// REPLACE function doLogout() { ... }
+function doLogout() {
+  localStorage.removeItem("ybauth");
+  localStorage.removeItem("ybauth_ts");
+  localStorage.removeItem("page");
+  localStorage.removeItem("sbc");
+  window.location.href = '/';
+}	
 function showAuth(){
   document.getElementById('auth').classList.remove('hidden');
   document.getElementById('app').classList.add('hidden');
@@ -702,47 +747,6 @@ function togglePw(){
   inp.type=_pwVisible?'text':'password';
   document.getElementById('eye-icon').style.opacity=_pwVisible?'1':'.45';
 }
-
-async function doLogin() {
-  const pw  = document.getElementById('pw').value.trim();
-  const btn = document.getElementById('login-btn');
-  const err = document.getElementById('auth-err');
-
-  if (!pw) {
-    err ? err.textContent = 'Enter password' : alert('Enter password');
-    return;
-  }
-
-  // ✅ Disable button while loading:
-  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
-
-  try {
-    const r = await GS('verifyPassword', pw);
-    if (r === true || r === 'true' || r) {
-      sessionStorage.clear();
-      ss('ybauth', '1');
-      showApp();
-    } else {
-      if (err) err.textContent = 'Wrong password';
-      else alert('Wrong password');
-      document.getElementById('pw').value = '';
-      document.getElementById('pw').focus();
-      // ✅ Re-enable button:
-      if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
-    }
-  } catch(e) {
-    if (err) err.textContent = 'Error: ' + e.message;
-    else alert('Error: ' + e.message);
-    // ✅ Re-enable button on error:
-    if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
-  }
-}
-  
-function doLogout() {
-  localStorage.clear();
-  window.location.href = '/';
-}
-
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
