@@ -963,10 +963,20 @@ function renderCust(){
   const pm=(document.getElementById('c-pm')?.value||'').toLowerCase();
   const df=document.getElementById('c-df')?.value;
   const dt=document.getElementById('c-dt')?.value;
+  
   const loc=(document.getElementById('c-loc')?.value||'').toLowerCase();
-  const od=s(r,hm,'Order Date'); if(df&&od&&pd(od)<new Date(df)) return false;
-  if(loc && !s(r,hm,'Location').toLowerCase().includes(loc)) return false;
 
+  D.cust.filtered = data.filter(r=>{
+    if(srch&&![s(r,hm,'Name'),s(r,hm,'Phone Number'),s(r,hm,'Ordered'),s(r,hm,'Location')].some(v=>v.toLowerCase().includes(srch))) return false;
+    if(pm==='paid' && !s(r,hm,'Payment').toLowerCase().includes('paid')) return false;
+    if(pm==='cod' && !s(r,hm,'Payment').toLowerCase().includes('cod')) return false;
+    const od=s(r,hm,'Order Date');
+    if(df&&od&&pd(od)<new Date(df)) return false;
+    if(dt&&od&&pd(od)>new Date(dt+'T23:59:59')) return false;
+    if(loc && !s(r,hm,'Location').toLowerCase().includes(loc)) return false;
+    return true;
+  });
+    
   D.cust.filtered = data.filter(r=>{
     if(srch&&![s(r,hm,'Name'),s(r,hm,'Phone Number'),s(r,hm,'Ordered'),s(r,hm,'Location')].some(v=>v.toLowerCase().includes(srch))) return false;
     if(pm==='paid' && !s(r,hm,'Payment').toLowerCase().includes('paid')) return false;
