@@ -38,18 +38,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .icon-btn:hover{background:var(--border)}
 .icon-btn.active{background:var(--accent)22;color:var(--accent)}
 
-/* SEARCH PANEL */
-.search-panel{background:var(--surface);border-bottom:1px solid var(--border);
-  max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0 12px}
-.search-panel.on{max-height:220px;padding:10px 12px}
-.search-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.search-inp{background:var(--card);border:1px solid var(--border);border-radius:8px;
-  padding:8px 11px;color:var(--text);font-size:13px;width:100%}
-.search-inp:focus{outline:none;border-color:var(--accent)}
-.search-inp::placeholder{color:var(--muted);font-size:12px}
-.search-clear{grid-column:1/-1;background:var(--border);color:var(--muted);border:none;
-  border-radius:8px;padding:8px;cursor:pointer;font-size:12px;font-weight:600}
-.search-clear:active{opacity:.7}
+/* HEADER SEARCH INPUT */
+.hdr-search{flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:9px;padding:8px 12px;color:var(--text);font-size:13px;
+  min-width:0;outline:none;transition:border-color .2s}
+.hdr-search:focus{border-color:var(--accent)}
+.hdr-search::placeholder{color:var(--muted);font-size:12px}
 
 /* NEW ORDER ALERT */
 .new-order-alert{background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -131,7 +125,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:fixed;inset:0;top:75px;gap:14px;color:var(--muted);font-size:14px;
+  position:fixed;inset:0;top:80px;gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
 .loading-sm{position:relative;inset:auto;min-height:120px;background:transparent;z-index:auto}
 .spinner{width:36px;height:36px;border:3px solid var(--border);
@@ -304,21 +298,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
     <p id="hdr-sub"></p>
   </div>
   <div class="hdr-actions" id="hdr-actions" style="display:none">
-    <button class="icon-btn" id="search-btn" onclick="toggleSearch()" title="Search">🔍</button>
+    <input class="hdr-search" id="hdr-search-inp"
+      placeholder="🔍 ស្វែងរក..."
+      oninput="debounceSearch('_all',this.value)"
+      onsearch="debounceSearch('_all',this.value)">
     <div class="hdr-badge" id="pending-count">0</div>
-  </div>
-</div>
-
-<!-- Search Panel -->
-<div class="search-panel" id="search-panel">
-  <div class="search-grid">
-    <input class="search-inp" id="sf-name"     placeholder="🔍 ឈ្មោះ..."       oninput="debounceSearch('name',this.value)">
-    <input class="search-inp" id="sf-phone"    placeholder="📞 ទូរស័ព្ទ..."     oninput="debounceSearch('phone',this.value)">
-    <input class="search-inp" id="sf-location" placeholder="📍 ទីតាំង..."       oninput="debounceSearch('location',this.value)">
-    <input class="search-inp" id="sf-ordered"  placeholder="🏷️ ទំនិញ..."        oninput="debounceSearch('ordered',this.value)">
-    <input class="search-inp" id="sf-pricing"  placeholder="💰 Pricing..."       oninput="debounceSearch('pricing',this.value)">
-    <input class="search-inp" id="sf-retail"   placeholder="💵 Retail Price..."  oninput="debounceSearch('retail',this.value)">
-    <button class="search-clear" onclick="clearSearch()">✕ Clear All Filters</button>
   </div>
 </div>
 
@@ -387,9 +371,8 @@ let pollTimer    = null;
 let visibleCount = 9;
 const CHUNK      = 9;
 
-let searchPanelOpen = false;
-let searchFilters   = { name:'', phone:'', location:'', ordered:'', pricing:'', retail:'' };
-let _searchTimer    = null;
+let _searchAll   = '';
+let _searchTimer = null;
 
 // ── VALIDATION ────────────────────────────────────────────
 const PH_MIN=9, PH_MAX=10, PW_MIN=4, PW_MAX=32;
@@ -578,40 +561,34 @@ function startPoll(){
 function stopPoll(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
 
 // ── SEARCH ────────────────────────────────────────────────
-function toggleSearch(){
-  searchPanelOpen=!searchPanelOpen;
-  const p=document.getElementById('search-panel');
-  if(p)p.classList.toggle('on',searchPanelOpen);
-  const b=document.getElementById('search-btn');
-  if(b)b.classList.toggle('active',searchPanelOpen);
-  if(searchPanelOpen)setTimeout(()=>document.getElementById('sf-name')?.focus(),300);
-}
 function debounceSearch(k,v){
-  searchFilters[k]=(v||'').toLowerCase().trim();
+  _searchAll=(v||'').toLowerCase().trim();
   clearTimeout(_searchTimer);
   _searchTimer=setTimeout(()=>{visibleCount=CHUNK;applyFilter();},200);
 }
 function clearSearch(){
-  searchFilters={name:'',phone:'',location:'',ordered:'',pricing:'',retail:''};
-  ['sf-name','sf-phone','sf-location','sf-ordered','sf-pricing','sf-retail']
-    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  _searchAll='';
+  const el=document.getElementById('hdr-search-inp');
+  if(el)el.value='';
   visibleCount=CHUNK;applyFilter();
 }
-function hasActiveSearch(){return Object.values(searchFilters).some(v=>v);}
+function hasActiveSearch(){return !!_searchAll;}
 
 // ── FILTER ────────────────────────────────────────────────
 function applyFilter(){
   let res=allOrders;
   if(codOnly) res=res.filter(o=>(o.payment||'').toLowerCase().includes('cod'));
-  if(hasActiveSearch()){
-    res=res.filter(o=>{
-      return(!searchFilters.name     ||(o.name    ||'').toLowerCase().includes(searchFilters.name))
-           &&(!searchFilters.phone   ||(o.phone   ||'').toLowerCase().includes(searchFilters.phone))
-           &&(!searchFilters.location||(o.location||'').toLowerCase().includes(searchFilters.location))
-           &&(!searchFilters.ordered ||(o.ordered ||'').toLowerCase().includes(searchFilters.ordered))
-           &&(!searchFilters.pricing ||(o.pricing ||'').toLowerCase().includes(searchFilters.pricing))
-           &&(!searchFilters.retail  ||(o.retail  ||'').toLowerCase().includes(searchFilters.retail));
-    });
+  if(_searchAll){
+    const q=_searchAll;
+    res=res.filter(o=>
+      (o.name    ||'').toLowerCase().includes(q)||
+      (o.phone   ||'').toLowerCase().includes(q)||
+      (o.location||'').toLowerCase().includes(q)||
+      (o.ordered ||'').toLowerCase().includes(q)||
+      (o.pricing ||'').toLowerCase().includes(q)||
+      (o.retail  ||'').toLowerCase().includes(q)||
+      (o.payment ||'').toLowerCase().includes(q)
+    );
   }
   orders=res;renderAll();
 }
@@ -629,9 +606,6 @@ function renderAll(){
   lastCount=allOrders.filter(o=>!isCompleted(o)).length;
   document.getElementById('pending-count').textContent=pending.length;
 
-  const searchActive=hasActiveSearch();
-  const searchBadge=searchActive?` <span style="background:var(--accent);color:#000;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700">ON</span>`:'';
-
   document.getElementById('app-content').innerHTML=`
     ${renderProfileCard()}
     <div class="stats">
@@ -640,7 +614,7 @@ function renderAll(){
       <div class="stat"><div class="stat-num">${pending.length}</div><div class="stat-lbl">រង់ចាំ</div></div>
     </div>
     <div class="fbar">
-      <span class="fbar-label">Filter:${searchBadge}</span>
+      <span class="fbar-label">Filter${hasActiveSearch()?` <span style="background:var(--accent);color:#000;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700">${orders.length}</span>`:''}</span>
       <label class="toggle" onclick="toggleCOD()">
         <div class="toggle-track ${codOnly?'on':''}" id="cod-track"><div class="toggle-thumb"></div></div>
         <span class="toggle-text">COD ប៉ុណ្ណោះ</span>
