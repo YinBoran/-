@@ -350,10 +350,10 @@ function applyCfg(cfg) {
     document.documentElement.style.setProperty('--p', cfg.primaryColor);
     document.documentElement.style.setProperty('--p-lt', cfg.primaryColor + '18');
   }
-  const name = cfg.storeName || 'YB Electronics';
+  const name = cfg.storeName || 'Y.B 9999 Shop';
   document.getElementById('h-name').textContent = name;
   document.title = name + ' — Shop';
-  const ini = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'YB';
+  const ini = name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'Y.B';
   setLogo('h-logo', cfg.logoUrl, ini);
 }
 
@@ -402,7 +402,7 @@ function filterProds() {
 // ═══════════════════════════════════════════════════════════
 // PRODUCTS — infinite scroll (6 items per chunk)
 // ═══════════════════════════════════════════════════════════
-const CHUNK = 5;
+const CHUNK = 12;
 let _io = null; // IntersectionObserver instance
 
 function renderGrid() {
@@ -727,7 +727,7 @@ async function confirmOrder() {
       const res = await fetch(window.API + "?action=order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(S.order)
       });
       const result = await res.json();
     if (result && result.success) {
