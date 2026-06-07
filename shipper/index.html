@@ -466,9 +466,8 @@ function renderList(list) {
           <div class="card-date">${e(o.orderDate||"")}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <a class="btn-call" href="tel:${e((o.phone||"").replace(/\s/g,""))}" onclick="event.stopPropagation()">
-            📞
-          </a>
+          <a class="btn-call" href="https://t.me/+${e((o.phone||"").replace(/\D/g,""))}" 
+   target="_blank" onclick="event.stopPropagation()">📞</a>
           ${done
             ? `<div class="btn-done">✅ ${e(o.receiveDate||"ដឹកដល់")}</div>`
             : `<button class="btn-deliver" onclick="event.stopPropagation();askDeliver('${e(o.profileId)}','${e(o.name||"")}')">
