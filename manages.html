@@ -729,12 +729,6 @@ async function initApp(){
 }
 
 async function loadAll(){
-  if(!hasGAS()){
-    document.getElementById('c-tbl').innerHTML = '<div class="empty-row">Google Apps Script unavailable</div>';
-    document.getElementById('p-tbl').innerHTML = '<div class="empty-row">Google Apps Script unavailable</div>';
-    toast('Google Apps Script unavailable. Open Manages through the published web app or editor.', 'warning', 6000);
-    return;
-  }
   D.cust.loading=true;
   document.getElementById('c-tbl').innerHTML = '<div class="empty-row" style="padding:40px 0"><div class="load-more-spin" style="display:inline-block;margin:0 auto"></div></div>';
   const [c, p] = await Promise.all([
