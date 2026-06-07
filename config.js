@@ -2,7 +2,7 @@
 // Updated Worker URL: yinboran.workers.dev
 
 window.YB_CONFIG = {
-  WORKER_URL: "https://yinboran-github-io.yinboran.workers.dev/",
+  WORKER_URL: "https://yinboran-github-io.yinboran.workers.dev",
 
   ENABLE_KHQR: true,
   ENABLE_COD: true,
