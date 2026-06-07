@@ -701,21 +701,29 @@ function togglePw(){
 }
 
 async function doLogin() {
-  const pw = document.getElementById('pw').value.trim();
-  if (!pw) return;
+  const pw  = document.getElementById('pw').value.trim();
+  const err = document.getElementById('auth-err'); // ← check if exists
+  if (!pw) {
+    err ? err.textContent = 'Enter password' : alert('Enter password');
+    return;
+  }
   try {
     const r = await GS('verifyPassword', pw);
     if (r === true || r === 'true' || r) {
-      sessionStorage.clear();   // ← add this
+      sessionStorage.clear();
       ss('ybauth', '1');
       showApp();
     } else {
-      alert('Wrong password');
+      // ✅ Fix — show error clearly:
+      err ? err.textContent = 'Wrong password' : alert('Wrong password');
+      document.getElementById('pw').value = '';
+      document.getElementById('pw').focus();
     }
-  } catch(err) {
-    alert('Error: ' + err.message);
+  } catch(e) {
+    err ? err.textContent = 'Error: ' + e.message : alert('Error: ' + e.message);
   }
 }
+  
 function doLogout(){
   try{ sessionStorage.clear(); }catch(e){}
   // Redirect back to storefront home after logout
