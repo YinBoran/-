@@ -205,14 +205,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 <body>
 
 <div class="hdr">
-  <div class="hdr-logo">YB</div>
-  <div class="hdr-info">
-    <h1>YB Shipper</h1>
-    <p id="hdr-sub">កំពុងផ្ទុក...</p>
+  <div class="hdr-logo" onclick="refreshOrders()" style="cursor:pointer">YB</div>
+  <div class="hdr-info" onclick="refreshOrders()" style="cursor:pointer">
+  <h1>YB Shipper</h1>
+    <!-- <p id="hdr-sub">កំពុងផ្ទុក...</p> -->
   </div>
   <div class="hdr-actions" id="hdr-actions" style="display:none">
-    <button class="icon-btn" onclick="refreshOrders()" title="Refresh">🔄</button>
-    <button class="icon-btn" onclick="doLogout()" title="Logout">🚪</button>
+    <button class="icon-btn" onclick="openSearch()" title="Search">🔍</button>
     <div class="hdr-badge" id="pending-count">0</div>
   </div>
 </div>
@@ -300,6 +299,7 @@ if (tgId) {
 
 function bootWithPhone(phone) {
   shipperData = { phone, name: "Shipper" };
+  Notification.requestPermission(); // ← បន្ថែម
   document.getElementById("hdr-sub").textContent = phone;
   document.getElementById("hdr-actions").style.display = "flex";
   loadOrders();
@@ -394,6 +394,8 @@ async function refreshOrders() {
 // POLL
 function startPoll() {
   stopPoll();
+  // Only poll if small team (≤10 shippers)
+  const interval = 60000; // 60s safe for small teams
   pollTimer = setInterval(async () => {
     if (!shipperData) return;
     try {
@@ -408,7 +410,7 @@ function startPoll() {
       allOrders = fresh;
       applyFilter();
     } catch(_){}
-  }, 60000);
+  }, interval);
 }
 function stopPoll() { if(pollTimer){clearInterval(pollTimer);pollTimer=null;} }
 
@@ -520,10 +522,9 @@ function renderList(list) {
   }).join("");
 
   const loadBtn = hasMore
-    ? `<button class="load-more-btn" onclick="loadMore()">
-        ផ្ទុកបន្ថែម (${list.length - visibleCount} ទៀត) ↓
-       </button>`
-    : "";
+  ? `<div id="scroll-sentinel" style="height:40px;display:flex;align-items:center;
+      justify-content:center"><div class="spinner" style="width:20px;height:20px"></div></div>`
+  : "";
 
   return cards + loadBtn;
 }
@@ -534,6 +535,19 @@ function loadMore() {
     ? orders.filter(o=>!isCompleted(o))
     : orders.filter(o=>isCompleted(o));
   document.getElementById("orders-list").innerHTML = renderList(list);
+  setupScrollObserver(list);
+}
+
+function setupScrollObserver(list) {
+  const sentinel = document.getElementById("scroll-sentinel");
+  if (!sentinel) return;
+  const io = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    if (visibleCount >= list.length) { io.disconnect(); return; }
+    io.disconnect();
+    loadMore();
+  }, { rootMargin: "100px" });
+  io.observe(sentinel);
 }
 
 function setTab(t) { activeTab=t; visibleCount=CHUNK; renderAll(); }
@@ -680,8 +694,32 @@ function openProfile() {
 
 // ALERT
 function showAlert(msg) {
+  // Banner
   document.getElementById("new-alert-txt").textContent = msg;
   document.getElementById("new-alert").classList.remove("hidden");
+
+  // Sound
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 520;
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.6);
+  } catch(_) {}
+
+  // Browser Notification
+  if (Notification.permission === "granted") {
+    new Notification("🚚 YB Shipper", { body: msg, icon: "/favicon.ico" });
+  } else if (Notification.permission !== "denied") {
+    Notification.requestPermission().then(p => {
+      if (p === "granted") new Notification("🚚 YB Shipper", { body: msg });
+    });
+  }
 }
 function dismissAlert() {
   document.getElementById("new-alert").classList.add("hidden");
@@ -691,7 +729,11 @@ function dismissAlert() {
 
 // ERROR / TOAST
 function showError(msg) {
-  document.getElementById("app-content").innerHTML = `
+  document.getElementById("app-content").innerHTML = 
+    const curList = activeTab==='pending'
+      ? orders.filter(o=>!isCompleted(o))
+      : orders.filter(o=>isCompleted(o));
+    setupScrollObserver(curList);`
     <div class="empty">
       <div class="empty-icon">⚠️</div><h3>Error</h3><p>${msg}</p>
       <button onclick="loadOrders()"
