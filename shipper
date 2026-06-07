@@ -281,7 +281,7 @@
 
 <script>
 const tg  = window.Telegram.WebApp;
-const API = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"; // ← replace YOUR_DEPLOYMENT_ID
+<script src="config.js"></script> // ← replace YOUR_DEPLOYMENT_ID
 
 // Expand to full height
 tg.expand();
