@@ -1,8 +1,4 @@
-// YB Store — config.js v3
-// Variable names match index.html, manages.html, shipper.html
-
-// const WORKER_URL = "https://yinboran-github-io.yinboran.workers.dev";
-const WORKER_URL = "https://yinboran-github-io.boranyin24.workers.dev/";
+const WORKER_URL = "https://mr.yinboran.workers.dev/";
 
 // Also expose as globals for any variation used across files
 window.WORKER_URL   = WORKER_URL;
@@ -26,6 +22,3 @@ window.callAPI = function(fn, params = {}, method = "GET") {
     body: JSON.stringify(params),
   }).then(r => r.json());
 };
-
-// const API = "https://yinboran-github-io.boranyin24.workers.dev/";
-// window.API = API;
