@@ -319,7 +319,7 @@ const S = {
 async function GS(fn, ...args) {
   const arg  = args.length === 0 ? undefined : args.length === 1 ? args[0] : args;
   const data = arg !== undefined ? encodeURIComponent(JSON.stringify(arg)) : "";
-  const url  = `${API}?action=gs&fn=${fn}${data ? "&data=" + data : ""}`;
+  const url  = `${window.API}?action=gs&fn=${fn}${data ? "&data=" + data : ""}`;
   const res  = await fetch(url);
   if (!res.ok) throw new Error("HTTP " + res.status);
   const json = await res.json();
