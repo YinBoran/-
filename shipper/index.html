@@ -303,21 +303,27 @@ async function loginByPhone() {
   const raw = document.getElementById("phone-inp")?.value.trim();
   if (!raw) { showToast("❌ បញ្ចូលលេខទូរស័ព្ទ!", true); return; }
   const btn = document.querySelector(".login-btn");
-  if (btn) { btn.disabled = true; btn.textContent = "កំពុងផ្ទុក..."; }
+  if (btn) { btn.disabled=true; btn.textContent="កំពុងផ្ទុក..."; }
   const phone = raw.replace(/\D/g,"");
-  const result = await gs("handleShipperOrders", phone);
-  if (!Array.isArray(result) || result.length === 0) {
-    showToast("❌ លេខទូរស័ព្ទមិនត្រឹមត្រូវ!", true);
-    if (btn) { btn.disabled = false; btn.textContent = "Login →"; }
-    return;
+  try {
+    const result = await gs("handleShipperOrders", phone);
+    if (!Array.isArray(result) || result.length===0) {
+      showToast("❌ លេខទូរស័ព្ទមិនត្រឹមត្រូវ!", true);
+      if (btn) { btn.disabled=false; btn.textContent="Login →"; }
+      return;
+    }
+    shipperData = { phone, name:"Shipper" };
+    localStorage.setItem("shipper_phone", phone);
+    document.getElementById("hdr-sub").textContent = raw;
+    document.getElementById("hdr-actions").style.display = "flex";
+    allOrders = result;
+    applyFilter();
+    startPoll();
+  } catch(e) {
+    showToast("❌ Error: "+e.message, true);
+    if (btn) { btn.disabled=false; btn.textContent="Login →"; }
   }
-  shipperData = { phone, name: "Shipper" };
-  localStorage.setItem("shipper_phone", phone);
-  document.getElementById("hdr-sub").textContent = raw;
-  document.getElementById("hdr-actions").style.display = "flex";
-  allOrders = result;
-  applyFilter();
-  startPoll();
+}
 
 function doLogout() {
   stopPoll();
