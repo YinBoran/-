@@ -982,8 +982,6 @@ function renderCust(){
     if(pm==='paid' && !s(r,hm,'Payment').toLowerCase().includes('paid')) return false;
     if(pm==='unpaid' && s(r,hm,'Payment').toLowerCase().includes('paid')) return false;
     if(pm==='cod' && !s(r,hm,'Payment').toLowerCase().includes('cod')) return false;
-    const od=s(r,hm,'Order Date'); if(df&&od&&pd(od)<new Date(df)) return false;
-    if(dt&&od&&pd(od)>new Date(dt+'T23:59:59')) return false;
     return true;
   });
 
