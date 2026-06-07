@@ -623,7 +623,10 @@ body.modal-open{overflow:hidden}
 // ═══════════════════════════════════════════════════════════
 // STORAGE HELPER — must be defined BEFORE D uses it
 // ═══════════════════════════════════════════════════════════
-function ss(k, v){ if(v===undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k,v); }
+function ss(k, v) { 
+  if(v===undefined) return localStorage.getItem(k); 
+  localStorage.setItem(k,v); 
+}
 
 // ═══════════════════════════════════════════════════════════
 // STATE — persisted keys use sessionStorage
@@ -702,11 +705,17 @@ function togglePw(){
 
 async function doLogin() {
   const pw  = document.getElementById('pw').value.trim();
-  const err = document.getElementById('auth-err'); // ← check if exists
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('auth-err');
+
   if (!pw) {
     err ? err.textContent = 'Enter password' : alert('Enter password');
     return;
   }
+
+  // ✅ Disable button while loading:
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+
   try {
     const r = await GS('verifyPassword', pw);
     if (r === true || r === 'true' || r) {
@@ -714,19 +723,23 @@ async function doLogin() {
       ss('ybauth', '1');
       showApp();
     } else {
-      // ✅ Fix — show error clearly:
-      err ? err.textContent = 'Wrong password' : alert('Wrong password');
+      if (err) err.textContent = 'Wrong password';
+      else alert('Wrong password');
       document.getElementById('pw').value = '';
       document.getElementById('pw').focus();
+      // ✅ Re-enable button:
+      if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
     }
   } catch(e) {
-    err ? err.textContent = 'Error: ' + e.message : alert('Error: ' + e.message);
+    if (err) err.textContent = 'Error: ' + e.message;
+    else alert('Error: ' + e.message);
+    // ✅ Re-enable button on error:
+    if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
   }
 }
   
-function doLogout(){
-  try{ sessionStorage.clear(); }catch(e){}
-  // Redirect back to storefront home after logout
+function doLogout() {
+  localStorage.clear();
   window.location.href = '/';
 }
 
