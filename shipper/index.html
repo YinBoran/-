@@ -378,7 +378,18 @@ function showToast(msg, isError) {
   setTimeout(() => { t.className = "toast"; }, 3000);
 }
 
-init();
+if (tgId) {
+  gs("handleShipperLogin", tgId)
+    .then(data => {
+      if (data.error) { showPhoneLogin(); return; }
+      shipperData = data;
+      document.getElementById("header-sub").textContent = data.name || tgName.trim();
+      loadOrders();
+    })
+    .catch(() => showPhoneLogin());
+} else {
+  showPhoneLogin();
+}
 </script>
 </body>
 </html>
