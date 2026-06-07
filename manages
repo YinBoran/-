@@ -4,6 +4,7 @@
 <base target="_top">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<script src="config.js"></script>
 <title id="doc-title">YB Manages</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Kantumruy+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -641,7 +642,6 @@ const D = {
 // ═══════════════════════════════════════════════════════════
 // API BRIDGE — fetch-based (works on GitHub Pages)
 // ═══════════════════════════════════════════════════════════
-<script src="config.js"></script> // ← replace
 
 async function GS(fn, ...args) {
   const arg  = args.length === 0 ? undefined : args.length === 1 ? args[0] : args;
