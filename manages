@@ -641,7 +641,7 @@ const D = {
 // ═══════════════════════════════════════════════════════════
 // API BRIDGE — fetch-based (works on GitHub Pages)
 // ═══════════════════════════════════════════════════════════
-const API = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"; // ← replace
+<script src="config.js"></script> // ← replace
 
 async function GS(fn, ...args) {
   const arg  = args.length === 0 ? undefined : args.length === 1 ? args[0] : args;
