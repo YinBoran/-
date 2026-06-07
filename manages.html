@@ -657,7 +657,9 @@ async function GS(fn, ...args) {
 // ═══════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════
-function chkAuth(){ ss('ybauth')==='1' ? showApp() : showAuth(); }
+function chkAuth() {
+  ss('ybauth') === '1' ? showApp() : showAuth();
+}
 function showAuth(){
   document.getElementById('auth').classList.remove('hidden');
   document.getElementById('app').classList.add('hidden');
@@ -704,6 +706,7 @@ async function doLogin() {
   try {
     const r = await GS('verifyPassword', pw);
     if (r === true || r === 'true' || r) {
+      sessionStorage.clear();   // ← add this
       ss('ybauth', '1');
       showApp();
     } else {
