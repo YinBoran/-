@@ -698,22 +698,20 @@ function togglePw(){
   document.getElementById('eye-icon').style.opacity=_pwVisible?'1':'.45';
 }
 
-async function doLogin(){
-  const pw  = document.getElementById('pw').value.trim();
-  const err = document.getElementById('auth-err');
-  const btn = document.getElementById('login-btn');
-  const txt = document.getElementById('login-txt');
-  const spn = document.getElementById('login-spin');
-  err.textContent='';
-  if(!pw){ err.textContent='Enter password'; return; }
-  if(!hasGAS()){ err.textContent='Google Apps Script unavailable. Open this page through the published web app.'; return; }
-  btn.disabled=true; txt.style.display='none'; spn.style.display='inline';
-  try{
+async function doLogin() {
+  const pw = document.getElementById('pw').value.trim();
+  if (!pw) return;
+  try {
     const r = await GS('verifyPassword', pw);
-    if(r===true){ ss('ybauth','1'); showApp(); }
-    else{ err.textContent='Incorrect password'; document.getElementById('pw').value=''; document.getElementById('pw').focus(); }
-  }catch(e){ err.textContent='Server error. Try again.'; console.error(e); }
-  finally{ btn.disabled=false; txt.style.display='inline'; spn.style.display='none'; }
+    if (r === true || r === 'true' || r) {
+      ss('ybauth', '1');
+      showApp();
+    } else {
+      alert('Wrong password');
+    }
+  } catch(err) {
+    alert('Error: ' + err.message);
+  }
 }
 function doLogout(){
   try{ sessionStorage.clear(); }catch(e){}
