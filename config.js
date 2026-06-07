@@ -1,2 +1,2 @@
 // config.js — replace with NEW URL:
-window.API = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRKAN8uzgKqaWhk3jTYCDYjMTBry1rvtwr7IXdJBAJ0GeNe_Zh-xM6cLBFC4OVsOJPCe3jVajXvp0VaN1NDXbpy5WiaeiR-R8uzBF3XkX1aWm4mopHcfkrMky0QN0bGqG4MYZJRfg5Tng9eaJ-X1WcjBe3iRSKpczwePDRIDY9kqCzNjVOyW9QNQUAwPMW2gLl8ZN9JlDsbjER7Tbfwxop6pTCjVosp2GN5T9PA3qCY2BcwGk6cXjIrIcThe1pyn4Zt-qAW6_x5kVLwYfnayNgHkXm53w&lib=MSXL16LMqzob1cmy8iboo5nA-nDy3ldf7";
+window.API = "https://script.google.com/macros/s/AKfycbzed-sl6kTHLqf5JKBp7vxl2v89hF_--hMAf33E3gceROoUsZp092rmQILFa4YmEITj/exec";
