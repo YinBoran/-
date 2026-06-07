@@ -724,10 +724,6 @@ async function confirmOrder() {
   if (btn) { btn.disabled = true; btn.textContent = 'កំពុងបញ្ជូន…'; }
   S.order.paymentType = _selectedPay;
   try {
-    // Each cart item must have .code for the Code column
-    // S.cart items: { code, name, price, qty }
-    // ❌ Current (URL too long):
-      // ✅ Fix — POST directly:
       const res = await fetch(window.API + "?action=order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
