@@ -18,6 +18,9 @@
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;padding-bottom:80px}
 
 /* ── HEADER ── */
+  @media(max-width:768px){
+  .hdr{background:linear-gradient(135deg,#1a1a1a,#222);
+}
 .hdr{background:linear-gradient(135deg,#1a1a1a,#222);border-bottom:1px solid var(--border);
   padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
 .hdr-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -289,38 +292,48 @@ if (tgId) {
 // ── LOGIN ─────────────────────────────────────────────────
 function showPhoneLogin() {
   document.getElementById("app-content").innerHTML = `
+    <div style="min-height:90vh;display:flex;align-items:center;justify-content:center">
     <div class="login-box">
       <h3>🚚 Shipper Login</h3>
       <p>បញ្ចូលលេខទូរស័ព្ទ Shipper</p>
       <input id="phone-inp" class="login-input" type="tel"
-        placeholder="076 9999 380" onkeydown="if(event.key==='Enter')loginByPhone()">
+        placeholder="Ex: 076 9999 380" onkeydown="if(event.key==='Enter')loginByPhone()">
       <button class="login-btn" onclick="loginByPhone()">Login →</button>
-    </div>`;
+    </div>
+  </div>`;
   setTimeout(()=>document.getElementById("phone-inp")?.focus(), 200);
 }
 
 async function loginByPhone() {
-  const raw = document.getElementById("phone-inp")?.value.trim();
-  if (!raw) { showToast("❌ បញ្ចូលលេខទូរស័ព្ទ!", true); return; }
-  const btn = document.querySelector(".login-btn");
+  const raw   = document.getElementById("phone-inp")?.value.trim();
+  const btn   = document.querySelector(".login-btn");
+  const phone = (raw||"").replace(/\D/g,"");
+
+  // Validate
+  if (!phone || phone.length < 9) {
+    showToast("❌ លេខទូរស័ព្ទខ្លីពេក!", true);
+    return;
+  }
+
+  // Loading state
   if (btn) { btn.disabled=true; btn.textContent="កំពុងផ្ទុក..."; }
-  const phone = raw.replace(/\D/g,"");
+
   try {
+    // Verify phone exists in Customers (Shipper Phone column)
     const result = await gs("handleShipperOrders", phone);
-    if (!Array.isArray(result) || result.length===0) {
-      showToast("❌ លេខទូរស័ព្ទមិនត្រឹមត្រូវ!", true);
-      if (btn) { btn.disabled=false; btn.textContent="Login →"; }
-      return;
-    }
-    shipperData = { phone, name:"Shipper" };
+    if (!Array.isArray(result)) {
+
+    // ✅ Login success (even if 0 orders)
+    shipperData = { phone, name: "Shipper" };
     localStorage.setItem("shipper_phone", phone);
     document.getElementById("hdr-sub").textContent = raw;
     document.getElementById("hdr-actions").style.display = "flex";
     allOrders = result;
     applyFilter();
     startPoll();
+
   } catch(e) {
-    showToast("❌ Error: "+e.message, true);
+    showToast("❌ " + e.message, true);
     if (btn) { btn.disabled=false; btn.textContent="Login →"; }
   }
 }
