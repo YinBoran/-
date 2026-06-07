@@ -299,8 +299,7 @@ function showPhoneLogin() {
       <input id="phone-inp" class="login-input" type="tel"
         placeholder="Ex: 076 9999 380" onkeydown="if(event.key==='Enter')loginByPhone()">
       <button class="login-btn" onclick="loginByPhone()">Login →</button>
-    </div>
-  </div>`;
+    </div>`;
   setTimeout(()=>document.getElementById("phone-inp")?.focus(), 200);
 }
 
@@ -448,7 +447,7 @@ function renderAll() {
       </div>
     </div>
     <div class="orders">
-      ${renderList(activeTab==='pending' ? pending : completed)}
+      ${slice(0,6)(activeTab==='pending' ? pending : completed)}
     </div>`;
 
   document.getElementById("app-content").innerHTML = html;
@@ -612,7 +611,7 @@ async function loadHistory(phone, currentId) {
   }
 }
 
-function closeDetail() { document.getElementById("detail-overlay").classList.remove("on"); }
+function closeDetail() { document.getElementById("detail-overlay").classList.remove("on"); document.body.style.overflow = "";}
 function closeDetailIfBg(ev) { if(ev.target===document.getElementById("detail-overlay")) closeDetail(); }
 
 // ── CONFIRM DELIVER ───────────────────────────────────────
