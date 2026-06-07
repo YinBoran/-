@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  const path = window.location.pathname;
+  const map = {
+    '/shop':    '/index.html',
+    '/shipper': '/shipper.html',
+    '/manage':  '/manages.html',
+  };
+  const target = map[path];
+  if (target) window.location.replace(target);
+</script>
+</head>
+</html>
