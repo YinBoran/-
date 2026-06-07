@@ -17,12 +17,10 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;padding-bottom:80px}
 
-/* ── HEADER ── */
-  @media(max-width:768px){
-  .hdr{background:linear-gradient(135deg,#1a1a1a,#222);
-}
+/* HEADER */
 .hdr{background:linear-gradient(135deg,#1a1a1a,#222);border-bottom:1px solid var(--border);
   padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+@media(max-width:768px){.hdr{background:#0f0f0f}}
 .hdr-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:10px;display:flex;align-items:center;justify-content:center;
   font-size:18px;font-weight:700;color:#000;flex-shrink:0}
@@ -36,7 +34,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   font-size:16px;transition:background .15s}
 .icon-btn:hover{background:var(--border)}
 
-/* ── NEW ORDER ALERT ── */
+/* NEW ORDER ALERT */
 .new-order-alert{background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;padding:10px 16px;font-size:13px;font-weight:700;
   display:flex;align-items:center;gap:8px;cursor:pointer;
@@ -44,14 +42,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 @keyframes pulse-bg{0%,100%{opacity:1}50%{opacity:.85}}
 .new-order-alert.hidden{display:none}
 
-/* ── STATS ── */
+/* STATS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
   background:var(--border);border-bottom:1px solid var(--border)}
 .stat{background:var(--surface);padding:10px;text-align:center}
 .stat-num{font-size:20px;font-weight:700;color:var(--accent)}
 .stat-lbl{font-size:10px;color:var(--muted);margin-top:2px}
 
-/* ── FILTER BAR ── */
+/* FILTER BAR */
 .fbar{background:var(--surface);border-bottom:1px solid var(--border);
   padding:8px 12px;display:flex;align-items:center;gap:8px}
 .fbar-label{font-size:12px;color:var(--muted)}
@@ -64,13 +62,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .toggle-track.on .toggle-thumb{left:18px}
 .toggle-text{font-size:12px;font-weight:600;color:var(--text)}
 
-/* ── TABS ── */
+/* TABS */
 .tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
 .tab{flex:1;padding:11px 8px;font-size:12px;font-weight:600;color:var(--muted);
   text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
-/* ── ORDERS ── */
+/* ORDERS */
 .orders{padding:10px;display:flex;flex-direction:column;gap:8px}
 .order-card{background:var(--card);border:1px solid var(--border);
   border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s}
@@ -103,8 +101,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .btn-call{background:#3b82f622;color:var(--blue);border:1px solid #3b82f644;
   font-size:11px;font-weight:600;padding:7px 12px;border-radius:7px;
   text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.load-more-btn{width:100%;padding:10px;background:var(--surface);color:var(--muted);
+  border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;margin-top:4px}
+.load-more-btn:hover{color:var(--text);border-color:var(--accent)}
 
-/* ── EMPTY / LOADING ── */
+/* EMPTY / LOADING */
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .empty-icon{font-size:44px;margin-bottom:12px}
 .empty h3{font-size:15px;margin-bottom:6px;color:var(--text)}
@@ -115,15 +116,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── TOAST ── */
+/* TOAST */
 .toast{position:fixed;bottom:20px;left:50%;
   transform:translateX(-50%) translateY(100px);
   background:var(--green);color:#000;font-size:13px;font-weight:600;
-  padding:12px 20px;border-radius:12px;transition:transform .3s;z-index:200;white-space:nowrap}
+  padding:12px 20px;border-radius:12px;transition:transform .3s;z-index:400;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.error{background:var(--red);color:#fff}
 
-/* ── POPUP OVERLAY ── */
+/* POPUP */
 .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;
   display:flex;align-items:flex-end;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .25s}
@@ -141,7 +142,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .popup-body{overflow-y:auto;flex:1;padding:16px}
 .popup-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px}
 
-/* ── DETAIL SECTIONS ── */
+/* DETAIL */
 .detail-section{margin-bottom:16px}
 .detail-label{font-size:10px;font-weight:700;color:var(--muted);
   text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
@@ -157,8 +158,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .history-item.cancelled{border-left-color:var(--red)}
 .history-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 
-/* ── CONFIRM DIALOG ── */
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;
+/* CONFIRM */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;
   display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .2s;padding:20px}
 .confirm-overlay.on{opacity:1;pointer-events:all}
@@ -176,9 +177,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .confirm-yes{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000}
 .confirm-no{background:var(--border);color:var(--text)}
 
-/* ── LOGIN ── */
-.login-box{margin:24px 16px;background:var(--card);
-  border:1px solid var(--accent)44;border-radius:16px;padding:24px;text-align:center}
+/* LOGIN */
+.login-box{background:var(--card);border:1px solid var(--accent)44;
+  border-radius:16px;padding:24px;text-align:center;width:100%;max-width:340px}
 .login-box h3{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:6px}
 .login-box p{font-size:12px;color:var(--muted);margin-bottom:16px}
 .login-input{width:100%;padding:12px;border-radius:10px;
@@ -188,9 +189,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .login-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer}
 
-/* ── PROFILE CARD ── */
+/* PROFILE CARD */
 .profile{margin:10px;background:var(--card);border:1px solid var(--border);
-  border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
+  border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.profile:hover{border-color:var(--accent)66}
 .profile-av{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:18px;font-weight:700;color:#000;flex-shrink:0}
@@ -215,7 +217,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   </div>
 </div>
 
-<!-- New order alert -->
 <div class="new-order-alert hidden" id="new-alert" onclick="dismissAlert()">
   🔔 <span id="new-alert-txt">មានការដឹកថ្មី!</span> — ចុចដើម្បីមើល
 </div>
@@ -224,12 +225,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Order detail popup -->
+<!-- Detail Popup -->
 <div class="popup-overlay" id="detail-overlay" onclick="closeDetailIfBg(event)">
-  <div class="popup" id="detail-popup">
+  <div class="popup">
     <div class="popup-handle"></div>
     <div class="popup-head">
       <span class="popup-title" id="detail-title">Order Detail</span>
@@ -240,7 +240,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   </div>
 </div>
 
-<!-- Confirm dialog -->
+<!-- Confirm Dialog -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-icon">🚚</div>
@@ -254,53 +254,71 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 </div>
 
 <script>
-const tg     = window.Telegram.WebApp;
+const tg = window.Telegram.WebApp;
 try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
 
 const user   = tg.initDataUnsafe?.user || {};
 const tgId   = String(user.id || "");
 const tgName = ((user.first_name||"") + " " + (user.last_name||"")).trim();
 
-let shipperData  = null;
-let orders       = [];
-let allOrders    = [];   // unfiltered
-let activeTab    = "pending";
-let codOnly      = false;
-let lastCount    = -1;   // for new order alert
-let pollTimer    = null;
+let shipperData = null;
+let allOrders   = [];
+let orders      = [];
+let activeTab   = "pending";
+let codOnly     = false;
+let lastCount   = -1;
+let pollTimer   = null;
+let visibleCount = 6;
+const CHUNK = 6;
 
-// ── API ──────────────────────────────────────────────────
+// API
 function gs(fn, arg) {
   const data = arg !== undefined ? encodeURIComponent(JSON.stringify(arg)) : "";
   return fetch(`${API}?action=gs&fn=${fn}${data?"&data="+data:""}`).then(r=>r.json());
 }
 
-// ── BOOT ─────────────────────────────────────────────────
+// BOOT
+const savedPhone = localStorage.getItem("shipper_phone");
 if (tgId) {
   gs("handleShipperLogin", tgId)
     .then(d => {
-      if (d.error) { showPhoneLogin(); return; }
+      if (d.error) {
+        if (savedPhone) { bootWithPhone(savedPhone); } else { showPhoneLogin(); }
+        return;
+      }
       shipperData = d;
       document.getElementById("hdr-sub").textContent = d.name || tgName || "Shipper";
+      document.getElementById("hdr-actions").style.display = "flex";
       loadOrders();
     })
-    .catch(() => showPhoneLogin());
+    .catch(() => {
+      if (savedPhone) { bootWithPhone(savedPhone); } else { showPhoneLogin(); }
+    });
 } else {
-  showPhoneLogin();
+  if (savedPhone) { bootWithPhone(savedPhone); } else { showPhoneLogin(); }
 }
 
-// ── LOGIN ─────────────────────────────────────────────────
+function bootWithPhone(phone) {
+  shipperData = { phone, name: "Shipper" };
+  document.getElementById("hdr-sub").textContent = phone;
+  document.getElementById("hdr-actions").style.display = "flex";
+  loadOrders();
+}
+
+// LOGIN
 function showPhoneLogin() {
   document.getElementById("app-content").innerHTML = `
-    <div style="min-height:90vh;display:flex;align-items:center;justify-content:center">
-    <div class="login-box">
-      <h3>🚚 Shipper Login</h3>
-      <p>បញ្ចូលលេខទូរស័ព្ទ Shipper</p>
-      <input id="phone-inp" class="login-input" type="tel"
-        placeholder="Ex: 076 9999 380" onkeydown="if(event.key==='Enter')loginByPhone()">
-      <button class="login-btn" onclick="loginByPhone()">Login →</button>
+    <div style="min-height:90vh;display:flex;align-items:center;justify-content:center;padding:20px">
+      <div class="login-box">
+        <h3>🚚 Shipper Login</h3>
+        <p>បញ្ចូលលេខទូរស័ព្ទ Shipper</p>
+        <input id="phone-inp" class="login-input" type="tel"
+          placeholder="Ex: 076 9999 380"
+          onkeydown="if(event.key==='Enter')loginByPhone()">
+        <button class="login-btn" onclick="loginByPhone()">Login →</button>
+      </div>
     </div>`;
-  setTimeout(()=>document.getElementById("phone-inp")?.focus(), 200);
+  setTimeout(() => document.getElementById("phone-inp")?.focus(), 200);
 }
 
 async function loginByPhone() {
@@ -308,122 +326,117 @@ async function loginByPhone() {
   const btn   = document.querySelector(".login-btn");
   const phone = (raw||"").replace(/\D/g,"");
 
-  // Validate
   if (!phone || phone.length < 9) {
     showToast("❌ លេខទូរស័ព្ទខ្លីពេក!", true);
     return;
   }
 
-  // Loading state
   if (btn) { btn.disabled=true; btn.textContent="កំពុងផ្ទុក..."; }
 
   try {
-    // Verify phone exists in Customers (Shipper Phone column)
     const result = await gs("handleShipperOrders", phone);
     if (!Array.isArray(result)) {
-
-    // ✅ Login success (even if 0 orders)
+      showToast("❌ Server error!", true);
+      if (btn) { btn.disabled=false; btn.textContent="Login →"; }
+      return;
+    }
     shipperData = { phone, name: "Shipper" };
     localStorage.setItem("shipper_phone", phone);
     document.getElementById("hdr-sub").textContent = raw;
     document.getElementById("hdr-actions").style.display = "flex";
     allOrders = result;
+    visibleCount = CHUNK;
     applyFilter();
     startPoll();
-
-  } catch(e) {
-    showToast("❌ " + e.message, true);
+  } catch(err) {
+    showToast("❌ " + err.message, true);
     if (btn) { btn.disabled=false; btn.textContent="Login →"; }
   }
 }
 
 function doLogout() {
   stopPoll();
-  shipperData = null; orders = []; allOrders = []; lastCount = -1;
-  showPhoneLogin();
+  localStorage.removeItem("shipper_phone");
+  shipperData = null; allOrders = []; orders = []; lastCount = -1;
   document.getElementById("hdr-sub").textContent = "កំពុងផ្ទុក...";
+  document.getElementById("hdr-actions").style.display = "none";
   document.getElementById("pending-count").textContent = "0";
+  showPhoneLogin();
 }
 
-// ── LOAD ORDERS ───────────────────────────────────────────
+// LOAD
 async function loadOrders() {
   document.getElementById("app-content").innerHTML =
     '<div class="loading"><div class="spinner"></div>កំពុងផ្ទើកទិន្ន័យ...</div>';
   try {
-    const phone = shipperData?.phone || "";
-    allOrders = await gs("handleShipperOrders", phone);
-    if (!Array.isArray(allOrders)) allOrders = [];
+    const result = await gs("handleShipperOrders", shipperData?.phone||"");
+    allOrders = Array.isArray(result) ? result : [];
+    visibleCount = CHUNK;
     applyFilter();
     startPoll();
-  } catch(e) {
-    showError("Load failed: " + e.message);
-  }
+  } catch(e) { showError("Load failed: " + e.message); }
 }
 
 async function refreshOrders() {
   if (!shipperData) return;
   try {
-    const phone = shipperData.phone || "";
-    const fresh = await gs("handleShipperOrders", phone);
+    const fresh = await gs("handleShipperOrders", shipperData.phone||"");
     if (!Array.isArray(fresh)) return;
-    const pendingBefore = allOrders.filter(o=>!isCompleted(o)).length;
+    const before = allOrders.filter(o=>!isCompleted(o)).length;
     allOrders = fresh;
     applyFilter();
-    const pendingNow = allOrders.filter(o=>!isCompleted(o)).length;
-    if (pendingNow > pendingBefore) {
-      showAlert(`មានការដឹកថ្មី +${pendingNow - pendingBefore}`);
-    }
-    showToast("🔄 Updated!", false);
-  } catch(e) { showToast("❌ Refresh failed", true); }
+    const after = allOrders.filter(o=>!isCompleted(o)).length;
+    if (after > before) showAlert(`មានការដឹកថ្មី +${after-before}`);
+    showToast("🔄 Updated!");
+  } catch(_) { showToast("❌ Refresh failed", true); }
 }
 
-// ── POLL (every 60s) ─────────────────────────────────────
+// POLL
 function startPoll() {
   stopPoll();
   pollTimer = setInterval(async () => {
     if (!shipperData) return;
     try {
-      const fresh = await gs("handleShipperOrders", shipperData.phone || "");
+      const fresh = await gs("handleShipperOrders", shipperData.phone||"");
       if (!Array.isArray(fresh)) return;
-      const newPending = fresh.filter(o=>!isCompleted(o)).length;
-      if (lastCount >= 0 && newPending > lastCount) {
-        showAlert(`មានការដឹកថ្មី +${newPending - lastCount}`);
+      const newP = fresh.filter(o=>!isCompleted(o)).length;
+      if (lastCount >= 0 && newP > lastCount) {
+        showAlert(`មានការដឹកថ្មី +${newP-lastCount}`);
         try { tg.HapticFeedback.notificationOccurred("warning"); } catch(_){}
       }
-      lastCount = newPending;
+      lastCount = newP;
       allOrders = fresh;
       applyFilter();
-    } catch(_) {}
+    } catch(_){}
   }, 60000);
 }
-function stopPoll() { if(pollTimer) { clearInterval(pollTimer); pollTimer=null; } }
+function stopPoll() { if(pollTimer){clearInterval(pollTimer);pollTimer=null;} }
 
-// ── FILTER ────────────────────────────────────────────────
+// FILTER
 function applyFilter() {
   orders = codOnly
-    ? allOrders.filter(o => (o.payment||"").toLowerCase().includes("cod"))
+    ? allOrders.filter(o=>(o.payment||"").toLowerCase().includes("cod"))
     : allOrders;
   renderAll();
 }
 
 function toggleCOD() {
   codOnly = !codOnly;
-  const track = document.getElementById("cod-track");
-  if (track) track.classList.toggle("on", codOnly);
+  visibleCount = CHUNK;
+  const t = document.getElementById("cod-track");
+  if(t) t.classList.toggle("on", codOnly);
   applyFilter();
 }
 
-// ── RENDER ────────────────────────────────────────────────
+// RENDER
 function renderAll() {
-  const pending   = orders.filter(o => !isCompleted(o));
-  const completed = orders.filter(o =>  isCompleted(o));
-
-  // update lastCount
+  const pending   = orders.filter(o=>!isCompleted(o));
+  const completed = orders.filter(o=>isCompleted(o));
   lastCount = allOrders.filter(o=>!isCompleted(o)).length;
   document.getElementById("pending-count").textContent = pending.length;
 
-  const html = `
-    ${shipperData ? renderProfileCard() : ""}
+  document.getElementById("app-content").innerHTML = `
+    ${renderProfileCard()}
     <div class="stats">
       <div class="stat"><div class="stat-num">${orders.length}</div><div class="stat-lbl">សរុប</div></div>
       <div class="stat"><div class="stat-num" style="color:var(--green)">${completed.length}</div><div class="stat-lbl">ដឹកដល់</div></div>
@@ -439,29 +452,24 @@ function renderAll() {
       </label>
     </div>
     <div class="tabs">
-      <div class="tab ${activeTab==='pending'?'active':''}" onclick="setTab('pending')">
-        🚚 រង់ចាំ (${pending.length})
-      </div>
-      <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">
-        ✅ ដឹកដល់ (${completed.length})
-      </div>
+      <div class="tab ${activeTab==='pending'?'active':''}" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
+      <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
     </div>
-    <div class="orders">
-      ${slice(0,6)(activeTab==='pending' ? pending : completed)}
+    <div class="orders" id="orders-list">
+      ${renderList(activeTab==='pending'?pending:completed)}
     </div>`;
-
-  document.getElementById("app-content").innerHTML = html;
 }
 
 function renderProfileCard() {
+  if (!shipperData) return "";
   const ini = (shipperData.name||"S").charAt(0).toUpperCase();
-  return `<div class="profile">
+  return `<div class="profile" onclick="openProfile()">
     <div class="profile-av">${ini}</div>
     <div>
-      <div class="profile-name">${shipperData.name||tgName||"Shipper"}</div>
-      <div class="profile-phone">${shipperData.phone||"—"}</div>
+      <div class="profile-name">${e(shipperData.name||tgName||"Shipper")}</div>
+      <div class="profile-phone">${e(shipperData.phone||"—")}</div>
     </div>
-    <div class="profile-role">SHIPPER</div>
+    <div class="profile-role">SHIPPER ›</div>
   </div>`;
 }
 
@@ -473,9 +481,12 @@ function renderList(list) {
       <p>${activeTab==='pending'?'ការដឹកថ្មីនឹងលេចនៅទីនេះ':'ប្រវត្តិការដឹកនឹងបង្ហាញនៅទីនេះ'}</p>
     </div>`;
 
-  return list.map(o => {
-    const isCod  = (o.payment||"").toLowerCase().includes("cod");
-    const done   = isCompleted(o);
+  const visible  = list.slice(0, visibleCount);
+  const hasMore  = list.length > visibleCount;
+
+  const cards = visible.map(o => {
+    const isCod = (o.payment||"").toLowerCase().includes("cod");
+    const done  = isCompleted(o);
     return `
     <div class="order-card ${isCod?'cod-highlight':''}" onclick="openDetail('${e(o.profileId)}')">
       <div class="card-top">
@@ -495,37 +506,52 @@ function renderList(list) {
           <div class="card-date">${e(o.orderDate||"")}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <a class="btn-call" href="https://t.me/+${e((o.phone||"").replace(/\D/g,""))}" 
-   target="_blank" onclick="event.stopPropagation()">📞</a>
+          <a class="btn-call" href="https://t.me/+${e((o.phone||"").replace(/\D/g,""))}"
+            target="_blank" onclick="event.stopPropagation()">📞</a>
           ${done
             ? `<div class="btn-done">✅ ${e(o.receiveDate||"ដឹកដល់")}</div>`
-            : `<button class="btn-deliver" onclick="event.stopPropagation();askDeliver('${e(o.profileId)}','${e(o.name||"")}')">
+            : `<button class="btn-deliver"
+                onclick="event.stopPropagation();askDeliver('${e(o.profileId)}','${e(o.name||"")}')">
                 🚚 ដឹកដល់
-               </button>`
-          }
+               </button>`}
         </div>
       </div>
     </div>`;
   }).join("");
+
+  const loadBtn = hasMore
+    ? `<button class="load-more-btn" onclick="loadMore()">
+        ផ្ទុកបន្ថែម (${list.length - visibleCount} ទៀត) ↓
+       </button>`
+    : "";
+
+  return cards + loadBtn;
 }
 
-function setTab(t) { activeTab = t; renderAll(); }
-function isCompleted(o) { return o.status==="Completed" || !!o.receiveDate; }
+function loadMore() {
+  visibleCount += CHUNK;
+  const list = activeTab==='pending'
+    ? orders.filter(o=>!isCompleted(o))
+    : orders.filter(o=>isCompleted(o));
+  document.getElementById("orders-list").innerHTML = renderList(list);
+}
 
-// ── ORDER DETAIL POPUP ────────────────────────────────────
+function setTab(t) { activeTab=t; visibleCount=CHUNK; renderAll(); }
+function isCompleted(o) { return o.status==="Completed"||!!o.receiveDate; }
+
+// DETAIL POPUP
 async function openDetail(profileId) {
-  const o = allOrders.find(x => x.profileId === profileId);
+  const o = allOrders.find(x=>x.profileId===profileId);
   if (!o) return;
-
-  document.getElementById("detail-title").textContent = o.name || "Order Detail";
-  document.getElementById("detail-body").innerHTML = `
-    <div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>`;
+  document.body.style.overflow = "hidden";
+  document.getElementById("detail-title").textContent = o.name||"Order Detail";
+  document.getElementById("detail-body").innerHTML =
+    '<div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>';
   document.getElementById("detail-foot").innerHTML = "";
   document.getElementById("detail-overlay").classList.add("on");
 
-  // Render detail
-  const isCod  = (o.payment||"").toLowerCase().includes("cod");
-  const done   = isCompleted(o);
+  const isCod = (o.payment||"").toLowerCase().includes("cod");
+  const done  = isCompleted(o);
 
   document.getElementById("detail-body").innerHTML = `
     <div class="detail-section">
@@ -533,7 +559,8 @@ async function openDetail(profileId) {
       <div class="detail-grid">
         <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||"—")}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val"><a href="tel:${e((o.phone||"").replace(/\s/g,""))}" style="color:var(--accent)">${e(o.phone||"—")}</a></div>
+          <div class="val"><a href="https://t.me/+${e((o.phone||"").replace(/\D/g,""))}"
+            target="_blank" style="color:var(--accent)">${e(o.phone||"—")}</a></div>
         </div>
         <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||"—")}</div></div>
       </div>
@@ -542,154 +569,142 @@ async function openDetail(profileId) {
       <div class="detail-label">ការបញ្ជាទិញ</div>
       <div class="detail-grid">
         <div class="detail-item full"><div class="key">ទំនិញ</div><div class="val">${e(o.ordered||"—")}</div></div>
-        <div class="detail-item"><div class="key">តម្លៃ</div><div class="val" style="color:var(--accent)">$${e(o.pricing||o.retail||"—")}</div></div>
+        <div class="detail-item"><div class="key">តម្លៃ</div>
+          <div class="val" style="color:var(--accent)">$${e(o.pricing||o.retail||"—")}</div></div>
         <div class="detail-item"><div class="key">ការទូទាត់</div>
-          <div class="val"><span style="color:${isCod?'var(--accent)':'var(--green)'}">${e(o.payment||"COD")}</span></div>
-        </div>
+          <div class="val" style="color:${isCod?'var(--accent)':'var(--green)'}">${e(o.payment||"COD")}</div></div>
         <div class="detail-item"><div class="key">កាលបរិច្ឆេទ</div><div class="val">${e(o.orderDate||"—")}</div></div>
         <div class="detail-item"><div class="key">Status</div>
-          <div class="val" style="color:${done?'var(--green)':'var(--accent)'}">${e(o.status||"Pending")}</div>
-        </div>
-        ${o.apvCodes?`<div class="detail-item full"><div class="key">APV Code</div><div class="val" style="font-family:monospace">${e(o.apvCodes)}</div></div>`:""}
-        ${o.receiveDate?`<div class="detail-item full"><div class="key">ដឹកដល់នៅ</div><div class="val" style="color:var(--green)">${e(o.receiveDate)}</div></div>`:""}
+          <div class="val" style="color:${done?'var(--green)':'var(--accent)'}">${e(o.status||"Pending")}</div></div>
+        ${o.apvCodes?`<div class="detail-item full"><div class="key">APV</div>
+          <div class="val" style="font-family:monospace">${e(o.apvCodes)}</div></div>`:""}
+        ${o.receiveDate?`<div class="detail-item full"><div class="key">ដឹកដល់នៅ</div>
+          <div class="val" style="color:var(--green)">${e(o.receiveDate)}</div></div>`:""}
       </div>
     </div>
     <div class="detail-section">
-      <div class="detail-label">ប្រវត្តិការបញ្ជាទិញ (${e(o.phone||"")})</div>
-      <div id="history-list"><div class="loading" style="min-height:80px"><div class="spinner" style="width:24px;height:24px"></div></div></div>
+      <div class="detail-label">ប្រវត្តិ (${e(o.phone||"")})</div>
+      <div id="history-list"><div class="loading" style="min-height:60px">
+        <div class="spinner" style="width:22px;height:22px"></div></div></div>
     </div>`;
 
-  // Buttons
   document.getElementById("detail-foot").innerHTML = `
-    <a class="btn-call" href="tel:${e((o.phone||"").replace(/\s/g,""))}" style="padding:10px 16px;font-size:13px">
-      📞 ទូរស័ព្ទ
-    </a>
-    ${!done ? `<button onclick="closeDetail();askDeliver('${e(o.profileId)}','${e(o.name||"")}');"
-      style="flex:1;padding:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-      color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
-      🚚 ដឹកដល់
-    </button>` : `<div style="flex:1;text-align:center;color:var(--green);font-weight:700;padding:10px">✅ ដឹកដល់ ${e(o.receiveDate||"")}</div>`}`;
+    <a class="btn-call" href="https://t.me/+${e((o.phone||"").replace(/\D/g,""))}"
+      target="_blank" style="padding:10px 16px;font-size:13px">📞 TG</a>
+    ${!done
+      ? `<button onclick="closeDetail();askDeliver('${e(o.profileId)}','${e(o.name||"")}');"
+          style="flex:1;padding:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+          color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
+          🚚 ដឹកដល់</button>`
+      : `<div style="flex:1;text-align:center;color:var(--green);font-weight:700;padding:10px">
+          ✅ ដឹកដល់ ${e(o.receiveDate||"")}</div>`}`;
 
-  // Load history async
   loadHistory(o.phone||"", o.profileId);
 }
 
 async function loadHistory(phone, currentId) {
   try {
-    const all = await gs("handleShipperOrders", shipperData?.phone||"");
-    if (!Array.isArray(all)) return;
-    // Filter by customer phone
     const cleanPhone = phone.replace(/\D/g,"").slice(-8);
-    const history = all.filter(o =>
+    const history = allOrders.filter(o =>
       o.phone && o.phone.replace(/\D/g,"").endsWith(cleanPhone)
-    ).sort((a,b) => (b.orderDate||"").localeCompare(a.orderDate||""));
+    ).sort((a,b)=>(b.orderDate||"").localeCompare(a.orderDate||""));
 
     const el = document.getElementById("history-list");
     if (!el) return;
-    if (!history.length) { el.innerHTML = `<p style="font-size:12px;color:var(--muted)">គ្មានប្រវត្តិ</p>`; return; }
+    if (!history.length) { el.innerHTML=`<p style="font-size:12px;color:var(--muted)">គ្មានប្រវត្តិ</p>`; return; }
 
     el.innerHTML = history.map(h => {
-      const done = isCompleted(h);
-      const isCurrent = h.profileId === currentId;
-      const color = done ? "var(--green)" : h.status?.toLowerCase().includes("cancel") ? "var(--red)" : "var(--accent)";
-      return `<div class="history-item ${done?'completed':h.status?.toLowerCase().includes('cancel')?'cancelled':'pending'}"
-        style="${isCurrent?'border-left-color:var(--blue)':''}">
+      const done    = isCompleted(h);
+      const isCur   = h.profileId===currentId;
+      const color   = done?"var(--green)":h.status?.toLowerCase().includes("cancel")?"var(--red)":"var(--accent)";
+      const cls     = done?"completed":h.status?.toLowerCase().includes("cancel")?"cancelled":"pending";
+      return `<div class="history-item ${cls}" style="${isCur?'border-left-color:var(--blue)':''}">
         <div class="history-row">
-          <span style="font-size:12px;font-weight:600">${e(h.ordered||"—").substring(0,30)}</span>
+          <span style="font-size:12px;font-weight:600">${e((h.ordered||"—").substring(0,30))}</span>
           <span style="font-size:11px;color:${color}">${e(h.status||"Pending")}</span>
         </div>
         <div class="history-row">
           <span style="font-size:11px;color:var(--muted)">${e(h.orderDate||"—")}</span>
           <span style="font-size:12px;font-weight:700;color:var(--accent)">$${e(h.pricing||h.retail||"—")}</span>
         </div>
-        ${isCurrent?'<span style="font-size:10px;color:var(--blue);font-weight:600">← ការបញ្ជានេះ</span>':''}
+        ${isCur?'<span style="font-size:10px;color:var(--blue);font-weight:600">← ការបញ្ជានេះ</span>':''}
       </div>`;
     }).join("");
   } catch(_) {
     const el = document.getElementById("history-list");
-    if(el) el.innerHTML = `<p style="font-size:12px;color:var(--muted)">មិនអាចផ្ទុក</p>`;
+    if(el) el.innerHTML=`<p style="font-size:12px;color:var(--muted)">មិនអាចផ្ទុក</p>`;
   }
 }
 
-function closeDetail() { document.getElementById("detail-overlay").classList.remove("on"); document.body.style.overflow = "";}
-function closeDetailIfBg(ev) { if(ev.target===document.getElementById("detail-overlay")) closeDetail(); }
+function closeDetail() {
+  document.getElementById("detail-overlay").classList.remove("on");
+  document.body.style.overflow = "";
+}
+function closeDetailIfBg(ev) {
+  if (ev.target===document.getElementById("detail-overlay")) closeDetail();
+}
 
-// ── CONFIRM DELIVER ───────────────────────────────────────
-let _pendingDeliverId = null;
-
+// CONFIRM
+let _pid = null;
 function askDeliver(profileId, name) {
-  _pendingDeliverId = profileId;
+  _pid = profileId;
   document.getElementById("confirm-sub").textContent = `ដឹកដល់ "${name}" ហើយ?`;
   document.getElementById("confirm-overlay").classList.add("on");
-  document.getElementById("confirm-yes-btn").onclick = () => confirmDeliver();
+  document.getElementById("confirm-yes-btn").onclick = confirmDeliver;
 }
-
 function closeConfirm() {
   document.getElementById("confirm-overlay").classList.remove("on");
-  _pendingDeliverId = null;
+  _pid = null;
 }
-
 async function confirmDeliver() {
-  if (!_pendingDeliverId) return;
-  const profileId = _pendingDeliverId;
+  if (!_pid) return;
+  const pid = _pid;
   closeConfirm();
-
-  try { tg.HapticFeedback.impactOccurred("medium"); } catch(_) {}
-
-  const btn = document.querySelector(`[onclick*="${profileId}"]`);
-  if (btn && btn.classList.contains("btn-deliver")) {
-    btn.disabled = true; btn.textContent = "⏳...";
-  }
-
+  try { tg.HapticFeedback.impactOccurred("medium"); } catch(_){}
   try {
-    const data = await gs("handleShipperComplete", [profileId, shipperData?.phone||""]);
-    if (data.success || data.completed) {
-      showToast("✅ ដឹកដល់ — Order Completed!");
-      try { tg.HapticFeedback.notificationOccurred("success"); } catch(_) {}
+    const data = await gs("handleShipperComplete", [pid, shipperData?.phone||""]);
+    if (data.success||data.completed) {
+      showToast("✅ ដឹកដល់ — Completed!");
+      try { tg.HapticFeedback.notificationOccurred("success"); } catch(_){}
       setTimeout(loadOrders, 800);
     } else {
-      showToast("❌ " + (data.error||"Failed"), true);
-      if (btn) { btn.disabled=false; btn.textContent="🚚 ដឹកដល់"; }
+      showToast("❌ "+(data.error||"Failed"), true);
     }
-  } catch(err) {
-    showToast("❌ " + err.message, true);
-    if (btn) { btn.disabled=false; btn.textContent="🚚 ដឹកដល់"; }
-  }
+  } catch(err) { showToast("❌ "+err.message, true); }
 }
 
-// ── ALERT ─────────────────────────────────────────────────
+// PROFILE (placeholder for next build)
+function openProfile() {
+  showToast("🚧 Profile tab — coming soon!", false);
+}
+
+// ALERT
 function showAlert(msg) {
-  const el = document.getElementById("new-alert");
   document.getElementById("new-alert-txt").textContent = msg;
-  el.classList.remove("hidden");
+  document.getElementById("new-alert").classList.remove("hidden");
 }
 function dismissAlert() {
   document.getElementById("new-alert").classList.add("hidden");
-  activeTab = "pending";
+  activeTab = "pending"; visibleCount = CHUNK;
   renderAll();
 }
 
-// ── ERROR ─────────────────────────────────────────────────
+// ERROR / TOAST
 function showError(msg) {
   document.getElementById("app-content").innerHTML = `
     <div class="empty">
-      <div class="empty-icon">⚠️</div>
-      <h3>Error</h3><p>${msg}</p>
+      <div class="empty-icon">⚠️</div><h3>Error</h3><p>${msg}</p>
       <button onclick="loadOrders()"
         style="margin-top:16px;padding:10px 20px;background:var(--accent);color:#000;
         border:none;border-radius:8px;font-weight:700;cursor:pointer">Retry</button>
     </div>`;
 }
-
-// ── TOAST ─────────────────────────────────────────────────
 function showToast(msg, isErr) {
   const t = document.getElementById("toast");
   t.textContent = msg;
-  t.className = "toast show" + (isErr?" error":"");
-  setTimeout(()=>{ t.className="toast"; }, 3000);
+  t.className = "toast show"+(isErr?" error":"");
+  setTimeout(()=>{t.className="toast";}, 3000);
 }
-
-// ── HELPER ────────────────────────────────────────────────
 function e(v) {
   return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
