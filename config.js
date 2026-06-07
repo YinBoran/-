@@ -26,5 +26,5 @@
 //   }).then(r => r.json());
 // };
 
-const API = "https://yinboran-github-io.yinboran.workers.dev";
+const API = "https://yinboran-github-io.boranyin24.workers.dev/";
 window.API = API;
