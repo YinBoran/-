@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>YB Shipper</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg:      #0f0f0f;
+    --surface: #1a1a1a;
+    --card:    #222;
+    --border:  #333;
+    --accent:  #f0a500;
+    --accent2: #e05c00;
+    --green:   #22c55e;
+    --red:     #ef4444;
+    --text:    #f0f0f0;
+    --muted:   #888;
+    --font:    'Segoe UI', system-ui, sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-logo {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #000;
+  }
+  .header-info h1 { font-size: 16px; font-weight: 600; }
+  .header-info p  { font-size: 12px; color: var(--muted); }
+  .header-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* Stats bar */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    background: var(--surface);
+    padding: 12px;
+    text-align: center;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .stat-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .tab {
+    flex: 1;
+    padding: 12px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Order cards */
+  .orders { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+
+  .order-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.15s;
+  }
+  .order-card:active { transform: scale(0.98); }
+
+  .card-top {
+    padding: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .card-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent)22, var(--accent)44);
+    border: 1px solid var(--accent)44;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .card-body { flex: 1; min-width: 0; }
+  .card-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .card-phone {
+    font-size: 13px; color: var(--accent);
+    font-family: monospace; font-weight: 600;
+  }
+  .card-location {
+    font-size: 12px; color: var(--muted); margin-top: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card-badge {
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .badge-cod { background: #f0a50022; color: var(--accent); border: 1px solid var(--accent)44; }
+  .badge-paid { background: #22c55e22; color: var(--green); border: 1px solid var(--green)44; }
+  .badge-pending { background: #88888822; color: var(--muted); border: 1px solid var(--border); }
+
+  .card-divider { height: 1px; background: var(--border); margin: 0 14px; }
+
+  .card-bottom {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .card-meta { font-size: 11px; color: var(--muted); }
+  .card-price { font-size: 15px; font-weight: 700; color: var(--text); }
+
+  .btn-deliver {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #000;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: opacity 0.15s;
+  }
+  .btn-deliver:active { opacity: 0.8; }
+  .btn-deliver:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn-done {
+    background: var(--green)22;
+    color: var(--green);
+    border: 1px solid var(--green)44;
+    font-size: 12px; font-weight: 600;
+    padding: 8px 14px; border-radius: 8px;
+    cursor: default;
+  }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .empty h3 { font-size: 16px; margin-bottom: 8px; color: var(--text); }
+  .empty p { font-size: 13px; line-height: 1.5; }
+
+  /* Loading */
+  .loading {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 200px; gap: 16px;
+    color: var(--muted); font-size: 14px;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 20px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--green);
+    color: #000;
+    font-size: 13px; font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--red); color: #fff; }
+
+  /* Register prompt */
+  .register-prompt {
+    margin: 20px 16px;
+    background: var(--card);
+    border: 1px solid var(--accent)44;
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+  .register-prompt h3 { font-size: 15px; margin-bottom: 8px; color: var(--accent); }
+  .register-prompt p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .tg-id { font-family: monospace; color: var(--accent); font-size: 14px; font-weight: 700; }
+
+  /* Profile section */
+  .profile {
+    margin: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .profile-avatar {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #000;
+    flex-shrink: 0;
+  }
+  .profile-name { font-size: 15px; font-weight: 600; }
+  .profile-phone { font-size: 12px; color: var(--accent); font-family: monospace; }
+  .profile-role {
+    margin-left: auto;
+    font-size: 10px; font-weight: 700;
+    padding: 4px 10px; border-radius: 6px;
+    background: var(--accent)22; color: var(--accent);
+    border: 1px solid var(--accent)44;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">YB</div>
+  <div class="header-info">
+    <h1>YB Shipper App</h1>
+    <p id="header-sub">កំពុងផ្ទុក...</p>
+  </div>
+  <div class="header-badge" id="pending-count">0</div>
+</div>
+
+<div id="app-content">
+  <div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const tg  = window.Telegram.WebApp;
+const API = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"; // ← replace YOUR_DEPLOYMENT_ID
+
+// Expand to full height
+tg.expand();
+tg.setHeaderColor('#0f0f0f');
+tg.setBackgroundColor('#0f0f0f');
+
+const user   = tg.initDataUnsafe?.user || {};
+const tgId   = String(user.id || "");
+const tgName = (user.first_name || "") + " " + (user.last_name || "");
+
+let shipperData = null;
+let orders      = [];
+let activeTab   = "pending";
+
+// ── Init ──────────────────────────────────────────────────
+async function init() {
+  try {
+    const res  = await fetch(`${API}?action=shipper_login&tg_id=${tgId}`);
+    const data = await res.json();
+
+    if (data.error) {
+      showNotRegistered();
+      return;
+    }
+
+    shipperData = data;
+    document.getElementById("header-sub").textContent = data.name || tgName.trim();
+    renderProfile();
+    await loadOrders();
+  } catch(e) {
+    showError("Connection error: " + e.message);
+  }
+}
+
+// ── Load Orders ───────────────────────────────────────────
+async function loadOrders() {
+  document.getElementById("app-content").innerHTML =
+    '<div class="loading"><div class="spinner"></div>កំពុងផ្ទើកទិន្ន័យ...</div>';
+  try {
+    const phone = shipperData.phone || "";
+    const res   = await fetch(`${API}?action=shipper_orders&phone=${encodeURIComponent(phone)}`);
+    orders      = await res.json();
+    renderAll();
+  } catch(e) {
+    showError("Load failed: " + e.message);
+  }
+}
+
+// ── Render ────────────────────────────────────────────────
+function renderAll() {
+  const pending   = orders.filter(o => !isCompleted(o));
+  const completed = orders.filter(o =>  isCompleted(o));
+
+  document.getElementById("pending-count").textContent = pending.length;
+
+  const html = `
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">${orders.length}</div>
+        <div class="stat-lbl">សរុប</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:#22c55e">${completed.length}</div>
+        <div class="stat-lbl">ដឹកដល់</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">${pending.length}</div>
+        <div class="stat-lbl">រង់ចាំ</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab ${activeTab==='pending'?'active':''}" onclick="setTab('pending')">
+        🚚 រង់ចាំ (${pending.length})
+      </div>
+      <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">
+        ✅ ដឹកដល់ (${completed.length})
+      </div>
+    </div>
+    <div class="orders" id="orders-list">
+      ${renderOrderList(activeTab === 'pending' ? pending : completed)}
+    </div>
+  `;
+  document.getElementById("app-content").innerHTML = html;
+  if (shipperData) {
+    document.getElementById("app-content").insertAdjacentHTML(
+      "afterbegin", renderProfileHTML()
+    );
+  }
+}
+
+function renderOrderList(list) {
+  if (!list.length) return `
+    <div class="empty">
+      <div class="empty-icon">${activeTab==='pending'?'📭':'🎉'}</div>
+      <h3>${activeTab==='pending' ? 'គ្មានការដឹករង់ចាំ' : 'មិនទាន់មានប្រវត្ត'}</h3>
+      <p>${activeTab==='pending' ? 'ការដឹកថ្មីនឹងលេចឡើងនៅទីនេះ' : 'ការដឹកដែលបានបញ្ចប់នឹងបង្ហាញនៅទីនេះ'}</p>
+    </div>`;
+
+  return list.map(o => `
+    <div class="order-card">
+      <div class="card-top">
+        <div class="card-icon">📦</div>
+        <div class="card-body">
+          <div class="card-name">${o.name || "FB User"}</div>
+          <div class="card-phone">${o.phone || "—"}</div>
+          <div class="card-location">📍 ${o.location || "—"}</div>
+          <div style="font-size:12px;color:#aaa;margin-top:4px">🏷️ ${o.ordered || "—"}</div>
+        </div>
+        <span class="card-badge ${o.payment==='Paid'?'badge-paid':'badge-cod'}">
+          ${o.payment || "COD"}
+        </span>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-bottom">
+        <div>
+          <div class="card-price">$${o.pricing || o.retail || "—"}</div>
+          <div class="card-meta">${o.orderDate || ""}</div>
+        </div>
+        ${isCompleted(o)
+          ? `<div class="btn-done">✅ ដឹកដល់ ${o.receiveDate || ""}</div>`
+          : `<button class="btn-deliver" onclick="markDelivered('${o.profileId}', this)">
+               🚚 ដឹកដល់
+             </button>`
+        }
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderProfileHTML() {
+  const initial = (shipperData.name || "S").charAt(0).toUpperCase();
+  return `
+    <div class="profile">
+      <div class="profile-avatar">${initial}</div>
+      <div>
+        <div class="profile-name">${shipperData.name || tgName.trim()}</div>
+        <div class="profile-phone">${shipperData.phone || "—"}</div>
+      </div>
+      <div class="profile-role">SHIPPER</div>
+    </div>`;
+}
+
+function renderProfile() {}
+
+function isCompleted(o) {
+  return o.status === "Completed" || o.receiveDate;
+}
+
+// ── Tab switch ────────────────────────────────────────────
+function setTab(tab) {
+  activeTab = tab;
+  renderAll();
+}
+
+// ── Mark Delivered ────────────────────────────────────────
+async function markDelivered(profileId, btn) {
+  btn.disabled = true;
+  btn.textContent = "⏳...";
+  tg.HapticFeedback.impactOccurred("medium");
+
+  try {
+    const res  = await fetch(`${API}?action=shipper_complete&profile_id=${encodeURIComponent(profileId)}&tg_id=${tgId}&phone=${encodeURIComponent(shipperData.phone || "")}`);
+    const data = await res.json();
+    if (data.success) {
+      showToast("✅ ដឹកដល់ — Order Completed!");
+      tg.HapticFeedback.notificationOccurred("success");
+      setTimeout(loadOrders, 1000);
+    } else {
+      showToast("❌ " + (data.error || "Failed"), true);
+      btn.disabled = false;
+      btn.textContent = "🚚 ដឹកដល់";
+    }
+  } catch(e) {
+    showToast("❌ Error: " + e.message, true);
+    btn.disabled = false;
+    btn.innerHTML = "🚚 ដឹកដល់";
+  }
+}
+
+// ── Not registered ────────────────────────────────────────
+function showNotRegistered() {
+  document.getElementById("header-sub").textContent = "មិនទាន់ register";
+  document.getElementById("app-content").innerHTML = `
+    <div class="register-prompt">
+      <h3>🚚 Shipper មិនទាន់ Register</h3>
+      <p>TG ID របស់អ្នក:</p>
+      <div class="tg-id" style="margin:12px 0">${tgId}</div>
+      <p>ប្រាប់ Admin ដើម្បីបន្ថែម ID នេះចូល Users sheet</p>
+      <p style="margin-top:8px;font-size:11px">
+        Users sheet → Link column → <strong>tg:${tgId}</strong>
+      </p>
+    </div>`;
+}
+
+function showError(msg) {
+  document.getElementById("app-content").innerHTML = `
+    <div class="empty">
+      <div class="empty-icon">⚠️</div>
+      <h3>Error</h3>
+      <p>${msg}</p>
+      <button onclick="init()" style="margin-top:16px;padding:10px 20px;background:var(--accent);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer">
+        Retry
+      </button>
+    </div>`;
+}
+
+function showToast(msg, isError) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className   = "toast show" + (isError ? " error" : "");
+  setTimeout(() => { t.className = "toast"; }, 3000);
+}
+
+// ── Start ─────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
