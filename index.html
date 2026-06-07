@@ -726,15 +726,16 @@ async function confirmOrder() {
   try {
     // Each cart item must have .code for the Code column
     // S.cart items: { code, name, price, qty }
-    const result = await GS('submitPublicOrder', {
-      name:        S.order.name,
-      phone:       S.order.phone,
-      location:    S.order.location,
-      note:        S.order.note || '',
-      items:       S.cart,           // {code, name, price, qty} → Code col = "200W x1, J98 x2"
-      deliveryFee: S.cfg.deliveryFee, // → Discount col
-      paymentType: S.order.paymentType
-    });
+    // ❌ Current (URL too long):
+      const result = await GS('submitPublicOrder', orderData);
+      
+      // ✅ Fix — POST directly:
+      const res = await fetch(window.API + "?action=order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData)
+      });
+      const result = await res.json();
     if (result && result.success) {
       S.order.profileId = result.profileId;
       S.order.khqrUrl   = result.khqrUrl || S.cfg.khqrUrl;
