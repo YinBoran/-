@@ -205,7 +205,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
     <h1>YB Shipper</h1>
     <p id="hdr-sub">កំពុងផ្ទុក...</p>
   </div>
-  <div class="hdr-actions">
+  <div class="hdr-actions" id="hdr-actions" style="display:none">
     <button class="icon-btn" onclick="refreshOrders()" title="Refresh">🔄</button>
     <button class="icon-btn" onclick="doLogout()" title="Logout">🚪</button>
     <div class="hdr-badge" id="pending-count">0</div>
@@ -301,12 +301,23 @@ function showPhoneLogin() {
 
 async function loginByPhone() {
   const raw = document.getElementById("phone-inp")?.value.trim();
-  if (!raw) return;
+  if (!raw) { showToast("❌ បញ្ចូលលេខទូរស័ព្ទ!", true); return; }
+  const btn = document.querySelector(".login-btn");
+  if (btn) { btn.disabled = true; btn.textContent = "កំពុងផ្ទុក..."; }
   const phone = raw.replace(/\D/g,"");
+  const result = await gs("handleShipperOrders", phone);
+  if (!Array.isArray(result) || result.length === 0) {
+    showToast("❌ លេខទូរស័ព្ទមិនត្រឹមត្រូវ!", true);
+    if (btn) { btn.disabled = false; btn.textContent = "Login →"; }
+    return;
+  }
   shipperData = { phone, name: "Shipper" };
+  localStorage.setItem("shipper_phone", phone);
   document.getElementById("hdr-sub").textContent = raw;
-  await loadOrders();
-}
+  document.getElementById("hdr-actions").style.display = "flex";
+  allOrders = result;
+  applyFilter();
+  startPoll();
 
 function doLogout() {
   stopPoll();
