@@ -13,18 +13,23 @@
   --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
   --text:#f0f0f0; --muted:#888;
   --font:'Segoe UI',system-ui,sans-serif;
+  --hdr-h:64px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;padding-bottom:80px}
 
-/* HEADER */
-.hdr{background:linear-gradient(135deg,#1a1a1a,#222);border-bottom:1px solid var(--border);
-  padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
-@media(max-width:768px){.hdr{background:#0f0f0f}}
+/* HEADER — fixed + auto-hide */
+.hdr{background:#0f0f0f;border-bottom:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;gap:10px;
+  position:fixed;top:0;left:0;right:0;z-index:50;height:var(--hdr-h);
+  transition:transform .28s ease;will-change:transform}
+.hdr.hdr-hidden{transform:translateY(-100%)}
+.hdr-spacer{height:var(--hdr-h);transition:height .28s ease;flex-shrink:0}
+.hdr-spacer.hdr-hidden{height:0}
 .hdr-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:10px;display:flex;align-items:center;justify-content:center;
   font-size:19px;font-weight:700;color:#000;flex-shrink:0;cursor:pointer;
-  transition:transform .15s,opacity .15s;user-select:none}
+  transition:transform .15s;user-select:none}
 .hdr-logo:active{transform:scale(.92)}
 .hdr-info{cursor:pointer}
 .hdr-info h1{font-size:16px;font-weight:700}
@@ -32,13 +37,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .hdr-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
 .hdr-badge{background:var(--accent);color:#000;font-size:12px;font-weight:700;
   padding:4px 10px;border-radius:20px;min-width:28px;text-align:center}
-.icon-btn{width:36px;height:36px;border:none;background:var(--surface);border-radius:8px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);
-  font-size:16px;transition:background .15s}
-.icon-btn:hover{background:var(--border)}
-.icon-btn.active{background:var(--accent)22;color:var(--accent)}
 
-/* HEADER SEARCH INPUT */
+/* HEADER SEARCH */
 .hdr-search{flex:1;background:var(--card);border:1px solid var(--border);
   border-radius:9px;padding:8px 12px;color:var(--text);font-size:13px;
   min-width:0;outline:none;transition:border-color .2s}
@@ -82,21 +82,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 /* ORDERS */
 .orders{padding:10px;display:flex;flex-direction:column;gap:8px}
 .order-card{background:var(--card);border:1px solid var(--border);
-  border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s}
+  border-radius:12px;overflow:hidden;cursor:pointer;
+  transition:transform .15s,border-color .15s,box-shadow .15s}
 .order-card:active{transform:scale(.98)}
 .order-card.cod-highlight{border-color:var(--accent)66}
+.order-card.holding{box-shadow:0 0 0 2.5px var(--accent);transform:scale(.99)}
 .card-top{padding:13px;display:flex;align-items:flex-start;gap:10px}
 .card-icon{width:42px;height:42px;border-radius:10px;
   background:linear-gradient(135deg,#f0a50022,#f0a50044);
   border:1px solid var(--accent)44;
-  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
-  cursor:pointer;transition:background .15s,transform .1s;-webkit-tap-highlight-color:transparent}
-.card-icon:active{transform:scale(.9);background:var(--accent)33}
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .card-body{flex:1;min-width:0}
-.card-name{font-size:14px;font-weight:700;margin-bottom:3px;
-  cursor:pointer;color:var(--text);text-decoration:none;
-  display:inline-block;transition:color .15s}
-.card-name:active{color:var(--accent)}
+.card-name{font-size:14px;font-weight:700;margin-bottom:3px;color:var(--text);display:block}
 .card-phone{font-size:13px;color:var(--accent);font-family:monospace;font-weight:600}
 .card-loc{font-size:12px;color:var(--muted);margin-top:3px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -117,7 +114,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px;cursor:default}
 .btn-call{background:#3b82f622;color:var(--blue);border:1px solid #3b82f644;
   font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px;
-  text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+  text-decoration:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;border:none}
 
 /* EMPTY / LOADING */
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
@@ -125,22 +122,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:fixed;inset:0;top:80px;gap:14px;color:var(--muted);font-size:14px;
+  position:fixed;inset:0;top:var(--hdr-h);gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
 .loading-sm{position:relative;inset:auto;min-height:120px;background:transparent;z-index:auto}
 .spinner{width:36px;height:36px;border:3px solid var(--border);
-  border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
-  flex-shrink:0}
+  border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;
   transform:translateX(-50%) translateY(100px);
   background:var(--green);color:#000;font-size:14px;font-weight:600;
-  padding:13px 22px;border-radius:12px;transition:transform .3s;z-index:400;
+  padding:13px 22px;border-radius:12px;transition:transform .3s;z-index:900;
   white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.error{background:var(--red);color:#fff}
+
+/* HOLD PROGRESS RING */
+.hold-ring{position:fixed;inset:0;pointer-events:none;z-index:800;
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .1s}
+.hold-ring.on{opacity:1}
+.hold-ring-inner{width:70px;height:70px;border-radius:50%;
+  border:3px solid var(--accent);background:rgba(240,165,0,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;animation:hold-pulse .6s ease infinite alternate}
+@keyframes hold-pulse{from{transform:scale(1)}to{transform:scale(1.15)}}
 
 /* ── POPUP ────────────────────────────────────────────── */
 .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;
@@ -152,9 +158,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   display:flex;flex-direction:column;
   transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
 .popup-overlay.on .popup{transform:translateY(0)}
-@media(max-width:900px){
-  .popup{border-radius:0;max-height:100dvh;height:100dvh}
-}
+@media(max-width:900px){.popup{border-radius:0;max-height:100dvh;height:100dvh}}
 .popup-handle{width:40px;height:5px;background:var(--border);border-radius:3px;
   margin:12px auto 0;flex-shrink:0;cursor:grab;touch-action:none}
 .popup-head{padding:14px 18px;border-bottom:1px solid var(--border);
@@ -164,9 +168,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .popup-close{width:30px;height:30px;background:var(--border);border:none;border-radius:50%;
   cursor:pointer;color:var(--text);font-size:15px;
   display:flex;align-items:center;justify-content:center;touch-action:auto;pointer-events:auto}
-.popup-body{overflow-y:auto;flex:1;padding:16px;-webkit-overflow-scrolling:touch}
-.popup-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;
-  flex-shrink:0}
+.popup-body{overflow-y:auto;flex:1;padding:16px;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain}
+.popup-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
 
 /* DETAIL */
 .detail-section{margin-bottom:16px}
@@ -212,7 +216,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   border:1px solid var(--border);background:var(--surface);color:var(--text);
   font-size:16px;margin-bottom:10px;text-align:center}
 .login-input:focus{outline:none;border-color:var(--accent)}
-.login-input.input-error{border-color:var(--red) !important;animation:shake .3s}
+.login-input.input-error{border-color:var(--red)!important;animation:shake .3s}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}
@@ -236,7 +240,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .profile-role{margin-left:auto;font-size:11px;font-weight:700;padding:3px 8px;
   border-radius:6px;background:var(--accent)22;color:var(--accent);border:1px solid var(--accent)44}
 
-/* PROFILE PAGE — TikTok style */
+/* PROFILE PAGE */
 .profile-page{position:fixed;inset:0;background:var(--bg);z-index:150;
   transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
   overflow-y:auto;padding-bottom:80px}
@@ -247,8 +251,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   border-radius:50%;cursor:pointer;color:var(--text);font-size:19px;
   display:flex;align-items:center;justify-content:center}
 .pp-cover{display:none}
-.pp-avatar-wrap{position:relative;bottom:auto;left:auto;transform:none;
-  display:flex;flex-direction:column;align-items:center;
+.pp-avatar-wrap{position:relative;display:flex;flex-direction:column;align-items:center;
   padding-top:24px;padding-bottom:4px;cursor:pointer}
 .pp-avatar{width:96px;height:96px;border-radius:50%;border:3px solid var(--accent)44;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -260,15 +263,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   padding:5px;font-size:16px;color:#fff}
 .pp-change-photo{display:block;text-align:center;margin-top:8px;color:var(--accent);
   font-size:14px;font-weight:600;background:none;border:none;cursor:pointer;padding:4px}
-.pp-info{text-align:center;padding:14px 20px 16px}
+.pp-info{text-align:center;padding:8px 20px 16px}
 .pp-name{font-size:23px;font-weight:800;margin-bottom:4px}
 .pp-username{font-size:14px;color:var(--muted);margin-bottom:10px}
 .pp-bio{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:12px;
   max-width:280px;margin-left:auto;margin-right:auto}
 .pp-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent);
-  font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;
+  font-size:14px;font-weight:600;cursor:pointer;
   background:var(--accent)11;padding:6px 14px;border-radius:20px;
-  border:1px solid var(--accent)33}
+  border:1px solid var(--accent)33;text-decoration:none}
 .pp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
   background:var(--border);margin:16px 0}
 .pp-stat{background:var(--surface);padding:17px 8px;text-align:center}
@@ -281,16 +284,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .pp-logout:hover{background:var(--red)44}
 .pp-divider{height:1px;background:var(--border);margin:0 16px 16px}
 
-/* NOTIF PERMISSION BANNER */
-.notif-bar{background:#1a1a2e;border:1px solid #3b82f644;
-  margin:8px;border-radius:10px;padding:10px 12px;
-  display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer}
-.notif-bar.hidden{display:none}
+/* INVOICE OVERLAY (in-page) */
+.invoice-overlay{position:fixed;inset:0;background:#fff;color:#000;z-index:600;
+  overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
+.invoice-overlay.on{display:block}
+.inv-toolbar{position:sticky;top:0;background:#f5f5f5;
+  padding:8px 12px;display:flex;gap:8px;align-items:center;
+  border-bottom:1px solid #ddd;z-index:1}
+@media print{
+  body>*:not(#invoice-overlay){display:none!important}
+  #invoice-overlay{display:block!important;position:static!important;overflow:visible!important}
+  .inv-toolbar{display:none!important}
+  #invoice-content{padding:0!important}
+}
 </style>
 </head>
 <body>
 
-<div class="hdr">
+<div class="hdr" id="main-hdr">
   <div class="hdr-logo" onclick="refreshOrders(true)">YB</div>
   <div class="hdr-info" onclick="refreshOrders(true)">
     <h1>YB Shipper</h1>
@@ -299,11 +310,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   <div class="hdr-actions" id="hdr-actions" style="display:none">
     <input class="hdr-search" id="hdr-search-inp"
       placeholder="🔍 ស្វែងរក..."
-      oninput="debounceSearch('_all',this.value)"
-      onsearch="debounceSearch('_all',this.value)">
+      oninput="debounceSearch(this.value)"
+      onsearch="debounceSearch(this.value)">
     <div class="hdr-badge" id="pending-count">0</div>
   </div>
 </div>
+<div class="hdr-spacer" id="hdr-spacer"></div>
 
 <div class="new-order-alert hidden" id="new-alert" onclick="dismissAlert()">
   🔔 <span id="new-alert-txt">មានការដឹកថ្មី!</span> — ចុចដើម្បីមើល
@@ -314,6 +326,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="hold-ring" id="hold-ring"><div class="hold-ring-inner">🧾</div></div>
 
 <!-- Detail Popup -->
 <div class="popup-overlay" id="detail-overlay" onclick="closeDetailIfBg(event)">
@@ -348,8 +361,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
     <span style="font-size:16px;font-weight:700">Profile</span>
   </div>
   <div id="pp-content">
-    <div class="loading"><div class="spinner"></div></div>
+    <div class="loading loading-sm"><div class="spinner"></div></div>
   </div>
+</div>
+
+<!-- Invoice Overlay (in-page, works in TG WebApp) -->
+<div class="invoice-overlay" id="invoice-overlay">
+  <div class="inv-toolbar">
+    <button onclick="closeInvoiceOverlay()"
+      style="padding:8px 14px;background:#333;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">← Back</button>
+    <button onclick="window.print()"
+      style="padding:8px 18px;background:#f0a500;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">🖨️ Print</button>
+    <button id="label-btn-inv" onclick="printLabel(_currentInvId)"
+      style="padding:8px 14px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">📦 Label</button>
+  </div>
+  <div id="invoice-content" style="padding:10px;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
 </div>
 
 <script>
@@ -372,28 +398,54 @@ const CHUNK      = 9;
 
 let _searchAll   = '';
 let _searchTimer = null;
+let _currentInvId = null;
+
+// ── SCROLL AUTO-HIDE HEADER ──────────────────────────────
+let _lastScrollY = 0;
+window.addEventListener('scroll', () => {
+  const y   = window.scrollY;
+  const hdr = document.getElementById('main-hdr');
+  const sp  = document.getElementById('hdr-spacer');
+  if (!hdr) return;
+  if (y > _lastScrollY + 6 && y > 60) {
+    hdr.classList.add('hdr-hidden');
+    if (sp) sp.classList.add('hdr-hidden');
+  } else if (y < _lastScrollY - 6) {
+    hdr.classList.remove('hdr-hidden');
+    if (sp) sp.classList.remove('hdr-hidden');
+  }
+  _lastScrollY = y;
+}, { passive: true });
 
 // ── VALIDATION ────────────────────────────────────────────
 const PH_MIN=9, PH_MAX=10, PW_MIN=4, PW_MAX=32;
 function validatePhone(v) {
-  const p = String(v||'').replace(/\D/g,'');
-  if (!p)               return {ok:false,msg:'សូមបញ្ចូលលេខទូរស័ព្ទ'};
-  if (p.length<PH_MIN)  return {ok:false,msg:`លេខទូរស័ព្ទត្រូវ ${PH_MIN}-${PH_MAX} ខ្ទង់`};
-  if (p.length>PH_MAX)  return {ok:false,msg:`លេខទូរស័ព្ទត្រូវ ${PH_MIN}-${PH_MAX} ខ្ទង់`};
-  if (!/^0/.test(p))    return {ok:false,msg:'ត្រូវចាប់ផ្តើមដោយ 0'};
-  return {ok:true,value:p};
+  const p=String(v||'').replace(/\D/g,'');
+  if(!p)              return{ok:false,msg:'សូមបញ្ចូលលេខទូរស័ព្ទ'};
+  if(p.length<PH_MIN) return{ok:false,msg:`លេខទូរស័ព្ទត្រូវ ${PH_MIN}-${PH_MAX} ខ្ទង់`};
+  if(p.length>PH_MAX) return{ok:false,msg:`លេខទូរស័ព្ទត្រូវ ${PH_MIN}-${PH_MAX} ខ្ទង់`};
+  if(!/^0/.test(p))   return{ok:false,msg:'ត្រូវចាប់ផ្តើមដោយ 0'};
+  return{ok:true,value:p};
 }
 function validatePassword(v) {
-  const p = String(v||'');
-  if (!p||p.trim().length===0) return {ok:false,msg:'សូមបញ្ចូល Password'};
-  if (p.length<PW_MIN)         return {ok:false,msg:`Password ត្រូវ ${PW_MIN}-${PW_MAX} តួ`};
-  if (p.length>PW_MAX)         return {ok:false,msg:`Password ច្រើនពេក`};
-  return {ok:true,value:p};
+  const p=String(v||'');
+  if(!p||p.trim().length===0) return{ok:false,msg:'សូមបញ្ចូល Password'};
+  if(p.length<PW_MIN)         return{ok:false,msg:`Password ត្រូវ ${PW_MIN}-${PW_MAX} តួ`};
+  if(p.length>PW_MAX)         return{ok:false,msg:'Password ច្រើនពេក'};
+  return{ok:true,value:p};
 }
-function sanitizeStr(v){ return String(v||'').replace(/<[^>]*>/g,'').trim().substring(0,256); }
+function sanitizeStr(v){return String(v||'').replace(/<[^>]*>/g,'').trim().substring(0,256);}
 function e(v){
   return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
                        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+// ── CALL PHONE (TG WebApp safe) ───────────────────────────
+function callPhone(phone){
+  const clean=String(phone||'').replace(/\D/g,'');
+  if(!clean)return;
+  try{ tg.openLink('tel:'+clean); }
+  catch(_){ window.location.href='tel:'+clean; }
 }
 
 // ── API ───────────────────────────────────────────────────
@@ -404,7 +456,7 @@ function gs(fn,arg){
 }
 
 // ── SESSION ───────────────────────────────────────────────
-const SESSION_TTL = 12*60*60*1000;
+const SESSION_TTL=12*60*60*1000;
 function saveSession(d){
   try{localStorage.setItem('yb_shipper',JSON.stringify({
     phone:sanitizeStr(d.phone),name:sanitizeStr(d.name||'Shipper'),
@@ -434,27 +486,14 @@ function bootWithData(data){
   shipperData={phone:sanitizeStr(data.phone),name:sanitizeStr(data.name||'Shipper'),role:sanitizeStr(data.role||'shipper')};
   const role=(shipperData.role||'').toLowerCase();
   if(role&&role!=='shipper'&&role!=='admin'){clearSession();showPhoneLogin();return;}
-  requestNotifPermission();
   document.getElementById('hdr-actions').style.display='flex';
   loadOrders();
 }
 
 // ── NOTIFICATION ──────────────────────────────────────────
-function requestNotifPermission(){
-  if(!('Notification' in window))return;
-  try{
-    if(Notification.permission==='default'){
-      const r=Notification.requestPermission();
-      if(r&&typeof r.then==='function')r.then(()=>{}).catch(()=>{});
-    }
-  }catch(_){}
-}
 function pushNotif(title,body){
   if(!('Notification' in window))return;
-  try{
-    if(Notification.permission==='granted')
-      new Notification(title,{body,icon:'../favicon.ico'});
-  }catch(_){}
+  try{if(Notification.permission==='granted')new Notification(title,{body});}catch(_){}
 }
 
 // ── LOGIN ─────────────────────────────────────────────────
@@ -485,10 +524,8 @@ function showPhoneLogin(){
 }
 function togglePw(){
   _pwVisible=!_pwVisible;
-  const i=document.getElementById('pw-inp');
-  if(i)i.type=_pwVisible?'text':'password';
-  const ey=document.getElementById('pw-eye');
-  if(ey)ey.textContent=_pwVisible?'🙈':'👁';
+  const i=document.getElementById('pw-inp');if(i)i.type=_pwVisible?'text':'password';
+  const ey=document.getElementById('pw-eye');if(ey)ey.textContent=_pwVisible?'🙈':'👁';
 }
 async function loginByPhone(){
   const rawP=document.getElementById('phone-inp')?.value.trim()||'';
@@ -525,7 +562,6 @@ async function loadOrders(){
     allOrders=r;visibleCount=CHUNK;applyFilter();startPoll();
   }catch(err){showError('Load failed: '+sanitizeStr(err.message));}
 }
-
 async function refreshOrders(silent=false){
   if(!shipperData)return;
   try{
@@ -560,15 +596,14 @@ function startPoll(){
 function stopPoll(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
 
 // ── SEARCH ────────────────────────────────────────────────
-function debounceSearch(k,v){
+function debounceSearch(v){
   _searchAll=(v||'').toLowerCase().trim();
   clearTimeout(_searchTimer);
   _searchTimer=setTimeout(()=>{visibleCount=CHUNK;applyFilter();},200);
 }
 function clearSearch(){
   _searchAll='';
-  const el=document.getElementById('hdr-search-inp');
-  if(el)el.value='';
+  const el=document.getElementById('hdr-search-inp');if(el)el.value='';
   visibleCount=CHUNK;applyFilter();
 }
 function hasActiveSearch(){return !!_searchAll;}
@@ -576,7 +611,7 @@ function hasActiveSearch(){return !!_searchAll;}
 // ── FILTER ────────────────────────────────────────────────
 function applyFilter(){
   let res=allOrders;
-  if(codOnly) res=res.filter(o=>(o.payment||'').toLowerCase().includes('cod'));
+  if(codOnly)res=res.filter(o=>(o.payment||'').toLowerCase().includes('cod'));
   if(_searchAll){
     const q=_searchAll;
     res=res.filter(o=>
@@ -593,19 +628,20 @@ function applyFilter(){
 }
 function toggleCOD(){
   codOnly=!codOnly;visibleCount=CHUNK;
-  const t=document.getElementById('cod-track');
-  if(t)t.classList.toggle('on',codOnly);
+  const t=document.getElementById('cod-track');if(t)t.classList.toggle('on',codOnly);
   applyFilter();
 }
 
 // ── RENDER ────────────────────────────────────────────────
 function renderAll(){
-  const pending=orders.filter(o=>!isCompleted(o));
-  const completed=orders.filter(o=>isCompleted(o));
+  const pending   = orders.filter(o=>!isCompleted(o));
+  const completed = orders.filter(o=>isCompleted(o));
   lastCount=allOrders.filter(o=>!isCompleted(o)).length;
   document.getElementById('pending-count').textContent=pending.length;
 
   const searching=hasActiveSearch();
+  // FIX 4: when searching, show ALL orders (both tabs merged), hide tabs
+  const listToRender = searching ? orders : (activeTab==='pending' ? pending : completed);
 
   document.getElementById('app-content').innerHTML=`
     ${searching?'':renderProfileCard()}
@@ -621,12 +657,12 @@ function renderAll(){
         <span class="toggle-text">COD ប៉ុណ្ណោះ</span>
       </label>
     </div>
-    <div class="tabs">
+    ${searching?`<div style="padding:8px 12px;font-size:12px;color:var(--muted)">🔍 លទ្ធផល ${orders.length} — Search All</div>`:`<div class="tabs">
       <div class="tab ${activeTab==='pending'?'active':''}" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
       <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
-    </div>
+    </div>`}
     <div class="orders" id="orders-list">
-      ${renderList(activeTab==='pending'?pending:completed)}
+      ${renderList(listToRender)}
     </div>`;
 }
 
@@ -648,9 +684,9 @@ function renderProfileCard(){
 function renderList(list){
   if(!list.length)return`
     <div class="empty">
-      <div class="empty-icon">${activeTab==='pending'?'📭':'🎉'}</div>
-      <h3>${activeTab==='pending'?'គ្មានការដឹករង់ចាំ':'អបអរ! ដឹកគ្រប់ហើយ'}</h3>
-      <p>${activeTab==='pending'?'ការដឹកថ្មីនឹងលេចនៅទីនេះ':'ប្រវត្តិការដឹកនឹងបង្ហាញនៅទីនេះ'}</p>
+      <div class="empty-icon">${hasActiveSearch()?'🔍':activeTab==='pending'?'📭':'🎉'}</div>
+      <h3>${hasActiveSearch()?'គ្មានលទ្ធផល':activeTab==='pending'?'គ្មានការដឹករង់ចាំ':'អបអរ! ដឹកគ្រប់ហើយ'}</h3>
+      <p>${hasActiveSearch()?'ព្យាយាម keyword ផ្សេង':activeTab==='pending'?'ការដឹកថ្មីនឹងលេចនៅទីនេះ':'ប្រវត្តិការដឹកនឹងបង្ហាញនៅទីនេះ'}</p>
     </div>`;
 
   const visible=list.slice(0,visibleCount);
@@ -662,15 +698,15 @@ function renderList(list){
     const sid=e(o.profileId);
     return`
     <div class="order-card ${isCod?'cod-highlight':''}"
-      onclick="openDetail('${sid}')"
       data-pid="${sid}"
-      ontouchstart="startHold(this,'${sid}')" ontouchend="cancelHold()" ontouchcancel="cancelHold()"
-      onmousedown="startHold(this,'${sid}')" onmouseup="cancelHold()" onmouseleave="cancelHold()">
+      onclick="cardClick(event,'${sid}')"
+      ontouchstart="startHold(this,'${sid}')" ontouchend="endHold(event)" ontouchcancel="cancelHold()"
+      onmousedown="startHold(this,'${sid}')" onmouseup="endHold(event)" onmouseleave="cancelHold()">
       <div class="card-top">
         <div class="card-icon">📦</div>
         <div class="card-body">
           <span class="card-name">${e(o.name||'FB User')}</span>
-          <div class="card-phone">📞 ${e(o.phone||'—')}</div>
+          <div class="card-phone" onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" style="cursor:pointer">📞 ${e(o.phone||'—')}</div>
           <div class="card-loc">📍 ${e(o.location||'—')}</div>
           <div class="card-item">🏷️ ${e((o.ordered||'—').substring(0,42))}${(o.ordered||'').length>42?'…':''}</div>
         </div>
@@ -683,8 +719,7 @@ function renderList(list){
           <div class="card-date">${e(o.orderDate||'')}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <a class="btn-call" href="tel:${e((o.phone||'').replace(/\D/g,''))}"
-            onclick="event.stopPropagation()">📞</a>
+          <button class="btn-call" onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" >📞</button>
           ${done
             ?`<div class="btn-done">✅ ${e(o.receiveDate||'ដឹកដល់')}</div>`
             :`<button class="btn-deliver"
@@ -700,19 +735,17 @@ function renderList(list){
     ?`<div id="scroll-sentinel" style="height:50px;display:flex;align-items:center;
         justify-content:center"><div class="spinner" style="width:22px;height:22px;border-width:2px"></div></div>`
     :'';
-
   setTimeout(()=>setupScrollObserver(list),100);
   return cards+sentinel;
 }
 
 function loadMore(){
   visibleCount+=CHUNK;
-  const list=activeTab==='pending'?orders.filter(o=>!isCompleted(o)):orders.filter(o=>isCompleted(o));
+  const list=hasActiveSearch()?orders:(activeTab==='pending'?orders.filter(o=>!isCompleted(o)):orders.filter(o=>isCompleted(o)));
   document.getElementById('orders-list').innerHTML=renderList(list);
 }
 function setupScrollObserver(list){
-  const s=document.getElementById('scroll-sentinel');
-  if(!s)return;
+  const s=document.getElementById('scroll-sentinel');if(!s)return;
   const io=new IntersectionObserver(entries=>{
     if(!entries[0].isIntersecting)return;
     if(visibleCount>=list.length){io.disconnect();return;}
@@ -723,54 +756,69 @@ function setupScrollObserver(list){
 function setTab(t){activeTab=t;visibleCount=CHUNK;renderAll();}
 function isCompleted(o){return o.status==='Completed'||!!o.receiveDate;}
 
-// ── LONG PRESS (3s) → Invoice ─────────────────────────────
-let _holdTimer=null,_holdEl=null;
+// ── LONG PRESS 3s → Invoice ───────────────────────────────
+let _holdTimer=null,_holdEl=null,_holdFired=false;
+
 function startHold(el,pid){
   cancelHold();
-  _holdEl=el;
-  el.style.transition='box-shadow .1s';
-  _holdTimer=setTimeout(()=>{
-    el.style.boxShadow='0 0 0 2px var(--accent)';
-    try{tg.HapticFeedback.impactOccurred('heavy');}catch(_){}
-    setTimeout(()=>{if(_holdEl)_holdEl.style.boxShadow='';},400);
-    openInvoice(pid);
-    cancelHold();
-  },3000);
+  _holdEl=el;_holdFired=false;
+  const ring=document.getElementById('hold-ring');
+  let count=0;
+  _holdTimer=setInterval(()=>{
+    count+=100;
+    if(count>=300)el.classList.add('holding');
+    if(count>=3000){
+      clearInterval(_holdTimer);_holdTimer=null;
+      _holdFired=true;
+      el.classList.remove('holding');
+      if(ring)ring.classList.add('on');
+      try{tg.HapticFeedback.impactOccurred('heavy');}catch(_){}
+      setTimeout(()=>{if(ring)ring.classList.remove('on');},500);
+      openInvoice(pid);
+      _holdEl=null;
+    }
+  },100);
+}
+function endHold(ev){
+  if(_holdFired){ev&&ev.stopPropagation&&ev.stopPropagation();cancelHold();return;}
+  cancelHold();
 }
 function cancelHold(){
-  clearTimeout(_holdTimer);_holdTimer=null;
-  if(_holdEl){_holdEl.style.boxShadow='';_holdEl=null;}
+  clearInterval(_holdTimer);_holdTimer=null;
+  if(_holdEl){_holdEl.classList.remove('holding');_holdEl=null;}
+  const ring=document.getElementById('hold-ring');
+  if(ring)ring.classList.remove('on');
+}
+function cardClick(ev,sid){
+  if(_holdFired){_holdFired=false;ev.stopPropagation();return;}
+  openDetail(sid);
 }
 
 // ── POPUP SWIPE GESTURE ───────────────────────────────────
-(function initPopupSwipe(){
-  let sy=0,dy=0,dragging=false;
-  const getPopup=()=>document.getElementById('detail-popup');
-
-  // Swipe zone = handle + popup-head (excluding close button)
+(function(){
+  let sy=0,dy=0,drag=false;
   function isSwipeTarget(el){
     const h=document.getElementById('popup-handle');
     const head=document.querySelector('.popup-head');
-    const closeBtn=document.querySelector('.popup-close');
-    if(closeBtn&&closeBtn.contains(el))return false;
-    return (h&&h.contains(el))||(head&&head.contains(el));
+    const close=document.querySelector('.popup-close');
+    if(close&&close.contains(el))return false;
+    return(h&&h.contains(el))||(head&&head.contains(el));
   }
-
   document.addEventListener('touchstart',ev=>{
     if(isSwipeTarget(ev.target)){
-      sy=ev.touches[0].clientY;dragging=true;dy=0;
-      const p=getPopup();if(p)p.style.transition='none';
+      sy=ev.touches[0].clientY;drag=true;dy=0;
+      const p=document.getElementById('detail-popup');if(p)p.style.transition='none';
     }
   },{passive:true});
   document.addEventListener('touchmove',ev=>{
-    if(!dragging)return;
+    if(!drag)return;
     dy=ev.touches[0].clientY-sy;
-    if(dy>0){const p=getPopup();if(p)p.style.transform=`translateY(${dy}px)`;}
+    if(dy>0){const p=document.getElementById('detail-popup');if(p)p.style.transform=`translateY(${dy}px)`;}
   },{passive:true});
   document.addEventListener('touchend',()=>{
-    if(!dragging)return;
-    dragging=false;
-    const p=getPopup();if(p)p.style.transition='';
+    if(!drag)return;
+    drag=false;
+    const p=document.getElementById('detail-popup');if(p)p.style.transition='';
     if(dy>80){closeDetail();}else{if(p)p.style.transform='';}
     dy=0;
   });
@@ -781,19 +829,20 @@ async function openDetail(profileId){
   if(!profileId)return;
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o)return;
+  // FIX 1: prevent background scroll
   document.body.style.overflow='hidden';
+  document.body.style.touchAction='none';
   document.getElementById('detail-title').textContent=o.name||'Order Detail';
   document.getElementById('detail-body').innerHTML=
     '<div class="loading loading-sm"><div class="spinner"></div></div>';
   document.getElementById('detail-foot').innerHTML='';
   document.getElementById('detail-overlay').classList.add('on');
-  // Reset swipe
-  const p=document.getElementById('detail-popup');
-  if(p)p.style.transform='';
+  const p=document.getElementById('detail-popup');if(p)p.style.transform='';
 
   const isCod=(o.payment||'').toLowerCase().includes('cod');
   const done=isCompleted(o);
   const sid=e(o.profileId);
+  const phoneClean=e((o.phone||'').replace(/\D/g,''));
 
   document.getElementById('detail-body').innerHTML=`
     <div class="detail-section">
@@ -802,8 +851,8 @@ async function openDetail(profileId){
         <div class="detail-item"><div class="key">ឈ្មោះ</div>
           <div class="val">${e(o.name||'—')}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val"><a href="tel:${e((o.phone||'').replace(/\D/g,''))}"
-            style="color:var(--accent)">${e(o.phone||'—')}</a></div></div>
+          <div class="val" onclick="callPhone('${phoneClean}')"
+            style="cursor:pointer;color:var(--accent)">${e(o.phone||'—')} 📞</div></div>
         <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||'—')}</div></div>
       </div>
     </div>
@@ -831,8 +880,8 @@ async function openDetail(profileId){
     </div>`;
 
   document.getElementById('detail-foot').innerHTML=`
-    <a class="btn-call" href="tel:${e((o.phone||'').replace(/\D/g,''))}"
-      style="padding:11px 18px;font-size:14px">📞 Call</a>
+    <button class="btn-call" onclick="callPhone('${phoneClean}')"
+      style="padding:11px 18px;font-size:14px;border:1px solid #3b82f644;border-radius:10px;cursor:pointer">📞 Call</button>
     ${!done
       ?`<button onclick="closeDetail();askDeliver('${sid}','${e(o.name||'')}');"
           style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -850,8 +899,7 @@ async function loadHistory(phone,currentId){
     const history=allOrders
       .filter(o=>o.phone&&o.phone.replace(/\D/g,'').endsWith(cleanPhone))
       .sort((a,b)=>(b.orderDate||'').localeCompare(a.orderDate||''));
-    const el=document.getElementById('history-list');
-    if(!el)return;
+    const el=document.getElementById('history-list');if(!el)return;
     if(!history.length){el.innerHTML=`<p style="font-size:13px;color:var(--muted)">គ្មានប្រវត្តិ</p>`;return;}
     el.innerHTML=history.map(h=>{
       const done=isCompleted(h),isCur=h.profileId===currentId;
@@ -876,10 +924,10 @@ async function loadHistory(phone,currentId){
 }
 
 function closeDetail(){
-  const p=document.getElementById('detail-popup');
-  if(p)p.style.transform='';
+  const p=document.getElementById('detail-popup');if(p)p.style.transform='';
   document.getElementById('detail-overlay').classList.remove('on');
   document.body.style.overflow='';
+  document.body.style.touchAction='';
 }
 function closeDetailIfBg(ev){if(ev.target===document.getElementById('detail-overlay'))closeDetail();}
 
@@ -907,98 +955,88 @@ async function confirmDeliver(){
   }catch(err){showToast('❌ '+sanitizeStr(err.message),true);}
 }
 
-// ── INVOICE A5 ────────────────────────────────────────────
+// ── INVOICE (in-page overlay) ─────────────────────────────
 function openInvoice(profileId){
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o){showToast('❌ Order not found',true);return;}
+  _currentInvId=profileId;
 
   const items=(o.ordered||'').split(/[,،]/).map(s=>s.trim()).filter(Boolean);
   const dp=(o.orderDate||'').split('/');
-  const day=dp[0]||'....';
-  const mon=dp[1]||'....';
+  const day=dp[0]||'....';const mon=dp[1]||'....';
   const yr=(dp[2]||'').split(' ')[0]||'........';
 
   let rows='';
   for(let i=0;i<12;i++){
     const item=items[i]||'';
-    rows+=`<tr><td class="tc">${i+1}</td><td>${item}</td>
-      <td class="tc">${item?'1':''}</td>
-      <td class="tr">${item&&i===0?e(o.retail||o.pricing||''):''}</td>
-      <td class="tr">${item&&i===0?e(o.retail||o.pricing||''):''}</td></tr>`;
+    rows+=`<tr><td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${i+1}</td>
+      <td style="border:.5pt solid #000;padding:2.5px 4px">${item}</td>
+      <td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${item?'1':''}</td>
+      <td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td>
+      <td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td></tr>`;
   }
 
-  const html=`<!DOCTYPE html><html lang="km"><head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
-<title>Invoice</title>
-<style>
-@page{size:A5 portrait;margin:.15in}
-@media print{.noprint{display:none!important}}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:10.5pt;color:#000}
-.header{text-align:center;padding-bottom:6px;border-bottom:1.5pt solid #000;margin-bottom:6px}
-.logo{font-size:30pt;font-weight:700;letter-spacing:-1px}
-.logo span{color:#e05c00}
-.sname{font-size:13pt;font-weight:700;margin:2px 0}
-.inv-ttl{font-size:15pt;font-weight:700;margin:4px 0}
-.info-row{display:flex;justify-content:space-between;margin:4px 0;font-size:9.5pt}
-.dline{border-bottom:1pt dotted #000;min-width:80px;display:inline-block}
-table{width:100%;border-collapse:collapse;margin:6px 0;font-size:9.5pt}
-th,td{border:.5pt solid #000;padding:2.5px 4px}
-th{background:#f0f0f0;font-weight:700;text-align:center;font-size:9pt}
-.tc{text-align:center}.tr{text-align:right}
-.sum-row{display:flex;justify-content:space-between;align-items:center;margin-top:3px;font-size:9.5pt}
-.sum-box{border:.5pt solid #000;min-width:70px;min-height:15px;display:inline-block;padding:1px 4px;text-align:right}
-.sig{display:flex;justify-content:space-around;margin-top:16px;font-size:9pt}
-.sig-col{text-align:center;width:45%}
-.sig-line{border-bottom:.5pt solid #000;margin-top:22px}
-</style></head><body>
-<div class="noprint" style="text-align:center;padding:8px;background:#f5f5f5;margin-bottom:8px">
-  <button onclick="window.print()" style="padding:8px 20px;background:#f0a500;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:14px">🖨️ Print</button>
-  <button onclick="window.close()" style="padding:8px 16px;background:#333;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;margin-left:8px">✕ Close</button>
-</div>
-<div class="header">
-  <div class="logo">Y<span>·</span>B</div>
-  <div class="sname">Y.B 9999 Electronics</div>
-  <div class="inv-ttl">វិក្កយបត្រ</div>
-</div>
-<div class="info-row">
-  <span><b>អតិថិជន:</b> <span class="dline">${e(o.name||'')}</span></span>
-  <span><b>ទូរស័ព្ទ:</b> ${e(o.phone||'076 9999 380')}</span>
-</div>
-<div class="info-row">
-  <span><b>ទីតាំង:</b> <span class="dline" style="min-width:120px">${e(o.location||'')}</span></span>
-  <span>ថ្ងៃ<span class="dline" style="min-width:20px;margin:0 3px">${day}</span>ខែ<span class="dline" style="min-width:20px;margin:0 3px">${mon}</span>ឆ្នាំ<span class="dline" style="min-width:32px;margin:0 3px">${yr}</span></span>
-</div>
-<table><thead><tr>
-  <th style="width:24px">លរ</th><th>រាយមុខទំនិញ</th>
-  <th style="width:36px">ចំនួន</th><th style="width:62px">តំលៃរាយ</th><th style="width:62px">តំលៃសរុប</th>
-</tr></thead><tbody>${rows}</tbody></table>
-<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px">
-  <div class="sig">
-    <div class="sig-col"><div><b>អ្នកលក់</b></div><div class="sig-line"></div></div>
-    <div style="width:20px"></div>
-    <div class="sig-col"><div><b>អ្នករិញ</b></div><div class="sig-line"></div></div>
+  document.getElementById('invoice-content').innerHTML=`
+<div style="max-width:550px;margin:0 auto;font-size:10.5pt">
+  <div style="text-align:center;padding-bottom:6px;border-bottom:1.5pt solid #000;margin-bottom:6px">
+    <div style="font-size:30pt;font-weight:700;letter-spacing:-1px">Y<span style="color:#e05c00">·</span>B</div>
+    <div style="font-size:13pt;font-weight:700;margin:2px 0">Y.B 9999 Electronics</div>
+    <div style="font-size:15pt;font-weight:700;margin:4px 0">វិក្កយបត្រ</div>
   </div>
-  <div>
-    <div class="sum-row"><span>ប្រាក់សរុប</span><span class="sum-box">${e(o.retail||o.pricing||'')}</span></div>
-    <div class="sum-row"><span>ប្រាក់កក់&nbsp;</span><span class="sum-box"></span></div>
-    <div class="sum-row"><span>ប្រាក់នៅខ</span><span class="sum-box"></span></div>
+  <div style="display:flex;justify-content:space-between;margin:4px 0;font-size:9.5pt">
+    <span><b>អតិថិជន:</b> <span style="border-bottom:1pt dotted #000;min-width:80px;display:inline-block;padding:0 4px">${e(o.name||'')}</span></span>
+    <span><b>ទូរស័ព្ទ:</b> ${e(o.phone||'')}</span>
   </div>
-</div>
-<script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script>
-</body></html>`;
+  <div style="display:flex;justify-content:space-between;margin:4px 0;font-size:9.5pt">
+    <span><b>ទីតាំង:</b> <span style="border-bottom:1pt dotted #000;min-width:120px;display:inline-block">${e(o.location||'')}</span></span>
+    <span>ថ្ងៃ<span style="border-bottom:1pt dotted #000;min-width:20px;display:inline-block;margin:0 2px">${day}</span>ខែ<span style="border-bottom:1pt dotted #000;min-width:20px;display:inline-block;margin:0 2px">${mon}</span>ឆ្នាំ<span style="border-bottom:1pt dotted #000;min-width:32px;display:inline-block;margin:0 2px">${yr}</span></span>
+  </div>
+  <table style="width:100%;border-collapse:collapse;margin:6px 0;font-size:9.5pt">
+    <thead><tr>
+      <th style="width:28px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">លរ</th>
+      <th style="border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">រាយមុខទំនិញ</th>
+      <th style="width:38px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">ចំនួន</th>
+      <th style="width:64px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">តំលៃរាយ</th>
+      <th style="width:64px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">តំលៃសរុប</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px">
+    <div style="display:flex;gap:20px">
+      <div style="text-align:center"><div style="font-size:9pt;font-weight:700">អ្នកលក់</div>
+        <div style="border-bottom:.5pt solid #000;margin-top:22px;width:80px"></div></div>
+      <div style="text-align:center"><div style="font-size:9pt;font-weight:700">អ្នករិញ</div>
+        <div style="border-bottom:.5pt solid #000;margin-top:22px;width:80px"></div></div>
+    </div>
+    <div style="font-size:9.5pt">
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+        <span>ប្រាក់សរុប</span>
+        <span style="border:.5pt solid #000;min-width:70px;min-height:15px;display:inline-block;padding:1px 4px;text-align:right">${e(o.retail||o.pricing||'')}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+        <span>ប្រាក់កក់&nbsp;&nbsp;</span>
+        <span style="border:.5pt solid #000;min-width:70px;min-height:15px;display:inline-block;padding:1px 4px"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span>ប្រាក់នៅខ</span>
+        <span style="border:.5pt solid #000;min-width:70px;min-height:15px;display:inline-block;padding:1px 4px"></span>
+      </div>
+    </div>
+  </div>
+</div>`;
 
-  const w=window.open('','_blank');
-  if(!w){showToast('❌ Please allow popups',true);return;}
-  w.document.write(html);w.document.close();
+  document.getElementById('invoice-overlay').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeInvoiceOverlay(){
+  document.getElementById('invoice-overlay').classList.remove('on');
+  document.body.style.overflow='';
 }
 
 // ── PRINT LABEL ───────────────────────────────────────────
 function printLabel(profileId){
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o){showToast('❌ Order not found',true);return;}
-
   const html=`<!DOCTYPE html><html lang="km"><head>
 <meta charset="UTF-8">
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
@@ -1009,29 +1047,21 @@ function printLabel(profileId){
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;color:#000}
 .label{border:1pt solid #000;padding:5px;height:calc(100% - 2mm)}
-.top{display:flex;justify-content:space-between;align-items:flex-start;
-  border-bottom:.5pt solid #ccc;padding-bottom:3px;margin-bottom:3px;font-size:8pt}
-.store{font-weight:700}.phone-store{color:#555}
+.top{display:flex;justify-content:space-between;border-bottom:.5pt solid #ccc;padding-bottom:3px;margin-bottom:3px;font-size:8pt}
 .cname{font-size:15pt;font-weight:700;margin-bottom:2px}
-.cphone{font-size:12pt;font-weight:600;color:#222}
+.cphone{font-size:12pt;font-weight:600}
 .addr{font-size:8.5pt;margin:3px 0;color:#333}
 .items{font-size:8pt;color:#555;border-top:.5pt dashed #aaa;padding-top:3px;margin-top:3px}
-.footer{display:flex;justify-content:space-between;align-items:center;
-  border-top:.5pt solid #000;padding-top:3px;margin-top:4px}
+.footer{display:flex;justify-content:space-between;align-items:center;border-top:.5pt solid #000;padding-top:3px;margin-top:4px}
 .price{font-size:14pt;font-weight:700}
 .pay-badge{background:#f0a500;padding:2px 7px;border-radius:3px;font-size:8pt;font-weight:700}
-.date-txt{font-size:8pt;color:#777}
-.oid{font-size:7pt;color:#aaa;margin-top:2px;text-align:right}
 </style></head><body>
 <div class="noprint" style="text-align:center;padding:6px;background:#f5f5f5;margin-bottom:6px">
-  <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print Label</button>
+  <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>
   <button onclick="window.close()" style="padding:7px 14px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;margin-left:6px">✕</button>
 </div>
 <div class="label">
-  <div class="top">
-    <span class="store">📦 YB 9999 Electronics</span>
-    <span class="phone-store">076 9999 380</span>
-  </div>
+  <div class="top"><span style="font-weight:700">📦 YB 9999 Electronics</span><span>076 9999 380</span></div>
   <div class="cname">${e(o.name||'—')}</div>
   <div class="cphone">📞 ${e(o.phone||'—')}</div>
   <div class="addr">📍 ${e(o.location||'—')}</div>
@@ -1039,16 +1069,22 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
   <div class="footer">
     <span class="price">${e(o.retail||o.pricing||'—')}</span>
     <span class="pay-badge">${e(o.payment||'COD')}</span>
-    <span class="date-txt">${e((o.orderDate||'').substring(0,10))}</span>
+    <span style="font-size:8pt;color:#777">${e((o.orderDate||'').substring(0,10))}</span>
   </div>
-  <div class="oid">ID: ${e(o.profileId||'')}</div>
+  <div style="font-size:7pt;color:#aaa;margin-top:2px;text-align:right">ID: ${e(o.profileId||'')}</div>
 </div>
 <script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script>
 </body></html>`;
-
-  const w=window.open('','_blank');
-  if(!w){showToast('❌ Please allow popups',true);return;}
-  w.document.write(html);w.document.close();
+  try{
+    const w=window.open('','_blank');
+    if(w){w.document.write(html);w.document.close();return;}
+  }catch(_){}
+  // Fallback: blob URL via tg.openLink
+  try{
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    tg.openLink(url);
+  }catch(_){showToast('❌ Please allow popups',true);}
 }
 
 // ── PROFILE PAGE ──────────────────────────────────────────
@@ -1056,8 +1092,7 @@ async function openProfile(){
   document.getElementById('profile-page').classList.add('on');
   document.body.style.overflow='hidden';
   const el=document.getElementById('pp-content');
-  el.innerHTML='<div class="loading"><div class="spinner"></div></div>';
-
+  el.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
   try{
     const p=await gs('userProfile',shipperData?.phone||'');
     const ini=(p.name||shipperData?.name||'S').charAt(0).toUpperCase();
@@ -1065,39 +1100,26 @@ async function openProfile(){
     const hasPhoto=lp||(p.photo&&!p.photo.includes('INSERT')&&p.photo.startsWith('http'));
     const photoSrc=lp||e(p.photo||'');
     const hasLink=p.link&&!p.link.includes('INSERT')&&p.link.length>3&&!p.link.startsWith('tg:');
-
     el.innerHTML=`
       <div class="pp-avatar-wrap" onclick="triggerPhotoUpload()">
         <div class="pp-avatar">
-          ${hasPhoto
-            ?`<img id="pp-av-img" src="${photoSrc}" onerror="this.style.display='none';document.getElementById('pp-av-ini').style.display='flex'">`
-            :''}
+          ${hasPhoto?`<img id="pp-av-img" src="${photoSrc}" onerror="this.style.display='none';document.getElementById('pp-av-ini').style.display='flex'">`:''}
           <span id="pp-av-ini" style="${hasPhoto?'display:none':'display:flex'};align-items:center;justify-content:center;width:100%;height:100%">${ini}</span>
           <div class="pp-avatar-cam">📷</div>
         </div>
-        <div class="pp-change-photo">📷 Change photo</div>
+        <div class="pp-change-photo">Change photo</div>
       </div>
       <input type="file" id="photo-file-inp" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-      <div class="pp-info" style="padding-top:8px">
+      <div class="pp-info">
         <div class="pp-name">${e(p.name||'Shipper')}</div>
         ${p.username?`<div class="pp-username">@${e(p.username)}</div>`:''}
         ${p.bio?`<div class="pp-bio">${e(p.bio)}</div>`:''}
-        ${hasLink?`<button class="pp-link" onclick="openExternalLink('${e(p.link)}')">
-          🔗 ${e(p.link.replace(/^https?:\/\//,'').substring(0,32))}</button>`:''}
+        ${hasLink?`<button class="pp-link" onclick="openExternalLink('${e(p.link)}')">🔗 ${e(p.link.replace(/^https?:\/\//,'').substring(0,32))}</button>`:''}
       </div>
       <div class="pp-stats">
-        <div class="pp-stat">
-          <div class="pp-stat-num">${parseInt(p.stats?.achievements)||0}</div>
-          <div class="pp-stat-lbl">✅ ដឹកបាន</div>
-        </div>
-        <div class="pp-stat">
-          <div class="pp-stat-num">${parseInt(p.stats?.pending)||0}</div>
-          <div class="pp-stat-lbl">🚚 កំពុងដឹក</div>
-        </div>
-        <div class="pp-stat">
-          <div class="pp-stat-num">${parseInt(p.stats?.total)||0}</div>
-          <div class="pp-stat-lbl">📦 សរុប</div>
-        </div>
+        <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.achievements)||0}</div><div class="pp-stat-lbl">✅ ដឹកបាន</div></div>
+        <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.pending)||0}</div><div class="pp-stat-lbl">🚚 កំពុងដឹក</div></div>
+        <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.total)||0}</div><div class="pp-stat-lbl">📦 សរុប</div></div>
       </div>
       <div class="pp-divider"></div>
       <button class="pp-logout" onclick="doLogout()">🚪 Logout</button>`;
@@ -1110,10 +1132,10 @@ async function openProfile(){
           ${lp?`<img src="${lp}">`:`<span>${ini}</span>`}
           <div class="pp-avatar-cam">📷</div>
         </div>
-        <div class="pp-change-photo">📷 Change photo</div>
+        <div class="pp-change-photo">Change photo</div>
       </div>
       <input type="file" id="photo-file-inp" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-      <div class="pp-info" style="padding-top:8px">
+      <div class="pp-info">
         <div class="pp-name">${e(shipperData?.name||'Shipper')}</div>
         <div class="pp-username">${e(shipperData?.phone||'')}</div>
       </div>
@@ -1126,43 +1148,26 @@ async function openProfile(){
       <button class="pp-logout" onclick="doLogout()">🚪 Logout</button>`;
   }
 }
-
-function triggerPhotoUpload(){
-  const inp=document.getElementById('photo-file-inp');
-  if(inp)inp.click();
-}
-
+function triggerPhotoUpload(){document.getElementById('photo-file-inp')?.click();}
 function handlePhotoUpload(ev){
-  const file=ev.target.files[0];
-  if(!file)return;
+  const file=ev.target.files[0];if(!file)return;
   if(!file.type.startsWith('image/')){showToast('❌ Images only',true);return;}
   if(file.size>3*1024*1024){showToast('❌ Max 3MB',true);return;}
   const r=new FileReader();
   r.onload=re=>{
     const durl=re.target.result;
     try{localStorage.setItem('yb_shipper_photo',durl);}catch(_){}
-    const avImg=document.getElementById('pp-av-img');
-    if(avImg){avImg.src=durl;avImg.style.display='';}
-    const avIni=document.getElementById('pp-av-ini');
-    if(avIni)avIni.style.display='none';
-    // Update mini avatar
+    const avImg=document.getElementById('pp-av-img');if(avImg){avImg.src=durl;avImg.style.display='';}
+    const avIni=document.getElementById('pp-av-ini');if(avIni)avIni.style.display='none';
     const miniAv=document.getElementById('mini-av');
     if(miniAv)miniAv.innerHTML=`<img src="${durl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
     showToast('✅ Photo updated!');
   };
   r.readAsDataURL(file);
 }
-
-function closeProfile(){
-  document.getElementById('profile-page').classList.remove('on');
-  document.body.style.overflow='';
-}
-
-// Fix 5: open link via Telegram WebApp API (works inside TG)
+function closeProfile(){document.getElementById('profile-page').classList.remove('on');document.body.style.overflow='';}
 function openExternalLink(url){
-  try{tg.openLink(url);}catch(_){
-    try{window.open(url,'_blank','noopener');}catch(_){}
-  }
+  try{tg.openLink(url);}catch(_){try{window.open(url,'_blank','noopener');}catch(_){}}
 }
 
 // ── ALERT ─────────────────────────────────────────────────
@@ -1170,11 +1175,8 @@ function showAlert(msg){
   document.getElementById('new-alert-txt').textContent=sanitizeStr(msg);
   document.getElementById('new-alert').classList.remove('hidden');
   try{
-    const ctx=new AudioContext();
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.connect(gain);gain.connect(ctx.destination);
-    osc.frequency.value=520;
+    const ctx=new AudioContext();const osc=ctx.createOscillator();const gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=520;
     gain.gain.setValueAtTime(.3,ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.6);
     osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.6);
