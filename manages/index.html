@@ -254,7 +254,7 @@ body.modal-open{overflow:hidden}
 
 /* ═══ TOAST ═════════════════════════════════════════════ */
 #toasts{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:7px;z-index:9999;pointer-events:none}
-.toast{background:var(--text);color:#fff;padding:11px 15px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:var(--sh);display:flex;align-items:center;gap:9px;animation:tin .25s var(--ease);pointer-events:all;min-width:220px}
+.toast{background:#333;color:#fff;color:#fff;padding:11px 15px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:var(--sh);display:flex;align-items:center;gap:9px;animation:tin .25s var(--ease);pointer-events:all;min-width:220px}
 .toast.success{background:var(--green)}.toast.error{background:var(--red)}.toast.warning{background:var(--amber);color:var(--text)}
 .toast.out{animation:tout .25s var(--ease) forwards}
 .toast svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
@@ -837,6 +837,11 @@ function refreshPage(){
 // ═══════════════════════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════════════════════
+  function showToast(msg, isErr) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show"+(isErr?" error":"");
+    
 function buildDash(){
   const rows=D.cust.raw; if(!rows||rows.length<2) return;
   const hm=cm(rows[0]); const data=rows.slice(1);
