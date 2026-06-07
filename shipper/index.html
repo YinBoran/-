@@ -184,12 +184,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
   border:1px solid var(--border);background:var(--surface);color:var(--text);
   font-size:15px;margin-bottom:10px;text-align:center;letter-spacing:1px}
 .login-input:focus{outline:none;border-color:var(--accent)}
+.login-input.input-error{border-color:var(--red) !important}
 .login-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer}
+.login-btn:disabled{opacity:.5;cursor:not-allowed}
 .pw-wrap{position:relative;margin-bottom:10px}
 .pw-wrap .login-input{margin-bottom:0;padding-right:44px}
 .pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);
   background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px}
+.input-hint{font-size:11px;color:var(--muted);margin-bottom:10px;text-align:left;padding-left:4px}
 
 /* PROFILE CARD (mini) */
 .profile{margin:10px;background:var(--card);border:1px solid var(--border);
@@ -325,33 +328,72 @@ let pollTimer    = null;
 let visibleCount = 6;
 const CHUNK      = 6;
 
+// ── VALIDATION HELPERS ────────────────────────────────────
+const PHONE_MIN = 9;
+const PHONE_MAX = 10;
+const PW_MIN    = 4;
+const PW_MAX    = 32;
+
+function validatePhone(raw) {
+  const phone = String(raw || "").replace(/\D/g, "");
+  if (!phone)                                   return { ok: false, msg: "សូមបញ្ចូលលេខទូរស័ព្ទ" };
+  if (phone.length < PHONE_MIN)                 return { ok: false, msg: `លេខទូរស័ព្ទត្រូវ ${PHONE_MIN}-${PHONE_MAX} ខ្ទង់` };
+  if (phone.length > PHONE_MAX)                 return { ok: false, msg: `លេខទូរស័ព្ទត្រូវ ${PHONE_MIN}-${PHONE_MAX} ខ្ទង់` };
+  if (!/^0\d+$/.test(phone))                    return { ok: false, msg: "លេខទូរស័ព្ទត្រូវចាប់ផ្តើមដោយ 0" };
+  return { ok: true, value: phone };
+}
+
+function validatePassword(raw) {
+  const pw = String(raw || "");
+  if (!pw || pw.trim().length === 0) return { ok: false, msg: "សូមបញ្ចូល Password" };
+  if (pw.length < PW_MIN)           return { ok: false, msg: `Password ត្រូវ ${PW_MIN}-${PW_MAX} តួអក្សរ` };
+  if (pw.length > PW_MAX)           return { ok: false, msg: `Password ច្រើនពេក (max ${PW_MAX})` };
+  return { ok: true, value: pw };
+}
+
 // ── API ──────────────────────────────────────────────────
 function gs(fn, arg) {
   const data = arg !== undefined ? encodeURIComponent(JSON.stringify(arg)) : "";
-  return fetch(`${API}?action=gs&fn=${fn}${data?"&data="+data:""}`).then(r=>r.json());
+  return fetch(`${API}?action=gs&fn=${fn}${data ? "&data=" + data : ""}`)
+    .then(r => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
 }
 
 // ── SESSION ───────────────────────────────────────────────
+const SESSION_TTL = 12 * 60 * 60 * 1000; // 12 hours
+
 function saveSession(data) {
-  localStorage.setItem("yb_shipper", JSON.stringify({
-    phone: data.phone,
-    name:  data.name||"Shipper",
+  const payload = {
+    phone: sanitizeStr(data.phone),
+    name:  sanitizeStr(data.name || "Shipper"),
+    role:  sanitizeStr(data.role || "shipper"),
     ts:    Date.now()
-  }));
+  };
+  try { localStorage.setItem("yb_shipper", JSON.stringify(payload)); } catch(_) {}
 }
+
 function loadSession() {
   try {
-    const s = JSON.parse(localStorage.getItem("yb_shipper")||"{}");
-    if (!s.phone) return null;
-    // Session expires 12 hours
-    if (Date.now() - (s.ts||0) > 12 * 60 * 60 * 1000) {
+    const s = JSON.parse(localStorage.getItem("yb_shipper") || "{}");
+    if (!s.phone)                         return null;
+    if (Date.now() - (s.ts || 0) > SESSION_TTL) {
       localStorage.removeItem("yb_shipper");
       return null;
     }
     return s;
   } catch(_) { return null; }
 }
-function clearSession() { localStorage.removeItem("yb_shipper"); }
+
+function clearSession() {
+  try { localStorage.removeItem("yb_shipper"); } catch(_) {}
+}
+
+// ── SANITIZE ─────────────────────────────────────────────
+function sanitizeStr(v) {
+  return String(v || "").replace(/<[^>]*>/g, "").trim().substring(0, 128);
+}
 
 // ── BOOT ─────────────────────────────────────────────────
 const saved = loadSession();
@@ -373,14 +415,34 @@ if (tgId) {
 }
 
 function bootWithData(data) {
-  shipperData = { phone: data.phone, name: data.name||"Shipper" };
-  Notification.requestPermission().catch(()=>{});
+  shipperData = {
+    phone: sanitizeStr(data.phone),
+    name:  sanitizeStr(data.name || "Shipper"),
+    role:  sanitizeStr(data.role || "shipper")
+  };
+  // Only shipper/admin allowed
+  const role = (shipperData.role || "").toLowerCase();
+  if (role && role !== "shipper" && role !== "admin") {
+    clearSession();
+    document.getElementById("app-content").innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🚫</div>
+        <h3>គណនីមិនមានសិទ្ធ</h3>
+        <p>Role "${e(role)}" មិនត្រូវបានអនុញ្ញាត</p>
+        <button onclick="showPhoneLogin()"
+          style="margin-top:16px;padding:10px 20px;background:var(--accent);
+          color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer">Login Again</button>
+      </div>`;
+    return;
+  }
+  try { Notification.requestPermission().catch(() => {}); } catch(_) {}
   document.getElementById("hdr-actions").style.display = "flex";
   loadOrders();
 }
 
 // ── LOGIN ─────────────────────────────────────────────────
 let _pwVisible = false;
+
 function showPhoneLogin() {
   document.getElementById("app-content").innerHTML = `
     <div style="min-height:90vh;display:flex;align-items:center;justify-content:center;padding:20px">
@@ -388,18 +450,29 @@ function showPhoneLogin() {
         <h3>🚚 YB Shipper Login</h3>
         <p>Phone + Password</p>
         <input id="phone-inp" class="login-input" type="tel"
-          placeholder="Ex: 0769999380" maxlength="12"
+          placeholder="Ex: 0769999380" maxlength="${PHONE_MAX}"
+          autocomplete="tel"
+          oninput="clearInputError('phone-inp')"
           onkeydown="if(event.key==='Enter')document.getElementById('pw-inp').focus()">
+        <div class="input-hint">លេខទូរស័ព្ទ ${PHONE_MIN}-${PHONE_MAX} ខ្ទង់ ចាប់ផ្តើមដោយ 0</div>
         <div class="pw-wrap">
           <input id="pw-inp" class="login-input" type="password"
             placeholder="Password"
+            maxlength="${PW_MAX}"
+            autocomplete="current-password"
+            oninput="clearInputError('pw-inp')"
             onkeydown="if(event.key==='Enter')loginByPhone()">
           <button class="pw-eye" onclick="togglePw()" tabindex="-1" id="pw-eye">👁</button>
         </div>
-        <button class="login-btn" onclick="loginByPhone()">Login →</button>
+        <div class="input-hint">Password ${PW_MIN}-${PW_MAX} តួអក្សរ</div>
+        <button class="login-btn" id="login-btn" onclick="loginByPhone()">Login →</button>
       </div>
     </div>`;
   setTimeout(() => document.getElementById("phone-inp")?.focus(), 200);
+}
+
+function clearInputError(id) {
+  document.getElementById(id)?.classList.remove("input-error");
 }
 
 function togglePw() {
@@ -411,39 +484,69 @@ function togglePw() {
 }
 
 async function loginByPhone() {
-  const rawPhone = document.getElementById("phone-inp")?.value.trim();
-  const rawPw    = document.getElementById("pw-inp")?.value.trim();
-  const btn      = document.querySelector(".login-btn");
-  const phone    = (rawPhone||"").replace(/\D/g,"");
+  const rawPhone = document.getElementById("phone-inp")?.value.trim() || "";
+  const rawPw    = document.getElementById("pw-inp")?.value || "";
+  const btn      = document.getElementById("login-btn");
 
-  if (!phone || phone.length < 9) {
-    showToast("❌ លេខទូរស័ព្ទខ្លីពេក!", true); return;
-  }
-  if (!rawPw || rawPw.length < 4) {
-    showToast("❌ Password ខ្លីពេក!", true); return;
+  // ── Validate phone ─────────────────────────────────────
+  const phoneV = validatePhone(rawPhone);
+  if (!phoneV.ok) {
+    document.getElementById("phone-inp")?.classList.add("input-error");
+    showToast("❌ " + phoneV.msg, true);
+    document.getElementById("phone-inp")?.focus();
+    return;
   }
 
-  if (btn) { btn.disabled=true; btn.textContent="កំពុងផ្ទុក..."; }
+  // ── Validate password ──────────────────────────────────
+  const pwV = validatePassword(rawPw);
+  if (!pwV.ok) {
+    document.getElementById("pw-inp")?.classList.add("input-error");
+    showToast("❌ " + pwV.msg, true);
+    document.getElementById("pw-inp")?.focus();
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = "កំពុងផ្ទុក..."; }
 
   try {
-    const result = await gs("verifyLogin", { phone, password: rawPw });
+    // ── FIX: use "identifier" not "phone" ─────────────────
+    const result = await gs("verifyLogin", {
+      identifier: phoneV.value,
+      password:   pwV.value
+    });
+
     if (result.error) {
-      showToast("❌ " + result.error, true);
-      if (btn) { btn.disabled=false; btn.textContent="Login →"; }
+      showToast("❌ " + sanitizeStr(result.error), true);
+      document.getElementById("pw-inp")?.classList.add("input-error");
+      document.getElementById("pw-inp")?.select();
+      if (btn) { btn.disabled = false; btn.textContent = "Login →"; }
       return;
     }
+
+    // ── Guard: role check before accepting session ─────────
+    const role = String(result.role || "").toLowerCase();
+    if (role !== "shipper" && role !== "admin") {
+      showToast("❌ គណនីនេះ មិនមែន Shipper", true);
+      if (btn) { btn.disabled = false; btn.textContent = "Login →"; }
+      return;
+    }
+
     saveSession(result);
     bootWithData(result);
   } catch(err) {
-    showToast("❌ " + err.message, true);
-    if (btn) { btn.disabled=false; btn.textContent="Login →"; }
+    showToast("❌ " + sanitizeStr(err.message), true);
+    if (btn) { btn.disabled = false; btn.textContent = "Login →"; }
   }
 }
 
 function doLogout() {
   stopPoll();
   clearSession();
-  shipperData = null; allOrders = []; orders = []; lastCount = -1;
+  shipperData  = null;
+  allOrders    = [];
+  orders       = [];
+  lastCount    = -1;
+  _pwVisible   = false;
   document.getElementById("hdr-actions").style.display = "none";
   document.getElementById("pending-count").textContent = "0";
   closeProfile();
@@ -455,24 +558,29 @@ async function loadOrders() {
   document.getElementById("app-content").innerHTML =
     '<div class="loading"><div class="spinner"></div>កំពុងផ្ទើកទិន្ន័យ...</div>';
   try {
-    const result = await gs("handleShipperOrders", shipperData?.phone||"");
-    allOrders = Array.isArray(result) ? result : [];
+    const result = await gs("handleShipperOrders", shipperData?.phone || "");
+    // Guard: must be array
+    if (!Array.isArray(result)) {
+      if (result && result.error) throw new Error(result.error);
+      throw new Error("Invalid response format");
+    }
+    allOrders    = result;
     visibleCount = CHUNK;
     applyFilter();
     startPoll();
-  } catch(e) { showError("Load failed: " + e.message); }
+  } catch(e) { showError("Load failed: " + sanitizeStr(e.message)); }
 }
 
 async function refreshOrders() {
   if (!shipperData) return;
   try {
-    const fresh = await gs("handleShipperOrders", shipperData.phone||"");
+    const fresh = await gs("handleShipperOrders", shipperData.phone || "");
     if (!Array.isArray(fresh)) return;
-    const before = allOrders.filter(o=>!isCompleted(o)).length;
-    allOrders = fresh;
+    const before = allOrders.filter(o => !isCompleted(o)).length;
+    allOrders    = fresh;
     applyFilter();
-    const after = allOrders.filter(o=>!isCompleted(o)).length;
-    if (after > before) showAlert(`មានការដឹកថ្មី +${after-before}`);
+    const after = allOrders.filter(o => !isCompleted(o)).length;
+    if (after > before) showAlert(`មានការដឹកថ្មី +${after - before}`);
     showToast("🔄 Updated!");
   } catch(_) { showToast("❌ Refresh failed", true); }
 }
@@ -483,25 +591,25 @@ function startPoll() {
   pollTimer = setInterval(async () => {
     if (!shipperData) return;
     try {
-      const fresh = await gs("handleShipperOrders", shipperData.phone||"");
+      const fresh = await gs("handleShipperOrders", shipperData.phone || "");
       if (!Array.isArray(fresh)) return;
-      const newP = fresh.filter(o=>!isCompleted(o)).length;
+      const newP = fresh.filter(o => !isCompleted(o)).length;
       if (lastCount >= 0 && newP > lastCount) {
-        showAlert(`មានការដឹកថ្មី +${newP-lastCount}`);
-        try { tg.HapticFeedback.notificationOccurred("warning"); } catch(_){}
+        showAlert(`មានការដឹកថ្មី +${newP - lastCount}`);
+        try { tg.HapticFeedback.notificationOccurred("warning"); } catch(_) {}
       }
       lastCount = newP;
       allOrders = fresh;
       applyFilter();
-    } catch(_){}
+    } catch(_) {}
   }, 60000);
 }
-function stopPoll() { if(pollTimer){clearInterval(pollTimer);pollTimer=null;} }
+function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
 
 // ── FILTER ───────────────────────────────────────────────
 function applyFilter() {
   orders = codOnly
-    ? allOrders.filter(o=>(o.payment||"").toLowerCase().includes("cod"))
+    ? allOrders.filter(o => (o.payment || "").toLowerCase().includes("cod"))
     : allOrders;
   renderAll();
 }
@@ -509,15 +617,15 @@ function toggleCOD() {
   codOnly = !codOnly;
   visibleCount = CHUNK;
   const t = document.getElementById("cod-track");
-  if(t) t.classList.toggle("on", codOnly);
+  if (t) t.classList.toggle("on", codOnly);
   applyFilter();
 }
 
 // ── RENDER ────────────────────────────────────────────────
 function renderAll() {
-  const pending   = orders.filter(o=>!isCompleted(o));
-  const completed = orders.filter(o=>isCompleted(o));
-  lastCount = allOrders.filter(o=>!isCompleted(o)).length;
+  const pending   = orders.filter(o => !isCompleted(o));
+  const completed = orders.filter(o => isCompleted(o));
+  lastCount = allOrders.filter(o => !isCompleted(o)).length;
   document.getElementById("pending-count").textContent = pending.length;
 
   document.getElementById("app-content").innerHTML = `
@@ -530,29 +638,29 @@ function renderAll() {
     <div class="fbar">
       <span class="fbar-label">Filter:</span>
       <label class="toggle" onclick="toggleCOD()">
-        <div class="toggle-track ${codOnly?'on':''}" id="cod-track">
+        <div class="toggle-track ${codOnly ? 'on' : ''}" id="cod-track">
           <div class="toggle-thumb"></div>
         </div>
         <span class="toggle-text">COD ប៉ុណ្ណោះ</span>
       </label>
     </div>
     <div class="tabs">
-      <div class="tab ${activeTab==='pending'?'active':''}" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
-      <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
+      <div class="tab ${activeTab === 'pending' ? 'active' : ''}" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
+      <div class="tab ${activeTab === 'completed' ? 'active' : ''}" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
     </div>
     <div class="orders" id="orders-list">
-      ${renderList(activeTab==='pending'?pending:completed)}
+      ${renderList(activeTab === 'pending' ? pending : completed)}
     </div>`;
 }
 
 function renderProfileCard() {
   if (!shipperData) return "";
-  const ini = (shipperData.name||"S").charAt(0).toUpperCase();
+  const ini = (shipperData.name || "S").charAt(0).toUpperCase();
   return `<div class="profile" onclick="openProfile()">
     <div class="profile-av" id="mini-av">${ini}</div>
     <div>
-      <div class="profile-name">${e(shipperData.name||tgName||"Shipper")}</div>
-      <div class="profile-phone">${e(shipperData.phone||"—")}</div>
+      <div class="profile-name">${e(shipperData.name || tgName || "Shipper")}</div>
+      <div class="profile-phone">${e(shipperData.phone || "—")}</div>
     </div>
     <div class="profile-role">SHIPPER ›</div>
   </div>`;
@@ -561,42 +669,44 @@ function renderProfileCard() {
 function renderList(list) {
   if (!list.length) return `
     <div class="empty">
-      <div class="empty-icon">${activeTab==='pending'?'📭':'🎉'}</div>
-      <h3>${activeTab==='pending'?'គ្មានការដឹករង់ចាំ':'អបអរ! ដឹកគ្រប់ហើយ'}</h3>
-      <p>${activeTab==='pending'?'ការដឹកថ្មីនឹងលេចនៅទីនេះ':'ប្រវត្តិការដឹកនឹងបង្ហាញនៅទីនេះ'}</p>
+      <div class="empty-icon">${activeTab === 'pending' ? '📭' : '🎉'}</div>
+      <h3>${activeTab === 'pending' ? 'គ្មានការដឹករង់ចាំ' : 'អបអរ! ដឹកគ្រប់ហើយ'}</h3>
+      <p>${activeTab === 'pending' ? 'ការដឹកថ្មីនឹងលេចនៅទីនេះ' : 'ប្រវត្តិការដឹកនឹងបង្ហាញនៅទីនេះ'}</p>
     </div>`;
 
   const visible = list.slice(0, visibleCount);
   const hasMore = list.length > visibleCount;
 
   const cards = visible.map(o => {
-    const isCod = (o.payment||"").toLowerCase().includes("cod");
+    const isCod = (o.payment || "").toLowerCase().includes("cod");
     const done  = isCompleted(o);
+    // Safely encode profileId for inline onclick attr
+    const safeId = e(o.profileId);
     return `
-    <div class="order-card ${isCod?'cod-highlight':''}" onclick="openDetail('${e(o.profileId)}')">
+    <div class="order-card ${isCod ? 'cod-highlight' : ''}" onclick="openDetail('${safeId}')">
       <div class="card-top">
         <div class="card-icon">📦</div>
         <div class="card-body">
-          <div class="card-name">${e(o.name||"FB User")}</div>
-          <div class="card-phone">📞 ${e(o.phone||"—")}</div>
-          <div class="card-loc">📍 ${e(o.location||"—")}</div>
-          <div class="card-item">🏷️ ${e((o.ordered||"—").substring(0,40))}${(o.ordered||"").length>40?"…":""}</div>
+          <div class="card-name">${e(o.name || "FB User")}</div>
+          <div class="card-phone">📞 ${e(o.phone || "—")}</div>
+          <div class="card-loc">📍 ${e(o.location || "—")}</div>
+          <div class="card-item">🏷️ ${e((o.ordered || "—").substring(0, 40))}${(o.ordered || "").length > 40 ? "…" : ""}</div>
         </div>
-        <span class="card-badge ${isCod?'badge-cod':'badge-paid'}">${e(o.payment||"COD")}</span>
+        <span class="card-badge ${isCod ? 'badge-cod' : 'badge-paid'}">${e(o.payment || "COD")}</span>
       </div>
       <div class="card-divider"></div>
       <div class="card-bottom">
         <div>
-          <div class="card-price">$${e(o.pricing||o.retail||"—")}</div>
-          <div class="card-date">${e(o.orderDate||"")}</div>
+          <div class="card-price">$${e(o.pricing || o.retail || "—")}</div>
+          <div class="card-date">${e(o.orderDate || "")}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <a class="btn-call" href="https://t.me/+${e((o.phone||"").replace(/\D/g,""))}"
-            target="_blank" onclick="event.stopPropagation()">📞</a>
+          <a class="btn-call" href="https://t.me/+${e((o.phone || "").replace(/\D/g, ""))}"
+            target="_blank" rel="noopener" onclick="event.stopPropagation()">📞</a>
           ${done
-            ? `<div class="btn-done">✅ ${e(o.receiveDate||"ដឹកដល់")}</div>`
+            ? `<div class="btn-done">✅ ${e(o.receiveDate || "ដឹកដល់")}</div>`
             : `<button class="btn-deliver"
-                onclick="event.stopPropagation();askDeliver('${e(o.profileId)}','${e(o.name||"")}')">
+                onclick="event.stopPropagation();askDeliver('${safeId}','${e(o.name || "")}')">
                 🚚 ដឹកដល់
                </button>`}
         </div>
@@ -615,9 +725,9 @@ function renderList(list) {
 
 function loadMore() {
   visibleCount += CHUNK;
-  const list = activeTab==='pending'
-    ? orders.filter(o=>!isCompleted(o))
-    : orders.filter(o=>isCompleted(o));
+  const list = activeTab === 'pending'
+    ? orders.filter(o => !isCompleted(o))
+    : orders.filter(o => isCompleted(o));
   document.getElementById("orders-list").innerHTML = renderList(list);
 }
 
@@ -633,102 +743,107 @@ function setupScrollObserver(list) {
   io.observe(sentinel);
 }
 
-function setTab(t) { activeTab=t; visibleCount=CHUNK; renderAll(); }
-function isCompleted(o) { return o.status==="Completed"||!!o.receiveDate; }
+function setTab(t) { activeTab = t; visibleCount = CHUNK; renderAll(); }
+function isCompleted(o) { return o.status === "Completed" || !!o.receiveDate; }
 
 // ── DETAIL POPUP ─────────────────────────────────────────
 async function openDetail(profileId) {
-  const o = allOrders.find(x=>x.profileId===profileId);
+  if (!profileId) return;
+  const o = allOrders.find(x => x.profileId === profileId);
   if (!o) return;
   document.body.style.overflow = "hidden";
-  document.getElementById("detail-title").textContent = o.name||"Order Detail";
+  document.getElementById("detail-title").textContent = o.name || "Order Detail";
   document.getElementById("detail-body").innerHTML =
     '<div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>';
   document.getElementById("detail-foot").innerHTML = "";
   document.getElementById("detail-overlay").classList.add("on");
 
-  const isCod = (o.payment||"").toLowerCase().includes("cod");
+  const isCod = (o.payment || "").toLowerCase().includes("cod");
   const done  = isCompleted(o);
 
   document.getElementById("detail-body").innerHTML = `
     <div class="detail-section">
       <div class="detail-label">អ្នកទទួល</div>
       <div class="detail-grid">
-        <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||"—")}</div></div>
+        <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name || "—")}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val"><a href="https://t.me/+${e((o.phone||"").replace(/\D/g,""))}"
-            target="_blank" style="color:var(--accent)">${e(o.phone||"—")}</a></div></div>
-        <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||"—")}</div></div>
+          <div class="val"><a href="https://t.me/+${e((o.phone || "").replace(/\D/g, ""))}"
+            target="_blank" rel="noopener" style="color:var(--accent)">${e(o.phone || "—")}</a></div></div>
+        <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location || "—")}</div></div>
       </div>
     </div>
     <div class="detail-section">
       <div class="detail-label">ការបញ្ជាទិញ</div>
       <div class="detail-grid">
-        <div class="detail-item full"><div class="key">ទំនិញ</div><div class="val">${e(o.ordered||"—")}</div></div>
+        <div class="detail-item full"><div class="key">ទំនិញ</div><div class="val">${e(o.ordered || "—")}</div></div>
         <div class="detail-item"><div class="key">តម្លៃ</div>
-          <div class="val" style="color:var(--accent)">$${e(o.pricing||o.retail||"—")}</div></div>
+          <div class="val" style="color:var(--accent)">$${e(o.pricing || o.retail || "—")}</div></div>
         <div class="detail-item"><div class="key">ការទូទាត់</div>
-          <div class="val" style="color:${isCod?'var(--accent)':'var(--green)'}">${e(o.payment||"COD")}</div></div>
-        <div class="detail-item"><div class="key">កាលបរិច្ឆេទ</div><div class="val">${e(o.orderDate||"—")}</div></div>
+          <div class="val" style="color:${isCod ? 'var(--accent)' : 'var(--green)'}">${e(o.payment || "COD")}</div></div>
+        <div class="detail-item"><div class="key">កាលបរិច្ឆេទ</div><div class="val">${e(o.orderDate || "—")}</div></div>
         <div class="detail-item"><div class="key">Status</div>
-          <div class="val" style="color:${done?'var(--green)':'var(--accent)'}">${e(o.status||"Pending")}</div></div>
-        ${o.apvCodes?`<div class="detail-item full"><div class="key">APV</div>
-          <div class="val" style="font-family:monospace">${e(o.apvCodes)}</div></div>`:""}
-        ${o.receiveDate?`<div class="detail-item full"><div class="key">ដឹកដល់នៅ</div>
-          <div class="val" style="color:var(--green)">${e(o.receiveDate)}</div></div>`:""}
+          <div class="val" style="color:${done ? 'var(--green)' : 'var(--accent)'}">${e(o.status || "Pending")}</div></div>
+        ${o.apvCodes ? `<div class="detail-item full"><div class="key">APV</div>
+          <div class="val" style="font-family:monospace">${e(o.apvCodes)}</div></div>` : ""}
+        ${o.receiveDate ? `<div class="detail-item full"><div class="key">ដឹកដល់នៅ</div>
+          <div class="val" style="color:var(--green)">${e(o.receiveDate)}</div></div>` : ""}
       </div>
     </div>
     <div class="detail-section">
-      <div class="detail-label">ប្រវត្តិ (${e(o.phone||"")})</div>
+      <div class="detail-label">ប្រវត្តិ (${e(o.phone || "")})</div>
       <div id="history-list"><div class="loading" style="min-height:60px">
         <div class="spinner" style="width:22px;height:22px"></div></div></div>
     </div>`;
 
+  const safeId = e(o.profileId);
   document.getElementById("detail-foot").innerHTML = `
-    <a class="btn-call" href="https://t.me/+${e((o.phone||"").replace(/\D/g,""))}"
-      target="_blank" style="padding:10px 16px;font-size:13px">📞 TG</a>
+    <a class="btn-call" href="https://t.me/+${e((o.phone || "").replace(/\D/g, ""))}"
+      target="_blank" rel="noopener" style="padding:10px 16px;font-size:13px">📞 TG</a>
     ${!done
-      ? `<button onclick="closeDetail();askDeliver('${e(o.profileId)}','${e(o.name||"")}');"
+      ? `<button onclick="closeDetail();askDeliver('${safeId}','${e(o.name || "")}');"
           style="flex:1;padding:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));
           color:#000;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
           🚚 ដឹកដល់</button>`
       : `<div style="flex:1;text-align:center;color:var(--green);font-weight:700;padding:10px">
-          ✅ ដឹកដល់ ${e(o.receiveDate||"")}</div>`}`;
+          ✅ ដឹកដល់ ${e(o.receiveDate || "")}</div>`}`;
 
-  loadHistory(o.phone||"", o.profileId);
+  loadHistory(o.phone || "", o.profileId);
 }
 
 async function loadHistory(phone, currentId) {
   try {
-    const cleanPhone = phone.replace(/\D/g,"").slice(-8);
-    const history = allOrders.filter(o =>
-      o.phone && o.phone.replace(/\D/g,"").endsWith(cleanPhone)
-    ).sort((a,b)=>(b.orderDate||"").localeCompare(a.orderDate||""));
+    const cleanPhone = phone.replace(/\D/g, "").slice(-8);
+    const history = allOrders
+      .filter(o => o.phone && o.phone.replace(/\D/g, "").endsWith(cleanPhone))
+      .sort((a, b) => (b.orderDate || "").localeCompare(a.orderDate || ""));
 
     const el = document.getElementById("history-list");
     if (!el) return;
-    if (!history.length) { el.innerHTML=`<p style="font-size:12px;color:var(--muted)">គ្មានប្រវត្តិ</p>`; return; }
+    if (!history.length) {
+      el.innerHTML = `<p style="font-size:12px;color:var(--muted)">គ្មានប្រវត្តិ</p>`;
+      return;
+    }
 
     el.innerHTML = history.map(h => {
       const done  = isCompleted(h);
-      const isCur = h.profileId===currentId;
-      const color = done?"var(--green)":h.status?.toLowerCase().includes("cancel")?"var(--red)":"var(--accent)";
-      const cls   = done?"completed":h.status?.toLowerCase().includes("cancel")?"cancelled":"pending";
-      return `<div class="history-item ${cls}" style="${isCur?'border-left-color:var(--blue)':''}">
+      const isCur = h.profileId === currentId;
+      const color = done ? "var(--green)" : h.status?.toLowerCase().includes("cancel") ? "var(--red)" : "var(--accent)";
+      const cls   = done ? "completed" : h.status?.toLowerCase().includes("cancel") ? "cancelled" : "pending";
+      return `<div class="history-item ${cls}" style="${isCur ? 'border-left-color:var(--blue)' : ''}">
         <div class="history-row">
-          <span style="font-size:12px;font-weight:600">${e((h.ordered||"—").substring(0,30))}</span>
-          <span style="font-size:11px;color:${color}">${e(h.status||"Pending")}</span>
+          <span style="font-size:12px;font-weight:600">${e((h.ordered || "—").substring(0, 30))}</span>
+          <span style="font-size:11px;color:${color}">${e(h.status || "Pending")}</span>
         </div>
         <div class="history-row">
-          <span style="font-size:11px;color:var(--muted)">${e(h.orderDate||"—")}</span>
-          <span style="font-size:12px;font-weight:700;color:var(--accent)">$${e(h.pricing||h.retail||"—")}</span>
+          <span style="font-size:11px;color:var(--muted)">${e(h.orderDate || "—")}</span>
+          <span style="font-size:12px;font-weight:700;color:var(--accent)">$${e(h.pricing || h.retail || "—")}</span>
         </div>
-        ${isCur?'<span style="font-size:10px;color:var(--blue);font-weight:600">← ការបញ្ជានេះ</span>':''}
+        ${isCur ? '<span style="font-size:10px;color:var(--blue);font-weight:600">← ការបញ្ជានេះ</span>' : ''}
       </div>`;
     }).join("");
   } catch(_) {
     const el = document.getElementById("history-list");
-    if(el) el.innerHTML=`<p style="font-size:12px;color:var(--muted)">មិនអាចផ្ទុក</p>`;
+    if (el) el.innerHTML = `<p style="font-size:12px;color:var(--muted)">មិនអាចផ្ទុក</p>`;
   }
 }
 
@@ -737,36 +852,42 @@ function closeDetail() {
   document.body.style.overflow = "";
 }
 function closeDetailIfBg(ev) {
-  if (ev.target===document.getElementById("detail-overlay")) closeDetail();
+  if (ev.target === document.getElementById("detail-overlay")) closeDetail();
 }
 
 // ── CONFIRM ───────────────────────────────────────────────
 let _pid = null;
+
 function askDeliver(profileId, name) {
+  if (!profileId) return;
   _pid = profileId;
   document.getElementById("confirm-sub").textContent = `ដឹកដល់ "${name}" ហើយ?`;
   document.getElementById("confirm-overlay").classList.add("on");
   document.getElementById("confirm-yes-btn").onclick = confirmDeliver;
 }
+
 function closeConfirm() {
   document.getElementById("confirm-overlay").classList.remove("on");
   _pid = null;
 }
+
 async function confirmDeliver() {
   if (!_pid) return;
   const pid = _pid;
   closeConfirm();
-  try { tg.HapticFeedback.impactOccurred("medium"); } catch(_){}
+  try { tg.HapticFeedback.impactOccurred("medium"); } catch(_) {}
+
+  // Disable re-tap on card while processing
   try {
-    const data = await gs("handleShipperComplete", [pid, shipperData?.phone||""]);
-    if (data.success||data.completed) {
+    const data = await gs("handleShipperComplete", [pid, shipperData?.phone || ""]);
+    if (data.success || data.completed) {
       showToast("✅ ដឹកដល់ — Completed!");
-      try { tg.HapticFeedback.notificationOccurred("success"); } catch(_){}
+      try { tg.HapticFeedback.notificationOccurred("success"); } catch(_) {}
       setTimeout(loadOrders, 800);
     } else {
-      showToast("❌ "+(data.error||"Failed"), true);
+      showToast("❌ " + sanitizeStr(data.error || "Failed"), true);
     }
-  } catch(err) { showToast("❌ "+err.message, true); }
+  } catch(err) { showToast("❌ " + sanitizeStr(err.message), true); }
 }
 
 // ── PROFILE PAGE ──────────────────────────────────────────
@@ -778,8 +899,8 @@ async function openProfile() {
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
 
   try {
-    const p = await gs("userProfile", shipperData?.phone||"");
-    const ini = (p.name||shipperData?.name||"S").charAt(0).toUpperCase();
+    const p   = await gs("userProfile", shipperData?.phone || "");
+    const ini = (p.name || shipperData?.name || "S").charAt(0).toUpperCase();
     const hasPhoto = p.photo && !p.photo.includes("INSERT") && p.photo.startsWith("http");
     const hasLink  = p.link  && !p.link.includes("INSERT")  && p.link.length > 3
                   && !p.link.startsWith("tg:");
@@ -795,42 +916,37 @@ async function openProfile() {
         </div>
       </div>
       <div class="pp-info">
-        <div class="pp-name">${e(p.name||"Shipper")}</div>
-        ${p.username?`<div class="pp-username">@${e(p.username)}</div>`:""}
-        ${p.bio?`<div class="pp-bio">${e(p.bio)}</div>`:""}
-        ${hasLink?`<a class="pp-link" href="${e(p.link)}" target="_blank">
-          🔗 ${e(p.link.replace(/^https?:\/\//,"").substring(0,32))}</a>`:""}
+        <div class="pp-name">${e(p.name || "Shipper")}</div>
+        ${p.username ? `<div class="pp-username">@${e(p.username)}</div>` : ""}
+        ${p.bio      ? `<div class="pp-bio">${e(p.bio)}</div>` : ""}
+        ${hasLink    ? `<a class="pp-link" href="${e(p.link)}" target="_blank" rel="noopener">
+          🔗 ${e(p.link.replace(/^https?:\/\//, "").substring(0, 32))}</a>` : ""}
       </div>
       <div class="pp-stats">
         <div class="pp-stat">
-          <div class="pp-stat-num">${p.stats?.achievements||0}</div>
+          <div class="pp-stat-num">${parseInt(p.stats?.achievements) || 0}</div>
           <div class="pp-stat-lbl">✅ ដឹកបាន</div>
         </div>
         <div class="pp-stat">
-          <div class="pp-stat-num">${p.stats?.pending||0}</div>
+          <div class="pp-stat-num">${parseInt(p.stats?.pending) || 0}</div>
           <div class="pp-stat-lbl">🚚 កំពុងដឹក</div>
         </div>
         <div class="pp-stat">
-          <div class="pp-stat-num">${p.stats?.total||0}</div>
+          <div class="pp-stat-num">${parseInt(p.stats?.total) || 0}</div>
           <div class="pp-stat-lbl">📦 សរុប</div>
         </div>
       </div>
       <div class="pp-divider"></div>
-      <button class="pp-logout" onclick="doLogout()">
-        🚪 Logout
-      </button>`;
+      <button class="pp-logout" onclick="doLogout()">🚪 Logout</button>`;
   } catch(_) {
-    // Fallback
-    const ini = (shipperData?.name||"S").charAt(0).toUpperCase();
+    const ini = (shipperData?.name || "S").charAt(0).toUpperCase();
     el.innerHTML = `
       <div class="pp-cover">
-        <div class="pp-avatar-wrap">
-          <div class="pp-avatar">${ini}</div>
-        </div>
+        <div class="pp-avatar-wrap"><div class="pp-avatar">${ini}</div></div>
       </div>
       <div class="pp-info">
-        <div class="pp-name">${e(shipperData?.name||"Shipper")}</div>
-        <div class="pp-username">${e(shipperData?.phone||"")}</div>
+        <div class="pp-name">${e(shipperData?.name || "Shipper")}</div>
+        <div class="pp-username">${e(shipperData?.phone || "")}</div>
       </div>
       <div class="pp-stats">
         <div class="pp-stat"><div class="pp-stat-num">—</div><div class="pp-stat-lbl">✅ ដឹកបាន</div></div>
@@ -849,7 +965,7 @@ function closeProfile() {
 
 // ── ALERT ─────────────────────────────────────────────────
 function showAlert(msg) {
-  document.getElementById("new-alert-txt").textContent = msg;
+  document.getElementById("new-alert-txt").textContent = sanitizeStr(msg);
   document.getElementById("new-alert").classList.remove("hidden");
   try {
     const ctx  = new AudioContext();
@@ -862,35 +978,45 @@ function showAlert(msg) {
     osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
   } catch(_) {}
   if (Notification.permission === "granted") {
-    new Notification("🚚 YB Shipper", { body: msg });
+    try { new Notification("🚚 YB Shipper", { body: sanitizeStr(msg) }); } catch(_) {}
   }
 }
 function dismissAlert() {
   document.getElementById("new-alert").classList.add("hidden");
-  activeTab = "pending"; visibleCount = CHUNK; renderAll();
+  activeTab    = "pending";
+  visibleCount = CHUNK;
+  renderAll();
 }
 
-// ── SEARCH (placeholder) ──────────────────────────────────
+// ── SEARCH ────────────────────────────────────────────────
 function openSearch() { showToast("🔍 Search — coming soon!"); }
 
 // ── ERROR / TOAST ─────────────────────────────────────────
 function showError(msg) {
   document.getElementById("app-content").innerHTML = `
     <div class="empty">
-      <div class="empty-icon">⚠️</div><h3>Error</h3><p>${msg}</p>
+      <div class="empty-icon">⚠️</div><h3>Error</h3><p>${e(msg)}</p>
       <button onclick="loadOrders()"
         style="margin-top:16px;padding:10px 20px;background:var(--accent);color:#000;
         border:none;border-radius:8px;font-weight:700;cursor:pointer">Retry</button>
     </div>`;
 }
+
 function showToast(msg, isErr) {
   const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = "toast show"+(isErr?" error":"");
-  setTimeout(()=>{t.className="toast";}, 3000);
+  t.textContent = sanitizeStr(msg);
+  t.className   = "toast show" + (isErr ? " error" : "");
+  setTimeout(() => { t.className = "toast"; }, 3000);
 }
+
+// ── HTML ESCAPE (XSS prevention) ──────────────────────────
 function e(v) {
-  return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return String(v || "")
+    .replace(/&/g,  "&amp;")
+    .replace(/</g,  "&lt;")
+    .replace(/>/g,  "&gt;")
+    .replace(/"/g,  "&quot;")
+    .replace(/'/g,  "&#039;");
 }
 </script>
 </body>
