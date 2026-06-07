@@ -426,7 +426,7 @@ async function loginByPhone() {
   if (btn) { btn.disabled=true; btn.textContent="កំពុងផ្ទុក..."; }
 
   try {
-    const result = await gs("verifyShipperLogin", { phone, password: rawPw });
+    const result = await gs("verifyLogin", { phone, password: rawPw });
     if (result.error) {
       showToast("❌ " + result.error, true);
       if (btn) { btn.disabled=false; btn.textContent="Login →"; }
