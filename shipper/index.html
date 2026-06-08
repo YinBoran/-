@@ -377,9 +377,9 @@ body{
 <script>
 if (window.Telegram.WebApp.isVersionAtLeast('6.1')) {
     window.Telegram.WebApp.setHeaderColor('#0f0f0f');
+  try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
   const tg = window.Telegram.WebApp;
 }
-try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
 
 const user   = tg.initDataUnsafe?.user || {};
 const tgId   = String(user.id || "");
