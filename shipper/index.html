@@ -829,7 +829,7 @@ async function openDetail(profileId){
       <div class="detail-grid">
         <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||'—')}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val" onclick="customerPhone}"
+          <div class="val" onclick="customerPhone()"
             style="cursor:pointer;color:var(--accent)">📞${e(o.phone||'—')}</div></div>
         <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||'—')}</div></div>
       </div>
