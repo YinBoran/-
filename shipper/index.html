@@ -359,10 +359,10 @@ body{
 </div>
 
 <div class="new-order-alert hidden" id="new-alert" onclick="dismissAlert()">
-  🔔 <span id="new-alert-txt">មានការដឹកថ្មី!</span> — ចុចដើម្បីមើល
+  🔔 <span id="new-alert-txt">ដឹកថ្មី!</span>
 </div>
 <div id="app-content">
-  <div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>
+  <div class="loading"><div class="spinner"></div></div>
 </div>
 <div class="toast" id="toast"></div>
 <div class="hold-ring" id="hold-ring"><div class="hold-ring-inner">🧾</div></div>
@@ -1086,7 +1086,7 @@ async function confirmDeliver(){
     if(d.success||d.completed){
       showToast('✅ ដឹកដល់ — Completed!');
       try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
-      setTimeout(loadOrders,800);
+      setTimeout(loadOrders,300);
     }else{showToast('❌ '+(sanitizeStr(d.error)||'Failed'),true);}
   }catch(err){showToast('❌ '+sanitizeStr(err.message),true);}
 }
