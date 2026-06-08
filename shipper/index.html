@@ -175,7 +175,7 @@ body{
   display:flex;align-items:center;justify-content:center;touch-action:auto;pointer-events:auto}
 .popup-body{overflow-y:auto;flex:1;padding:16px;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain}
-.popup-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.popup-foot{padding:20px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
 
 .detail-section{margin-bottom:16px}
 .detail-label{font-size:11px;font-weight:700;color:var(--muted);
@@ -829,7 +829,7 @@ async function openDetail(profileId){
       <div class="detail-grid">
         <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||'—')}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val" onclick="window.open('https://t.me{phoneClean}', '_blank');"
+          <div class="val" onclick="if(typeof phoneClean !== 'undefined' && phoneClean) { window.open('https://t.me/' + phoneClean, '_blank'); }"
             style="cursor:pointer;color:var(--accent)">📞${e(o.phone||'—')}</div></div>
         <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||'—')}</div></div>
       </div>
@@ -868,7 +868,24 @@ async function openDetail(profileId){
           ✅ ដឹកដល់ ${e(o.receiveDate||'')}</div>`}`;
   loadHistory(o.phone||'',o.profileId);
 }
-
+function phoneCustomer {// Ensure this script runs after the DOM is loaded
+document.querySelectorAll('.val').forEach(element => {
+    element.addEventListener('click', () => {
+        // Now you have full access to variables in this scope
+        window.open(`https://t.me/${phoneClean}`, '_blank');
+    });
+});
+}
+  document.querySelector('.val').addEventListener('click', function() {
+    // Check if phoneClean exists and is not an empty string
+    if (typeof phoneClean !== 'undefined' && phoneClean && phoneClean.trim() !== '') {
+        window.open(`https://t.me/${phoneClean}`, '_blank', 'noopener,noreferrer');
+    } else {
+        console.log("No phone number provided, staying on current page.");
+        // Optional: Add a user notification here
+        // alert("No phone number available.");
+    }
+});
 async function loadHistory(phone,currentId){
   try{
     const cleanPhone=phone.replace(/\D/g,'').slice(-8);
