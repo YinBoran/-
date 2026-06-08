@@ -22,7 +22,7 @@
   --ease:cubic-bezier(.4,0,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none;padding-top:env(safe-area-inset-top);}
 img{display:block;max-width:100%}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 
@@ -402,7 +402,7 @@ function filterProds() {
 // ═══════════════════════════════════════════════════════════
 // PRODUCTS — infinite scroll (6 items per chunk)
 // ═══════════════════════════════════════════════════════════
-const CHUNK = 9;
+const CHUNK = 15;
 let _io = null; // IntersectionObserver instance
 
 function renderGrid() {
@@ -844,6 +844,10 @@ function getDemoProducts() {
     { code:'cl18', name:'Speaker CL18',           category:'Speaker',  photo:'', price:'$25',  stockStatus:'In Stock',  description:'CL18 Portable Speaker' },
     { code:'s75',  name:'Speaker S75',            category:'Speaker',  photo:'', price:'$55',  stockStatus:'Low Stock', description:'S75 Heavy Bass Speaker' },
     { code:'s53',  name:'S53-V1 Wireless Mic Set',category:'Wireless', photo:'', price:'$35',  stockStatus:'In Stock',  description:'S53-V1 Wireless Microphone' },
+    { code:'rgb',  name:'RGB LED Strip',          category:'LED',      photo:'', price:'$12',  stockStatus:'Low Stock', description:'5M RGB LED light strip' },
+    { code:'q9',   name:'Q9 Karaoke Speaker',     category:'Karaoke',  photo:'', price:'$45',  stockStatus:'In Stock',  description:'Q9 Bluetooth Karaoke Speaker' },
+    { code:'rgb',  name:'RGB LED Strip',          category:'LED',      photo:'', price:'$12',  stockStatus:'Low Stock', description:'5M RGB LED light strip' },
+    { code:'q9',   name:'Q9 Karaoke Speaker',     category:'Karaoke',  photo:'', price:'$45',  stockStatus:'In Stock',  description:'Q9 Bluetooth Karaoke Speaker' },
     { code:'rgb',  name:'RGB LED Strip',          category:'LED',      photo:'', price:'$12',  stockStatus:'Low Stock', description:'5M RGB LED light strip' },
     { code:'q9',   name:'Q9 Karaoke Speaker',     category:'Karaoke',  photo:'', price:'$45',  stockStatus:'In Stock',  description:'Q9 Bluetooth Karaoke Speaker' },
   ];
