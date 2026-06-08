@@ -373,35 +373,28 @@ body{
   </div>
   <div id="invoice-content" style="padding:10px;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
 </div>
+<script>
+    // 1. Define 'tg' first, at the top
+    const tg = window.Telegram?.WebApp;
+
+    // 2. Now use 'tg' for your settings
+    if (tg && tg.isVersionAtLeast('6.1')) {
+        try { 
+            tg.expand(); 
+            tg.setHeaderColor('#0f0f0f'); 
+            tg.setBackgroundColor('#0f0f0f'); 
+        } catch(_) {}
+    }
+
+    // 3. Now use 'tg' for your data
+    const user = tg?.initDataUnsafe?.user || {};
+    const tgId = String(user.id || "");
+    const tgName = [user.first_name, user.last_name].filter(Boolean).join(" ");
+
+    // ... rest of your code ...
+</script>
 
 <script>
-if (window.Telegram.WebApp.isVersionAtLeast('6.1')) {
-    window.Telegram.WebApp.setHeaderColor('#0f0f0f');
- 
-}
-// 1. Define the interface and safe access
-const tg = window.Telegram?.WebApp;
-
-// 2. Perform initialization and UI settings
-if (tg) {
-    try {
-        tg.expand();
-        // Check version support before calling UI methods to avoid console warnings
-        if (tg.isVersionAtLeast('6.1')) {
-            tg.setHeaderColor('#0f0f0f');
-            tg.setBackgroundColor('#0f0f0f');
-        }
-    } catch (e) {
-        console.warn("Telegram UI settings failed:", e);
-    }
-}
-
-// 3. Safely extract user data
-const user = tg?.initDataUnsafe?.user || {};
-const tgId = String(user.id || "");
-const tgName = [user.first_name, user.last_name].filter(Boolean).join(" ");
-
-console.log(`User initialized: ${tgName} (${tgId})`);
 let shipperData  = null;
 let allOrders    = [];
 let orders       = [];
