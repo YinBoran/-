@@ -11,10 +11,6 @@
 <title>YB Shipper</title>
 <style>
 :root {
-  .noselect {
-  -webkit-user-select: none; /* Safari */
-  user-select: none;         /* Standard syntax */
-}
   --bg:#0f0f0f; --surface:#1a1a1a; --card:#222; --border:#333;
   --accent:#f0a500; --accent2:#e05c00;
   --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
@@ -27,6 +23,12 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%;-webkit-text-size-adjust:100%}
 body{
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Safari */
+  -khtml-user-select: none;    /* Konqueror HTML */
+  -moz-user-select: none;      /* Old versions of Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, supported by modern Chrome, Edge, Opera, and Firefox */
   background:var(--bg);color:var(--text);font-family:var(--font);
   min-height:100vh;min-height:-webkit-fill-available;
   padding-bottom:calc(80px + var(--sab));
