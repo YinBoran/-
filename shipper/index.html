@@ -869,7 +869,8 @@ async function openDetail(profileId){
   loadHistory(o.phone||'',o.profileId);
 }
 
-  function customerPhone {// Check if the environment is Telegram
+  function customerPhone() {
+    // Check if the environment is Telegram
   if (window.Telegram && window.Telegram.WebApp) {
       let cleanPhone = phoneClean.replace(/\D/g, ''); // Remove non-numeric characters
       let url = `https://t.me/+${cleanPhone}`;
