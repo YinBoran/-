@@ -829,8 +829,8 @@ async function openDetail(profileId){
       <div class="detail-grid">
         <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||'—')}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val" onclick="callPhone('${phoneClean}')"
-            style="cursor:pointer;color:var(--accent)">${e(o.phone||'—')} 📞</div></div>
+          <div class="val" onclick="window.open('https://t.me{phoneClean}', '_blank');"
+            style="cursor:pointer;color:var(--accent)">📞${e(o.phone||'—')}</div></div>
         <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||'—')}</div></div>
       </div>
     </div>
@@ -1081,7 +1081,7 @@ async function openProfile(){
         <div class="pp-name">${e(p.name||'Shipper')}</div>
         ${p.username?`<div class="pp-username">@${e(p.username)}</div>`:''}
         ${p.bio?`<div class="pp-bio">${e(p.bio)}</div>`:''}
-        ${hasLink?`<button class="pp-link" onclick="openExternalLink('${e(p.link)}')">🔗 ${e(p.link.replace(/^https?:\/\//,'').substring(0,32))}</button>`:''}
+        ${hasLink?`<button class="pp-link" onclick="opeInternalLink('${e(p.link)}')">🔗 ${e(p.link.replace(/^https?:\/\//,'').substring(0,32))}</button>`:''}
       </div>
       <div class="pp-stats">
         <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.achievements)||0}</div><div class="pp-stat-lbl">✅ ដឹកបាន</div></div>
