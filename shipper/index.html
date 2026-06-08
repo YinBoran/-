@@ -390,8 +390,7 @@ body{
     </div>
     <div class="bs-body" id="label-body" style="padding:16px;background:#fff;color:#000;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
     <div class="bs-foot">
-      <button onclick="printCurrentLabel()" style="flex:1;padding:12px;background:#3b82f6;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">🖨️ Print Label</button>
-      <button onclick="closeLabelPopup()" style="padding:12px 16px;background:var(--border);color:var(--text);border:none;border-radius:10px;font-size:14px;cursor:pointer">បិទ</button>
+      <button onclick="printCurrentLabel()" style="flex:1;padding:12px;background:#3b82f6;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:200;cursor:pointer">🖨️ Print</button>
     </div>
   </div>
 </div>
@@ -418,7 +417,7 @@ body{
   <div class="stock-popup" id="stock-sheet">
     <div class="bs-handle" id="stock-handle"></div>
     <div class="bs-head">
-      <span style="font-size:15px;font-weight:700">📦 ស្ការ — Stock Manager</span>
+      <span style="font-size:15px;font-weight:700">📦 ចំនួនអីវ៉ាន់</span>
       <button class="bs-close-btn" onclick="closeStockPopup()">✕</button>
     </div>
     <div style="overflow-y:auto;flex:1;padding:12px" id="stock-popup-body">
@@ -681,7 +680,7 @@ function doLogout(){
 
 async function loadOrders(){
   document.getElementById('app-content').innerHTML=
-    '<div class="loading"><div class="spinner"></div>កំពុងផ្ទើកទិន្ន័យ...</div>';
+    '<div class="loading"><div class="spinner">
   try{
     const r=await gs('handleShipperOrders',shipperData?.phone||'');
     if(!Array.isArray(r)){if(r&&r.error)throw new Error(r.error);throw new Error('Invalid response');}
@@ -710,7 +709,7 @@ function startPoll(){
       const newP=fresh.filter(o=>!isCompleted(o)).length;
       if(lastCount>=0&&newP>lastCount){
         showAlert(`មានការដឹកថ្មី +${newP-lastCount}`);
-        pushNotif('🚚 YB Shipper',`មានការដឹកថ្មី +${newP-lastCount}`);
+        pushNotif('🚚 អតិថិជនកម្ម៉ង់ +${newP-lastCount}`);
         try{tg.HapticFeedback.notificationOccurred('warning');}catch(_){}
       }
       lastCount=newP;allOrders=fresh;applyFilter();
@@ -757,7 +756,7 @@ function getLoyaltyCount(phone){
   return allOrders.filter(o=>(o.phone||'').replace(/\D/g,'').endsWith(clean)).length;
 }
 function getLoyaltyBadge(count){
-  if(count>=3)return`<span class="loyal-badge">⭐ ទិញ ${count} ដង</span>`;
+  if(count>=2)return`<span class="loyal-badge">⭐ ទិញ ${count} ដង</span>`;
   return'';
 }
 
