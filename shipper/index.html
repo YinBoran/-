@@ -956,7 +956,7 @@ function startPoll() {
       const newP = fresh.filter(o => !isCompleted(o)).length;
       if (lastCount >= 0 && newP > lastCount) {
         const diff = newP - lastCount;
-        showAlert(`មានការដឹកថ្មី +${diff}`);
+        showAlert(`មានកម្ម៉ង់អីវ៉ាន់ +${diff}`);
         pushNotifHistory(`+${diff} ការដឹកថ្មី — ${nowPP()}`);
         pushNotif('🚚 YB Shipper', `ការដឹកថ្មី +${diff}`);
         try { tg.HapticFeedback.notificationOccurred('warning'); } catch(_) {}
@@ -964,7 +964,7 @@ function startPoll() {
       lastCount = newP; allOrders = fresh; applyFilter();
       updateHdrSub();
     } catch(_) {}
-  }, 60000);
+  }, 20000);
 }
 function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
 
