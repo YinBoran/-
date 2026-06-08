@@ -4,52 +4,42 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="../config.js?v=2"></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
 <title>YB Shipper</title>
 <style>
 :root {
-  --safe-top: env(safe-area-inset-top);
-  --hdr-h: 64px;
+  --bg:#0f0f0f; --surface:#1a1a1a; --card:#222; --border:#333;
+  --accent:#f0a500; --accent2:#e05c00;
+  --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
+  --text:#f0f0f0; --muted:#888;
+  --font:'Segoe UI',system-ui,sans-serif;
+  --hdr-h:64px;
 }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
+/* FIX 1: body padding-top ត្រឹមត្រូវ */
 body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:var(--font);
-  min-height:100vh;
-  padding-bottom:80px;
+  background:var(--bg);color:var(--text);font-family:var(--font);
+  min-height:100vh;padding-bottom:80px;
   padding-top:calc(var(--hdr-h) + env(safe-area-inset-top));
 }
-.hdr{
-  background:#0f0f0f;
-  border-bottom:1px solid var(--border);
-  padding:12px 16px;
-  display:flex;align-items:center;gap:10px;
-  position:fixed;
-  top:0;left:0;right:0;
-  z-index:50;
-  height:var(--hdr-h);
-  transform:translateY(env(safe-area-inset-top));
-  transition:transform .28s ease;
-  will-change:transform;
-}
 
-.hdr-spacer {
-  display:none;
-}
-/* HEADER — fixed + auto-hide */
-.hdr{background:#0f0f0f;border-bottom:1px solid var(--border);
-  padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));
+/* FIX 1: header ជាន់ status bar ផុត */
+.hdr{
+  background:#0f0f0f;border-bottom:1px solid var(--border);
+  padding:12px 16px;
   display:flex;align-items:center;gap:10px;
   position:fixed;top:0;left:0;right:0;z-index:50;
   height:calc(var(--hdr-h) + env(safe-area-inset-top));
-  transition:transform .28s ease;will-change:transform}
+  padding-top:calc(12px + env(safe-area-inset-top));
+  transition:transform .28s ease;will-change:transform;
+}
 .hdr.hdr-hidden{transform:translateY(-100%)}
-.hdr-spacer{height:var(--hdr-h);transition:height .28s ease;flex-shrink:0}
-.hdr-spacer.hdr-hidden{height:0}
+.hdr-spacer{display:none}
+
 .hdr-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:10px;display:flex;align-items:center;justify-content:center;
   font-size:19px;font-weight:700;color:#000;flex-shrink:0;cursor:pointer;
@@ -62,14 +52,12 @@ body{
 .hdr-badge{background:var(--accent);color:#000;font-size:12px;font-weight:700;
   padding:4px 10px;border-radius:20px;min-width:28px;text-align:center}
 
-/* HEADER SEARCH */
 .hdr-search{flex:1;background:var(--card);border:1px solid var(--border);
   border-radius:9px;padding:8px 12px;color:var(--text);font-size:13px;
   min-width:0;outline:none;transition:border-color .2s}
 .hdr-search:focus{border-color:var(--accent)}
 .hdr-search::placeholder{color:var(--muted);font-size:12px}
 
-/* NEW ORDER ALERT */
 .new-order-alert{background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;padding:10px 16px;font-size:14px;font-weight:700;
   display:flex;align-items:center;gap:8px;cursor:pointer;
@@ -77,14 +65,12 @@ body{
 @keyframes pulse-bg{0%,100%{opacity:1}50%{opacity:.85}}
 .new-order-alert.hidden{display:none}
 
-/* STATS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
   background:var(--border);border-bottom:1px solid var(--border)}
 .stat{background:var(--surface);padding:11px;text-align:center}
 .stat-num{font-size:22px;font-weight:700;color:var(--accent)}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
 
-/* FILTER BAR */
 .fbar{background:var(--surface);border-bottom:1px solid var(--border);
   padding:8px 12px;display:flex;align-items:center;gap:8px}
 .fbar-label{font-size:13px;color:var(--muted)}
@@ -97,13 +83,11 @@ body{
 .toggle-track.on .toggle-thumb{left:18px}
 .toggle-text{font-size:13px;font-weight:600;color:var(--text)}
 
-/* TABS */
 .tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
 .tab{flex:1;padding:12px 8px;font-size:13px;font-weight:600;color:var(--muted);
   text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
-/* ORDERS */
 .orders{padding:10px;display:flex;flex-direction:column;gap:8px}
 .order-card{background:var(--card);border:1px solid var(--border);
   border-radius:12px;overflow:hidden;cursor:pointer;
@@ -140,20 +124,19 @@ body{
   font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px;
   text-decoration:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;border:none}
 
-/* EMPTY / LOADING */
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .empty-icon{font-size:44px;margin-bottom:12px}
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:fixed;inset:0;top:var(--hdr-h);gap:14px;color:var(--muted);font-size:14px;
+  position:fixed;inset:0;top:calc(var(--hdr-h) + env(safe-area-inset-top));
+  gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
 .loading-sm{position:relative;inset:auto;min-height:120px;background:transparent;z-index:auto}
 .spinner{width:36px;height:36px;border:3px solid var(--border);
   border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;
   transform:translateX(-50%) translateY(100px);
   background:var(--green);color:#000;font-size:14px;font-weight:600;
@@ -162,7 +145,6 @@ body{
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.error{background:var(--red);color:#fff}
 
-/* HOLD PROGRESS RING */
 .hold-ring{position:fixed;inset:0;pointer-events:none;z-index:800;
   display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .1s}
 .hold-ring.on{opacity:1}
@@ -172,7 +154,6 @@ body{
   font-size:22px;animation:hold-pulse .6s ease infinite alternate}
 @keyframes hold-pulse{from{transform:scale(1)}to{transform:scale(1.15)}}
 
-/* ── POPUP ────────────────────────────────────────────── */
 .popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;
   display:flex;align-items:flex-end;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .25s}
@@ -196,7 +177,6 @@ body{
   overscroll-behavior:contain}
 .popup-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
 
-/* DETAIL */
 .detail-section{margin-bottom:16px}
 .detail-label{font-size:11px;font-weight:700;color:var(--muted);
   text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
@@ -212,7 +192,6 @@ body{
 .history-item.cancelled{border-left-color:var(--red)}
 .history-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 
-/* CONFIRM */
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;
   display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .2s;padding:20px}
@@ -251,7 +230,6 @@ body{
   background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px}
 .input-hint{font-size:12px;color:var(--muted);margin-bottom:10px;text-align:left;padding-left:4px}
 
-/* PROFILE CARD (mini) */
 .profile{margin:10px;background:var(--card);border:1px solid var(--border);
   border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer}
 .profile:hover{border-color:var(--accent)66}
@@ -264,7 +242,6 @@ body{
 .profile-role{margin-left:auto;font-size:11px;font-weight:700;padding:3px 8px;
   border-radius:6px;background:var(--accent)22;color:var(--accent);border:1px solid var(--accent)44}
 
-/* PROFILE PAGE */
 .profile-page{position:fixed;inset:0;background:var(--bg);z-index:150;
   transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
   overflow-y:auto;padding-bottom:80px}
@@ -308,7 +285,6 @@ body{
 .pp-logout:hover{background:var(--red)44}
 .pp-divider{height:1px;background:var(--border);margin:0 16px 16px}
 
-/* INVOICE OVERLAY (in-page) */
 .invoice-overlay{position:fixed;inset:0;background:#fff;color:#000;z-index:600;
   overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
 .invoice-overlay.on{display:block}
@@ -352,7 +328,6 @@ body{
 <div class="toast" id="toast"></div>
 <div class="hold-ring" id="hold-ring"><div class="hold-ring-inner">🧾</div></div>
 
-<!-- Detail Popup -->
 <div class="popup-overlay" id="detail-overlay" onclick="closeDetailIfBg(event)">
   <div class="popup" id="detail-popup">
     <div class="popup-handle" id="popup-handle"></div>
@@ -365,7 +340,6 @@ body{
   </div>
 </div>
 
-<!-- Confirm Dialog -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-icon">🚚</div>
@@ -378,7 +352,6 @@ body{
   </div>
 </div>
 
-<!-- Profile Page -->
 <div class="profile-page" id="profile-page">
   <div class="pp-back">
     <button class="pp-back-btn" onclick="closeProfile()">←</button>
@@ -389,7 +362,6 @@ body{
   </div>
 </div>
 
-<!-- Invoice Overlay (in-page, works in TG WebApp) -->
 <div class="invoice-overlay" id="invoice-overlay">
   <div class="inv-toolbar">
     <button onclick="closeInvoiceOverlay()"
@@ -419,7 +391,6 @@ let lastCount    = -1;
 let pollTimer    = null;
 let visibleCount = 9;
 const CHUNK      = 9;
-
 let _searchAll   = '';
 let _searchTimer = null;
 let _currentInvId = null;
@@ -429,14 +400,11 @@ let _lastScrollY = 0;
 window.addEventListener('scroll', () => {
   const y   = window.scrollY;
   const hdr = document.getElementById('main-hdr');
-  const sp  = document.getElementById('hdr-spacer');
   if (!hdr) return;
   if (y > _lastScrollY + 6 && y > 60) {
     hdr.classList.add('hdr-hidden');
-    if (sp) sp.classList.add('hdr-hidden');
   } else if (y < _lastScrollY - 6) {
     hdr.classList.remove('hdr-hidden');
-    if (sp) sp.classList.remove('hdr-hidden');
   }
   _lastScrollY = y;
 }, { passive: true });
@@ -464,7 +432,6 @@ function e(v){
                        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-// ── CALL PHONE (TG WebApp safe) ───────────────────────────
 function callPhone(phone){
   const clean=String(phone||'').replace(/\D/g,'');
   if(!clean)return;
@@ -472,7 +439,6 @@ function callPhone(phone){
   catch(_){ window.location.href='tel:'+clean; }
 }
 
-// ── API ───────────────────────────────────────────────────
 function gs(fn,arg){
   const data=arg!==undefined?encodeURIComponent(JSON.stringify(arg)):'';
   return fetch(`${API}?action=gs&fn=${fn}${data?'&data='+data:''}`)
@@ -506,25 +472,12 @@ if(tgId){
     .catch(()=>{saved?bootWithData(saved):showPhoneLogin();});
 }else{saved?bootWithData(saved):showPhoneLogin();}
 
-function bootWithData(data){
-  shipperData={phone:sanitizeStr(data.phone),name:sanitizeStr(data.name||'Shipper'),role:sanitizeStr(data.role||'shipper')};
-  const role=(shipperData.role||'').toLowerCase();
-  if(role&&role!=='shipper'&&role!=='admin'){clearSession();showPhoneLogin();return;}
-  document.getElementById('hdr-actions').style.display='flex';
-  loadOrders();
-}
-
-// ── NOTIFICATION ──────────────────────────────────────────
-function pushNotif(title,body){
-  if(!('Notification' in window))return;
-  try{if(Notification.permission==='granted')new Notification(title,{body});}catch(_){}
-}
-
-// ── LOGIN ─────────────────────────────────────────────────
-let _pwVisible=false;
+// FIX 2: showPhoneLogin — hide header, no scroll
 function showPhoneLogin(){
+  document.getElementById('main-hdr').style.display='none';
+  document.body.style.overflow='hidden';
   document.getElementById('app-content').innerHTML=`
-    <div style="height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;padding-top:env(safe-area-inset-top)">
+    <div style="height:100dvh;background:#0f0f0f;display:flex;align-items:center;justify-content:center;padding:20px;padding-top:env(safe-area-inset-top)">
       <div class="login-box">
         <h3>🚚 YB Shipper Login</h3>
         <p>Phone + Password</p>
@@ -546,11 +499,14 @@ function showPhoneLogin(){
     </div>`;
   setTimeout(()=>document.getElementById('phone-inp')?.focus(),200);
 }
+
 function togglePw(){
   _pwVisible=!_pwVisible;
   const i=document.getElementById('pw-inp');if(i)i.type=_pwVisible?'text':'password';
   const ey=document.getElementById('pw-eye');if(ey)ey.textContent=_pwVisible?'🙈':'👁';
 }
+let _pwVisible=false;
+
 async function loginByPhone(){
   const rawP=document.getElementById('phone-inp')?.value.trim()||'';
   const rawW=document.getElementById('pw-inp')?.value||'';
@@ -568,6 +524,23 @@ async function loginByPhone(){
     saveSession(r);bootWithData(r);
   }catch(err){showToast('❌ '+sanitizeStr(err.message),true);if(btn){btn.disabled=false;btn.textContent='Login →';}}
 }
+
+// FIX 2: bootWithData — show header back
+function bootWithData(data){
+  shipperData={phone:sanitizeStr(data.phone),name:sanitizeStr(data.name||'Shipper'),role:sanitizeStr(data.role||'shipper')};
+  const role=(shipperData.role||'').toLowerCase();
+  if(role&&role!=='shipper'&&role!=='admin'){clearSession();showPhoneLogin();return;}
+  document.getElementById('main-hdr').style.display='flex';
+  document.body.style.overflow='';
+  document.getElementById('hdr-actions').style.display='flex';
+  loadOrders();
+}
+
+function pushNotif(title,body){
+  if(!('Notification' in window))return;
+  try{if(Notification.permission==='granted')new Notification(title,{body});}catch(_){}
+}
+
 function doLogout(){
   stopPoll();clearSession();
   shipperData=null;allOrders=[];orders=[];lastCount=-1;_pwVisible=false;
@@ -576,7 +549,6 @@ function doLogout(){
   closeProfile();showPhoneLogin();
 }
 
-// ── LOAD ──────────────────────────────────────────────────
 async function loadOrders(){
   document.getElementById('app-content').innerHTML=
     '<div class="loading"><div class="spinner"></div>កំពុងផ្ទើកទិន្ន័យ...</div>';
@@ -599,7 +571,6 @@ async function refreshOrders(silent=false){
   }catch(_){if(!silent)showToast('❌ Refresh failed',true);}
 }
 
-// ── POLL ──────────────────────────────────────────────────
 function startPoll(){
   stopPoll();
   pollTimer=setInterval(async()=>{
@@ -619,7 +590,6 @@ function startPoll(){
 }
 function stopPoll(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
 
-// ── SEARCH ────────────────────────────────────────────────
 function debounceSearch(v){
   _searchAll=(v||'').toLowerCase().trim();
   clearTimeout(_searchTimer);
@@ -632,7 +602,6 @@ function clearSearch(){
 }
 function hasActiveSearch(){return !!_searchAll;}
 
-// ── FILTER ────────────────────────────────────────────────
 function applyFilter(){
   let res=allOrders;
   if(codOnly)res=res.filter(o=>(o.payment||'').toLowerCase().includes('cod'));
@@ -656,17 +625,13 @@ function toggleCOD(){
   applyFilter();
 }
 
-// ── RENDER ────────────────────────────────────────────────
 function renderAll(){
   const pending   = orders.filter(o=>!isCompleted(o));
   const completed = orders.filter(o=>isCompleted(o));
   lastCount=allOrders.filter(o=>!isCompleted(o)).length;
   document.getElementById('pending-count').textContent=pending.length;
-
   const searching=hasActiveSearch();
-  // FIX 4: when searching, show ALL orders (both tabs merged), hide tabs
   const listToRender = searching ? orders : (activeTab==='pending' ? pending : completed);
-
   document.getElementById('app-content').innerHTML=`
     ${searching?'':renderProfileCard()}
     ${searching?'':`<div class="stats">
@@ -712,10 +677,8 @@ function renderList(list){
       <h3>${hasActiveSearch()?'គ្មានលទ្ធផល':activeTab==='pending'?'គ្មានការដឹករង់ចាំ':'អបអរ! ដឹកគ្រប់ហើយ'}</h3>
       <p>${hasActiveSearch()?'ព្យាយាម keyword ផ្សេង':activeTab==='pending'?'ការដឹកថ្មីនឹងលេចនៅទីនេះ':'ប្រវត្តិការដឹកនឹងបង្ហាញនៅទីនេះ'}</p>
     </div>`;
-
   const visible=list.slice(0,visibleCount);
   const hasMore=list.length>visibleCount;
-
   const cards=visible.map(o=>{
     const isCod=(o.payment||'').toLowerCase().includes('cod');
     const done=isCompleted(o);
@@ -754,7 +717,6 @@ function renderList(list){
       </div>
     </div>`;
   }).join('');
-
   const sentinel=hasMore
     ?`<div id="scroll-sentinel" style="height:50px;display:flex;align-items:center;
         justify-content:center"><div class="spinner" style="width:22px;height:22px;border-width:2px"></div></div>`
@@ -780,9 +742,7 @@ function setupScrollObserver(list){
 function setTab(t){activeTab=t;visibleCount=CHUNK;renderAll();}
 function isCompleted(o){return o.status==='Completed'||!!o.receiveDate;}
 
-// ── LONG PRESS 3s → Invoice ───────────────────────────────
 let _holdTimer=null,_holdEl=null,_holdFired=false;
-
 function startHold(el,pid){
   cancelHold();
   _holdEl=el;_holdFired=false;
@@ -818,7 +778,6 @@ function cardClick(ev,sid){
   openDetail(sid);
 }
 
-// ── POPUP SWIPE GESTURE ───────────────────────────────────
 (function(){
   let sy=0,dy=0,drag=false;
   function isSwipeTarget(el){
@@ -848,12 +807,10 @@ function cardClick(ev,sid){
   });
 })();
 
-// ── DETAIL POPUP ──────────────────────────────────────────
 async function openDetail(profileId){
   if(!profileId)return;
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o)return;
-  // FIX 1: prevent background scroll
   document.body.style.overflow='hidden';
   document.body.style.touchAction='none';
   document.getElementById('detail-title').textContent=o.name||'Order Detail';
@@ -862,18 +819,15 @@ async function openDetail(profileId){
   document.getElementById('detail-foot').innerHTML='';
   document.getElementById('detail-overlay').classList.add('on');
   const p=document.getElementById('detail-popup');if(p)p.style.transform='';
-
   const isCod=(o.payment||'').toLowerCase().includes('cod');
   const done=isCompleted(o);
   const sid=e(o.profileId);
   const phoneClean=e((o.phone||'').replace(/\D/g,''));
-
   document.getElementById('detail-body').innerHTML=`
     <div class="detail-section">
       <div class="detail-label">អ្នកទទួល</div>
       <div class="detail-grid">
-        <div class="detail-item"><div class="key">ឈ្មោះ</div>
-          <div class="val">${e(o.name||'—')}</div></div>
+        <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||'—')}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
           <div class="val" onclick="callPhone('${phoneClean}')"
             style="cursor:pointer;color:var(--accent)">${e(o.phone||'—')} 📞</div></div>
@@ -902,7 +856,6 @@ async function openDetail(profileId){
       <div id="history-list"><div class="loading loading-sm">
         <div class="spinner" style="width:24px;height:24px"></div></div></div>
     </div>`;
-
   document.getElementById('detail-foot').innerHTML=`
     <button class="btn-call" onclick="callPhone('${phoneClean}')"
       style="padding:11px 18px;font-size:14px;border:1px solid #3b82f644;border-radius:10px;cursor:pointer">📞 Call</button>
@@ -913,7 +866,6 @@ async function openDetail(profileId){
           🚚 ដឹកដល់</button>`
       :`<div style="flex:1;text-align:center;color:var(--green);font-weight:700;padding:11px;font-size:14px">
           ✅ ដឹកដល់ ${e(o.receiveDate||'')}</div>`}`;
-
   loadHistory(o.phone||'',o.profileId);
 }
 
@@ -955,7 +907,6 @@ function closeDetail(){
 }
 function closeDetailIfBg(ev){if(ev.target===document.getElementById('detail-overlay'))closeDetail();}
 
-// ── CONFIRM ───────────────────────────────────────────────
 let _pid=null;
 function askDeliver(profileId,name){
   if(!profileId)return;
@@ -979,17 +930,14 @@ async function confirmDeliver(){
   }catch(err){showToast('❌ '+sanitizeStr(err.message),true);}
 }
 
-// ── INVOICE (in-page overlay) ─────────────────────────────
 function openInvoice(profileId){
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o){showToast('❌ Order not found',true);return;}
   _currentInvId=profileId;
-
   const items=(o.ordered||'').split(/[,،]/).map(s=>s.trim()).filter(Boolean);
   const dp=(o.orderDate||'').split('/');
   const day=dp[0]||'....';const mon=dp[1]||'....';
   const yr=(dp[2]||'').split(' ')[0]||'........';
-
   let rows='';
   for(let i=0;i<12;i++){
     const item=items[i]||'';
@@ -999,7 +947,6 @@ function openInvoice(profileId){
       <td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td>
       <td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td></tr>`;
   }
-
   document.getElementById('invoice-content').innerHTML=`
 <div style="max-width:550px;margin:0 auto;font-size:10.5pt">
   <div style="text-align:center;padding-bottom:6px;border-bottom:1.5pt solid #000;margin-bottom:6px">
@@ -1048,7 +995,6 @@ function openInvoice(profileId){
     </div>
   </div>
 </div>`;
-
   document.getElementById('invoice-overlay').classList.add('on');
   document.body.style.overflow='hidden';
 }
@@ -1057,7 +1003,6 @@ function closeInvoiceOverlay(){
   document.body.style.overflow='';
 }
 
-// ── PRINT LABEL ───────────────────────────────────────────
 function printLabel(profileId){
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o){showToast('❌ Order not found',true);return;}
@@ -1103,7 +1048,6 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
     const w=window.open('','_blank');
     if(w){w.document.write(html);w.document.close();return;}
   }catch(_){}
-  // Fallback: blob URL via tg.openLink
   try{
     const blob=new Blob([html],{type:'text/html'});
     const url=URL.createObjectURL(blob);
@@ -1111,7 +1055,6 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
   }catch(_){showToast('❌ Please allow popups',true);}
 }
 
-// ── PROFILE PAGE ──────────────────────────────────────────
 async function openProfile(){
   document.getElementById('profile-page').classList.add('on');
   document.body.style.overflow='hidden';
@@ -1194,7 +1137,6 @@ function openExternalLink(url){
   try{tg.openLink(url);}catch(_){try{window.open(url,'_blank','noopener');}catch(_){}}
 }
 
-// ── ALERT ─────────────────────────────────────────────────
 function showAlert(msg){
   document.getElementById('new-alert-txt').textContent=sanitizeStr(msg);
   document.getElementById('new-alert').classList.remove('hidden');
@@ -1212,7 +1154,6 @@ function dismissAlert(){
   activeTab='pending';visibleCount=CHUNK;renderAll();
 }
 
-// ── ERROR / TOAST ─────────────────────────────────────────
 function showError(msg){
   document.getElementById('app-content').innerHTML=`
     <div class="empty">
