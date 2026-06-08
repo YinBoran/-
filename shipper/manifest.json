@@ -1,15 +1,22 @@
 {
-  "name": "YB Shipper",
-  "short_name": "YB Shipper",
+  "name": "Yin Boran",
+  "short_name": "App",
+  "start_url": "/index.html",
   "display": "standalone",
-  "start_url": "/shipper/",
-  "background_color": "#0f0f0f",
-  "theme_color": "#0f0f0f",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "icon.png",
-      "sizes": "",
-      "type": "image/png"
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
