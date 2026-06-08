@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
 <title>YB Shipper</title>
 <style>
 :root {
@@ -476,7 +477,7 @@ function showPhoneLogin(){
   document.getElementById('main-hdr').style.display='none';
   document.body.style.overflow='hidden';
   document.getElementById('app-content').innerHTML=`
-    <div style="height:100dvh;background:#0f0f0f;display:flex;align-items:center;justify-content:center;padding:20px;padding-top:env(safe-area-inset-top)">
+    <div style="height:80dvh;background:#0f0f0f;display:flex;align-items:center;justify-content:center;padding:20px;padding-top:env(safe-area-inset-top)">
       <div class="login-box">
         <h3>🚚 YB Shipper Login</h3>
         <p>Phone + Password</p>
