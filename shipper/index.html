@@ -872,25 +872,15 @@ async function openDetail(profileId){
     // Check if the environment is Telegram
     if (window.Telegram && window.Telegram.WebApp) {
         let cleanPhone = phoneClean.replace(/\D/g, ''); // Remove non-numeric characters
-        let url = `https://t.me/+${cleanPhone}`;
+        let url = `t.me/+${cleanPhone}`;
         
         // This is the preferred way to handle Telegram-related links
         window.Telegram.WebApp.openTelegramLink(url);
     } else {
         // Fallback for regular web browsers
-        window.open(`https://t.me/+${phoneClean}`, '_blank');
+        window.open(`t.me/+${phoneClean}`, '_blank');
     }
 }
-  document.querySelector('.val').addEventListener('click', function() {
-    // Check if phoneClean exists and is not an empty string
-    if (typeof phoneClean !== 'undefined' && phoneClean && phoneClean.trim() !== '') {
-        window.open(`https://t.me/${phoneClean}`, '_blank', 'noopener,noreferrer');
-    } else {
-        console.log("No phone number provided, staying on current page.");
-        // Optional: Add a user notification here
-        // alert("No phone number available.");
-    }
-});
 async function loadHistory(phone,currentId){
   try{
     const cleanPhone=phone.replace(/\D/g,'').slice(-8);
