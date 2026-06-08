@@ -375,7 +375,10 @@ body{
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
+if (window.Telegram.WebApp.isVersionAtLeast('6.1')) {
+    window.Telegram.WebApp.setHeaderColor('#0f0f0f');
+  const tg = window.Telegram.WebApp;
+}
 try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
 
 const user   = tg.initDataUnsafe?.user || {};
@@ -858,7 +861,7 @@ async function openDetail(profileId){
     </div>`;
   document.getElementById('detail-foot').innerHTML=`
     <button class="btn-call" onclick="callPhone('${phoneClean}')"
-      style="padding:11px 18px;font-size:14px;border:1px solid #3b82f644;border-radius:10px;cursor:pointer">📞 Call</button>
+      style="padding:11px 18px 5px;font-size:14px;border:1px solid #3b82f644;border-radius:10px;cursor:pointer">📞 Call</button>
     ${!done
       ?`<button onclick="closeDetail();askDeliver('${sid}','${e(o.name||'')}');"
           style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
