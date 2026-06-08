@@ -32,7 +32,7 @@ body{
 
 /* ── Header with iOS safe area ── */
 .hdr{
-  background:#0f0f0f;border-bottom:1px solid var(--border);
+  background:#0f0f0f;border-bottom:0px solid var(--border);
   padding:10px 16px;display:flex;align-items:center;gap:10px;
   position:fixed;top:0;left:0;right:0;z-index:50;
   height:calc(var(--hdr-h) + var(--sat));
@@ -928,10 +928,10 @@ async function refreshOrders(silent = false) {
     allOrders = fresh; applyFilter();
     const after = allOrders.filter(o => !isCompleted(o)).length;
     if (after > before) pushNotifHistory(`+ ការដឹកថ្មី ${after - before}`);
-    if (!silent) showToast('🔄 Updated!');
+    if (!silent) showToast();
     // FIX 9: Update subtitle
     updateHdrSub();
-  } catch(_) { if (!silent) showToast('❌ Refresh failed', true); }
+  } catch(_) { if (!silent) showToast('❌ failed', true); }
 }
 
 // FIX 9: Show last refresh time in header subtitle
@@ -1109,16 +1109,16 @@ function renderList(list) {
     const phoneClean = e((o.phone || '').replace(/\D/g,''));
     const loyalBadge = getLoyaltyBadge(getLoyaltyCount(o.phone || ''));
     return `
-    <div class="order-card ${isCod ? 'cod-highlight' : ''}"
+    <div value="" disabled selected class="order-card ${isCod ? 'cod-highlight' : ''}"
       data-pid="${sid}"
       onclick="cardClick(event,'${sid}')"
       ontouchstart="startHold(this,'${sid}')" ontouchend="endHold(event)" ontouchcancel="cancelHold()"
-      onmousedown="startHold(this,'${sid}')" onmouseup="endHold(event)" onmouseleave="cancelHold()">
+      // onmousedown="startHold(this,'${sid}')" onmouseup="endHold(event)" onmouseleave="cancelHold()">
       <div class="card-top">
         <div class="card-icon" onclick="event.stopPropagation();openLabelPopup('${sid}')">📦</div>
         <div class="card-body">
-          <span class="card-name" onclick="event.stopPropagation();openInvoiceFromName('${sid}')">${e(o.name || 'FB User')}</span>
-          <div class="card-phone" onclick="event.stopPropagation();customerPhone('${phoneClean}','${sid}')">
+          <span class="card-name">${e(o.name || 'FB User')}</span>
+          <div class="card-phone" ${phoneClean}','${sid}>
             📞 ${e(o.phone || '—')}
           </div>
           <div class="card-loc">📍 ${e(o.location || '—')}</div>
@@ -1134,7 +1134,7 @@ function renderList(list) {
           <div class="card-date">${e(o.orderDate || '')}</div>
         </div>
         ${done
-          ? `<div class="btn-done">✅ ${e(o.receiveDate || 'ដឹកដល់')}</div>`
+          ? `<div class="btn-done">✅ ${e(o.orderDate || 'ដឹកដល់')}</div>`
           : `<button class="btn-deliver" onclick="event.stopPropagation();askDeliver('${sid}','${e(o.name||'')}')">🚚 ដឹកដល់</button>`}
       </div>
     </div>`;
@@ -1184,8 +1184,8 @@ function startHold(el, pid) {
   let count  = 0;
   _holdTimer = setInterval(() => {
     count += 100;
-    if (count >= 300) el.classList.add('holding');
-    if (count >= 3000) {
+    if (count >= 200) el.classList.add('holding');
+    if (count >= 2000) {
       clearInterval(_holdTimer); _holdTimer = null; _holdFired = true;
       el.classList.remove('holding');
       if (ring) ring.classList.add('on');
