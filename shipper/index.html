@@ -680,7 +680,7 @@ function doLogout(){
 
 async function loadOrders(){
   document.getElementById('app-content').innerHTML=
-    '<div class="loading"><div class="spinner">
+    '<div class="loading"><div class="spinner"></div>'
   try{
     const r=await gs('handleShipperOrders',shipperData?.phone||'');
     if(!Array.isArray(r)){if(r&&r.error)throw new Error(r.error);throw new Error('Invalid response');}
