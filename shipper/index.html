@@ -829,7 +829,7 @@ async function openDetail(profileId){
       <div class="detail-grid">
         <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||'—')}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val" onclick="if(typeof phoneClean !== 'undefined' && phoneClean) { window.open('https://t.me/' + phoneClean, '_blank'); }"
+          <div class="val" onclick="customerPhone}"
             style="cursor:pointer;color:var(--accent)">📞${e(o.phone||'—')}</div></div>
         <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||'—')}</div></div>
       </div>
@@ -868,13 +868,18 @@ async function openDetail(profileId){
           ✅ ដឹកដល់ ${e(o.receiveDate||'')}</div>`}`;
   loadHistory(o.phone||'',o.profileId);
 }
-function phoneCustomer {// Ensure this script runs after the DOM is loaded
-document.querySelectorAll('.val').forEach(element => {
-    element.addEventListener('click', () => {
-        // Now you have full access to variables in this scope
-        window.open(`https://t.me/${phoneClean}`, '_blank');
-    });
-});
+
+  function customerPhone {// Check if the environment is Telegram
+  if (window.Telegram && window.Telegram.WebApp) {
+      let cleanPhone = phoneClean.replace(/\D/g, ''); // Remove non-numeric characters
+      let url = `https://t.me/+${cleanPhone}`;
+      
+      // This is the preferred way to handle Telegram-related links
+      window.Telegram.WebApp.openTelegramLink(url);
+  } else {
+      // Fallback for regular web browsers
+      window.open(`https://t.me/+${phoneClean}`, '_blank');
+  }
 }
   document.querySelector('.val').addEventListener('click', function() {
     // Check if phoneClean exists and is not an empty string
