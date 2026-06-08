@@ -23,12 +23,6 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{height:100%;-webkit-text-size-adjust:100%}
 body{
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none;   /* Safari */
-  -khtml-user-select: none;    /* Konqueror HTML */
-  -moz-user-select: none;      /* Old versions of Firefox */
-  -ms-user-select: none;       /* Internet Explorer/Edge */
-  user-select: none;           /* Non-prefixed version, supported by modern Chrome, Edge, Opera, and Firefox */
   background:var(--bg);color:var(--text);font-family:var(--font);
   min-height:100vh;min-height:-webkit-fill-available;
   padding-bottom:calc(80px + var(--sab));
@@ -38,7 +32,7 @@ body{
 
 /* ── Header with iOS safe area ── */
 .hdr{
-  background:#0f0f0f;border-bottom:0px solid var(--border);
+  background:#0f0f0f;border-bottom:1px solid var(--border);
   padding:10px 16px;display:flex;align-items:center;gap:10px;
   position:fixed;top:0;left:0;right:0;z-index:50;
   height:calc(var(--hdr-h) + var(--sat));
@@ -473,10 +467,10 @@ body{
       placeholder="🔍 ស្វែងរក..."
       oninput="debounceSearch(this.value)"
       onsearch="debounceSearch(this.value)">
-    <div class="hdr-notif" id="hdr-notif-btn">
+    <div class="hdr-notif" id="hdr-notif-btn" onclick="openNotifPanel()">
       🔔<div class="hdr-notif-dot" id="notif-dot"></div>
     </div>
-    <!-- <div class="hdr-badge" id="pending-count">0</div> -->
+    <div class="hdr-badge" id="pending-count">0</div>
   </div>
 </div>
 
@@ -934,10 +928,10 @@ async function refreshOrders(silent = false) {
     allOrders = fresh; applyFilter();
     const after = allOrders.filter(o => !isCompleted(o)).length;
     if (after > before) pushNotifHistory(`+ ការដឹកថ្មី ${after - before}`);
-    if (!silent) showToast();
+    if (!silent) showToast('🔄 Updated!');
     // FIX 9: Update subtitle
     updateHdrSub();
-  } catch(_) { if (!silent) showToast('❌ failed', true); }
+  } catch(_) { if (!silent) showToast('❌ Refresh failed', true); }
 }
 
 // FIX 9: Show last refresh time in header subtitle
@@ -956,7 +950,7 @@ function startPoll() {
       const newP = fresh.filter(o => !isCompleted(o)).length;
       if (lastCount >= 0 && newP > lastCount) {
         const diff = newP - lastCount;
-        showAlert(`មានកម្ម៉ង់អីវ៉ាន់`, `+${diff}`);
+        showAlert(`មានការដឹកថ្មី +${diff}`);
         pushNotifHistory(`+${diff} ការដឹកថ្មី — ${nowPP()}`);
         pushNotif('🚚 YB Shipper', `ការដឹកថ្មី +${diff}`);
         try { tg.HapticFeedback.notificationOccurred('warning'); } catch(_) {}
@@ -964,7 +958,7 @@ function startPoll() {
       lastCount = newP; allOrders = fresh; applyFilter();
       updateHdrSub();
     } catch(_) {}
-  }, 20000);
+  }, 60000);
 }
 function stopPoll() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
 
@@ -1115,16 +1109,16 @@ function renderList(list) {
     const phoneClean = e((o.phone || '').replace(/\D/g,''));
     const loyalBadge = getLoyaltyBadge(getLoyaltyCount(o.phone || ''));
     return `
-    <div value="" disabled selected class="order-card ${isCod ? 'cod-highlight' : ''}"
+    <div class="order-card ${isCod ? 'cod-highlight' : ''}"
       data-pid="${sid}"
       onclick="cardClick(event,'${sid}')"
       ontouchstart="startHold(this,'${sid}')" ontouchend="endHold(event)" ontouchcancel="cancelHold()"
-      // onmousedown="startHold(this,'${sid}')" onmouseup="endHold(event)" onmouseleave="cancelHold()">
+      onmousedown="startHold(this,'${sid}')" onmouseup="endHold(event)" onmouseleave="cancelHold()">
       <div class="card-top">
         <div class="card-icon" onclick="event.stopPropagation();openLabelPopup('${sid}')">📦</div>
         <div class="card-body">
-          <span class="card-name">${e(o.name || 'FB User')}</span>
-          <div class="card-phone" ${phoneClean}','${sid}>
+          <span class="card-name" onclick="event.stopPropagation();openInvoiceFromName('${sid}')">${e(o.name || 'FB User')}</span>
+          <div class="card-phone" onclick="event.stopPropagation();customerPhone('${phoneClean}','${sid}')">
             📞 ${e(o.phone || '—')}
           </div>
           <div class="card-loc">📍 ${e(o.location || '—')}</div>
@@ -1140,7 +1134,7 @@ function renderList(list) {
           <div class="card-date">${e(o.orderDate || '')}</div>
         </div>
         ${done
-          ? `<div class="btn-done">✅ ${e(o.orderDate || 'ដឹកដល់')}</div>`
+          ? `<div class="btn-done">✅ ${e(o.receiveDate || 'ដឹកដល់')}</div>`
           : `<button class="btn-deliver" onclick="event.stopPropagation();askDeliver('${sid}','${e(o.name||'')}')">🚚 ដឹកដល់</button>`}
       </div>
     </div>`;
@@ -1190,8 +1184,8 @@ function startHold(el, pid) {
   let count  = 0;
   _holdTimer = setInterval(() => {
     count += 100;
-    if (count >= 200) el.classList.add('holding');
-    if (count >= 2000) {
+    if (count >= 300) el.classList.add('holding');
+    if (count >= 3000) {
       clearInterval(_holdTimer); _holdTimer = null; _holdFired = true;
       el.classList.remove('holding');
       if (ring) ring.classList.add('on');
