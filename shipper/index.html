@@ -868,19 +868,18 @@ async function openDetail(profileId){
           ✅ ដឹកដល់ ${e(o.receiveDate||'')}</div>`}`;
   loadHistory(o.phone||'',o.profileId);
 }
-
   function customerPhone() {
     // Check if the environment is Telegram
-  if (window.Telegram && window.Telegram.WebApp) {
-      let cleanPhone = phoneClean.replace(/\D/g, ''); // Remove non-numeric characters
-      let url = `https://t.me/+${cleanPhone}`;
-      
-      // This is the preferred way to handle Telegram-related links
-      window.Telegram.WebApp.openTelegramLink(url);
-  } else {
-      // Fallback for regular web browsers
-      window.open(`https://t.me/+${phoneClean}`, '_blank');
-  }
+    if (window.Telegram && window.Telegram.WebApp) {
+        let cleanPhone = phoneClean.replace(/\D/g, ''); // Remove non-numeric characters
+        let url = `https://t.me/+${cleanPhone}`;
+        
+        // This is the preferred way to handle Telegram-related links
+        window.Telegram.WebApp.openTelegramLink(url);
+    } else {
+        // Fallback for regular web browsers
+        window.open(`https://t.me/+${phoneClean}`, '_blank');
+    }
 }
   document.querySelector('.val').addEventListener('click', function() {
     // Check if phoneClean exists and is not an empty string
