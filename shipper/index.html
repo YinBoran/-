@@ -842,7 +842,7 @@ async function openDetail(profileId){
       <div class="detail-grid">
         <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||'—')}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val" onclick="customerPhone()"
+          <div class="val" onclick="customerPhone('${phoneClean}')"
             style="cursor:pointer;color:var(--accent)">📞${e(o.phone||'—')}</div></div>
         <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||'—')}</div></div>
       </div>
@@ -881,17 +881,16 @@ async function openDetail(profileId){
           ✅ ដឹកដល់ ${e(o.receiveDate||'')}</div>`}`;
   loadHistory(o.phone||'',o.profileId);
 }
-  function customerPhone() {
-    // Check if the environment is Telegram
+// Update the function to accept 'phone'
+function customerPhone(phone) { 
     if (window.Telegram && window.Telegram.WebApp) {
-        let cleanPhone = phoneClean.replace(/\D/g, ''); // Remove non-numeric characters
-        let url = `t.me/+${cleanPhone}`;
+        // Use the 'phone' argument passed to the function
+        let cleanPhone = phone.replace(/\D/g, ''); 
+        let url = `https://t.me/+${cleanPhone}`;
         
-        // This is the preferred way to handle Telegram-related links
         window.Telegram.WebApp.openTelegramLink(url);
     } else {
-        // Fallback for regular web browsers
-        window.open(`t.me/+${phoneClean}`, '_blank');
+        window.open(`https://t.me/+${phone}`, '_blank');
     }
 }
 async function loadHistory(phone,currentId){
