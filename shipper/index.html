@@ -1,5 +1,4 @@
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: HTMLEOF'
-<!DOCTYPE html>
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <!DOCTYPE html>
 <html lang="km">
 <head>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -91,7 +90,7 @@ body{
 
 .tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
 .tab{flex:1;padding:12px 8px;font-size:13px;font-weight:600;color:var(--muted);
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
 .orders{padding:10px;display:flex;flex-direction:column;gap:8px}
@@ -153,7 +152,7 @@ body{
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
   position:fixed;inset:0;top:var(--hdr-h);gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
 .loading-sm{position:relative;inset:auto;min-height:120px;background:transparent;z-index:auto}
@@ -233,7 +232,7 @@ body{
 .history-item.completed{border-left-color:var(--green)}
 .history-item.pending{border-left-color:var(--accent)}
 .
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: history-item.cancelled{border-left-color:var(--red)}
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: history-item.cancelled{border-left-color:var(--red)}
 .history-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;
@@ -296,7 +295,7 @@ body{
   border-radius:50%;cursor:pointer;color:var(--text);font-size:19px;
   display:flex;align-items:center;justify-content:center}
 .pp-avatar-wrap{position:relative;display:flex;flex-direction:column;align-items:center;
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: padding-top:24px;padding-bottom:4px;cursor:pointer}
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: padding-top:24px;padding-bottom:4px;cursor:pointer}
 .pp-avatar{width:96px;height:96px;border-radius:50%;border:3px solid var(--accent)44;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   display:flex;align-items:center;justify-content:center;
@@ -328,6 +327,26 @@ body{
 .pp-logout:hover{background:var(--red)44}
 .pp-divider{height:1px;background:var(--border);margin:0 16px 16px}
 
+/* ============ STOCK POPUP ============ */
+.stock-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 0}
+.stock-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s}
+.stock-card:active{transform:scale(.97)}
+.stock-card.low-stock{border-color:#ef444466}
+.stock-card.out-stock{border-color:var(--red);opacity:.7}
+.stock-card-img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--border)}
+.stock-card-img-placeholder{width:100%;aspect-ratio:1;background:linear-gradient(135deg,var(--border),var(--surface));display:flex;align-items:center;justify-content:center;font-size:32px}
+.stock-card-body{padding:8px}
+.stock-card-name{font-size:13px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stock-card-price{font-size:14px;font-weight:700;color:var(--accent)}
+.stock-card-qty{font-size:11px;margin-top:3px}
+.stock-card-status{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-top:4px}
+.status-in{background:#22c55e22;color:var(--green);border:1px solid var(--green)44}
+.status-low{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
+.status-out{background:var(--red)22;color:var(--red);border:1px solid var(--red)44}
+.stock-section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:8px 0 4px;border-top:1px solid var(--border);margin-top:8px}
+.stock-section-title:first-child{border-top:none;margin-top:0}
+/* ============ END STOCK POPUP ============ */
+
 .invoice-overlay{position:fixed;inset:0;background:#fff;color:#000;z-index:600;
   overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
 .invoice-overlay.on{display:block}
@@ -336,7 +355,7 @@ body{
   border-bottom:1px solid #ddd;z-index:1}
 @media print{
   body>*:not(#invoice-overlay){display:none!important}
-  #invoice-overlay{display:block!important;position:static!important;overflow:visible!important}
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: #invoice-overlay{display:block!important;position:static!important;overflow:visible!important}
   .inv-toolbar{display:none!important}
   #invoice-content{padding:0!important}
 }
@@ -371,7 +390,7 @@ body{
       <div style="width:42px;height:42px;border-radius:50%;background:var(--border);animation:shimmer 1.4s ease infinite;flex-shrink:0"></div>
       <div style="flex:1;display:flex;flex-direction:column;gap:7px">
         <div style="height:13px;width:60%;background:var(--border);border-radius:4px;animation:shimmer 1.4s ease infinite"></div>
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: <div style="height:11px;width:40%;background:var(--border);border-radius:4px;animation:shimmer 1.4s ease infinite"></div>
+        <div style="height:11px;width:40%;background:var(--border);border-radius:4px;animation:shimmer 1.4s ease infinite"></div>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:10px">
@@ -383,7 +402,7 @@ body{
     <div class="skeleton-card"><div class="skeleton-row"><div class="skeleton-icon"></div><div class="skeleton-body"><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div><div class="skeleton-line w40"></div></div></div><div class="skeleton-divider"></div><div class="skeleton-bottom"><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
     <div class="skeleton-card"><div class="skeleton-row"><div class="skeleton-icon"></div><div class="skeleton-body"><div class="skeleton-line w80"></div><div class="skeleton-line w60"></div><div class="skeleton-line w40"></div></div></div><div class="skeleton-divider"></div><div class="skeleton-bottom"><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
   </div>
-  <!-- ============ END SKELETON ============ -->
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <!-- ============ END SKELETON ============ -->
 </div>
 
 <!-- ============ UX: GLOBAL SPINNER (tab/scroll) ============ -->
@@ -423,13 +442,36 @@ body{
 
 <div class="profile-page" id="profile-page">
   <div class="pp-back">
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: <button class="pp-back-btn" onclick="closeProfile()">←</button>
+    <button class="pp-back-btn" onclick="closeProfile()">←</button>
     <span style="font-size:16px;font-weight:700">Profile</span>
   </div>
   <div id="pp-content">
     <div class="loading loading-sm"><div class="spinner"></div></div>
   </div>
 </div>
+
+<!-- ============ STOCK POPUP ============ -->
+<div class="popup-overlay" id="stock-overlay" onclick="closeStockIfBg(event)">
+  <div class="popup" id="stock-popup">
+    <div class="popup-handle" id="stock-handle"></div>
+    <div class="popup-head">
+      <span class="popup-title">📦 គ្រប់គ្រងស្តុក</span>
+      <button class="popup-close" onclick="closeStock()">✕</button>
+    </div>
+    <div class="popup-body" id="stock-body">
+      <div class="loading loading-sm"><div class="spinner"></div></div>
+    </div>
+    <div class="popup-foot">
+      <button onclick="openAddStock()"
+        style="flex:1;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+        color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
+        + បន្ថែម Stock
+      </button>
+    </div>
+  </div>
+</div>
+<!-- ============ END STOCK POPUP ============ -->
+
 <div class="invoice-overlay" id="invoice-overlay">
   <div class="inv-toolbar">
     <button onclick="closeInvoiceOverlay()"
@@ -463,8 +505,7 @@ const CHUNK      = 9;
 let _searchAll   = '';
 let _searchTimer = null;
 let _currentInvId = null;
-
-// ============ UX: SPINNER HELPERS ============
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: // ============ UX: SPINNER HELPERS ============
 function showSpinner(){document.getElementById('global-spinner').style.display='block';}
 function hideSpinner(){document.getElementById('global-spinner').style.display='none';}
 // ============ END SPINNER HELPERS ============
@@ -524,8 +565,7 @@ function gs(fn,arg){
 
 const SESSION_TTL=12*60*60*1000;
 function saveSession(d){
-  try{localStorage.
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: setItem('yb_shipper',JSON.stringify({
+  try{localStorage.setItem('yb_shipper',JSON.stringify({
     phone:sanitizeStr(d.phone),name:sanitizeStr(d.name||'Shipper'),
     role:sanitizeStr(d.role||'shipper'),ts:Date.now()
   }));}catch(_){}
@@ -565,7 +605,7 @@ let _pwVisible=false;
 function showPhoneLogin(){
   // ============ UX: hide skeleton, show login ============
   document.getElementById('app-content').innerHTML=`
-    <div style="height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;padding-top:env(safe-area-inset-top)">
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <div style="height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;padding-top:env(safe-area-inset-top)">
       <div class="login-box">
         <h3>🚚 YB Shipper Login</h3>
         <p>Phone + Password</p>
@@ -607,8 +647,7 @@ async function loginByPhone(){
     const r=await gs('verifyLogin',{identifier:pv.value,password:wv.value});
     hideSpinner();
     if(r.error){showToast('❌ '+sanitizeStr(r.error),true);document.getElementById('pw-inp')?.classList.add('input-error');if(btn){btn.disabled=false;btn.textContent='Login →';}return;}
-    const role=String(r.
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: role||'').toLowerCase();
+    const role=String(r.role||'').toLowerCase();
     if(role!=='shipper'&&role!=='admin'){showToast('❌ គណនីនេះ មិនមែន Shipper',true);if(btn){btn.disabled=false;btn.textContent='Login →';}return;}
     saveSession(r);bootWithData(r);
   }catch(err){
@@ -646,7 +685,7 @@ function renderSkeletonCards(count){
       <div class="skeleton-row">
         <div class="skeleton-icon"></div>
         <div class="skeleton-body">
-          <div class="skeleton-line w80"></div>
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <div class="skeleton-line w80"></div>
           <div class="skeleton-line w60"></div>
           <div class="skeleton-line w40"></div>
         </div>
@@ -722,8 +761,7 @@ function applyFilter(){
     const q=_searchAll;
     res=res.filter(o=>
       (o.name    '').toLowerCase().includes(q)
-      (o.phone   '').
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: toLowerCase().includes(q)
+      (o.phone   '').toLowerCase().includes(q)
       (o.location||'').toLowerCase().includes(q)||
       (o.ordered '').toLowerCase().includes(q)
       (o.pricing '').toLowerCase().includes(q)
@@ -755,10 +793,10 @@ function renderAll(){
     ${searching?'':`<div class="stats">
       <div class="stat"><div class="stat-num">${orders.length}</div><div class="stat-lbl">សរុប</div></div>
       <div class="stat"><div class="stat-num" style="color:var(--green)">${completed.length}</div><div class="stat-lbl">ដឹកដល់</div></div>
-      <div class="stat"><div class="stat-num">${pending.length}</div><div class="stat-lbl">រង់ចាំ</div></div>
+      <div class="stat" onclick="openStockPopup()" style="cursor:pointer"><div class="stat-num">📦</div><div class="stat-lbl">សុគ</div></div>
     </div>`}
     <div class="fbar">
-      <span class="fbar-label">Filter${searching?` <span style="background:var(--accent);color:#000;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700">${orders.length}</span>`:''}</span>
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <span class="fbar-label">Filter${searching?` <span style="background:var(--accent);color:#000;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700">${orders.length}</span>`:''}</span>
       <label class="toggle" onclick="toggleCOD()">
         <div class="toggle-track ${codOnly?'on':''}" id="cod-track"><div class="toggle-thumb"></div></div>
         <span class="toggle-text">COD ប៉ុណ្ណោះ</span>
@@ -810,7 +848,7 @@ function renderList(list){
       ontouchstart="startHold(this,'${sid}')" ontouchend="endHold(event)" ontouchcancel="cancelHold()"
       onmousedown="startHold(this,'${sid}')" onmouseup="endHold(event)" onmouseleave="cancelHold()">
       <div class="card-top">
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: <div class="card-icon">📦</div>
+        <div class="card-icon">📦</div>
         <div class="card-body">
           <span class="card-name">${e(o.name||'FB User')}</span>
           <div class="card-phone" onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" style="cursor:pointer">📞 ${e(o.phone||'—')}</div>
@@ -840,7 +878,7 @@ function renderList(list){
 
   const sentinel=hasMore
     ?`<div id="scroll-sentinel" style="height:50px;display:flex;align-items:center;
-        justify-content:center"><div class="spinner spinner-sm"></div></div>`
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: justify-content:center"><div class="spinner spinner-sm"></div></div>`
     :'';
   setTimeout(()=>setupScrollObserver(list),100);
   return cards+sentinel;
@@ -918,8 +956,7 @@ function cardClick(ev,sid){
     const head=document.querySelector('.popup-head');
     const close=document.querySelector('.popup-close');
     if(close&&close.contains(el))return false;
-    return(h&&h.
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: contains(el))||(head&&head.contains(el));
+    return(h&&h.contains(el))||(head&&head.contains(el));
   }
   document.addEventListener('touchstart',ev=>{
     if(isSwipeTarget(ev.target)){
@@ -956,7 +993,8 @@ async function openDetail(profileId){
 
   const isCod=(o.payment||'').toLowerCase().includes('cod');
   const done=isCompleted(o);
-  const sid=e(o.profileId);
+  const sid=e(o.
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: profileId);
   const phoneClean=e((o.phone||'').replace(/\D/g,''));
 
   document.getElementById('detail-body').innerHTML=`
@@ -994,12 +1032,12 @@ async function openDetail(profileId){
         <div class="spinner" style="width:24px;height:24px"></div></div></div>
     </div>`;
 
-document.getElementById('detail-foot').innerHTML=`
+  document.getElementById('detail-foot').innerHTML=`
     <button class="btn-call" onclick="callPhone('${phoneClean}')"
       style="padding:11px 18px;font-size:14px;border:1px solid #3b82f644;border-radius:10px;cursor:pointer">📞 Call</button>
     ${!done
       ?`<button onclick="closeDetail();askDeliver('${sid}','${e(o.name||'')}');"
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+          style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
           color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
           🚚 ដឹកដល់</button>`
       :`<div style="flex:1;text-align:center;color:var(--green);font-weight:700;padding:11px;font-size:14px">
@@ -1025,7 +1063,7 @@ async function loadHistory(phone,currentId){
           <span style="font-size:13px;font-weight:600">${e((h.ordered||'—').substring(0,30))}</span>
           <span style="font-size:12px;color:${color}">${e(h.status||'Pending')}</span>
         </div>
-        <div class="history-row">
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <div class="history-row">
           <span style="font-size:12px;color:var(--muted)">${e(h.orderDate||'—')}</span>
           <span style="font-size:13px;font-weight:700;color:var(--accent)">$${e(h.pricing||h.retail||'—')}</span>
         </div>
@@ -1086,7 +1124,7 @@ function openInvoice(profileId){
     const item=items[i]||'';
     rows+=`<tr><td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${i+1}</td>
       <td style="border:.5pt solid #000;padding:2.5px 4px">${item}</td>
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: <td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${item?'1':''}</td>
+      <td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${item?'1':''}</td>
       <td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td>
       <td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td></tr>`;
   }
@@ -1104,7 +1142,7 @@ function openInvoice(profileId){
   </div>
   <div style="display:flex;justify-content:space-between;margin:4px 0;font-size:9.5pt">
     <span><b>ទីតាំង:</b> <span style="border-bottom:1pt dotted #000;min-width:120px;display:inline-block">${e(o.location||'')}</span></span>
-    <span>ថ្ងៃ<span style="border-bottom:1pt dotted #000;min-width:20px;display:inline-block;margin:0 2px">${day}</span>ខែ<span style="border-bottom:1pt dotted #000;min-width:20px;display:inline-block;margin:0 2px">${mon}</span>ឆ្នាំ<span style="border-bottom:1pt dotted #000;min-width:32px;display:inline-block;margin:0 2px">${yr}</span></span>
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <span>ថ្ងៃ<span style="border-bottom:1pt dotted #000;min-width:20px;display:inline-block;margin:0 2px">${day}</span>ខែ<span style="border-bottom:1pt dotted #000;min-width:20px;display:inline-block;margin:0 2px">${mon}</span>ឆ្នាំ<span style="border-bottom:1pt dotted #000;min-width:32px;display:inline-block;margin:0 2px">${yr}</span></span>
   </div>
   <table style="width:100%;border-collapse:collapse;margin:6px 0;font-size:9.5pt">
     <thead><tr>
@@ -1147,7 +1185,8 @@ function closeInvoiceOverlay(){
   document.getElementById('invoice-overlay').classList.remove('on');
   document.body.style.overflow='';
 }
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: function printLabel(profileId){
+
+function printLabel(profileId){
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o){showToast('❌ Order not found',true);return;}
   const html=`<!DOCTYPE html><html lang="km"><head>
@@ -1170,7 +1209,7 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
 .pay-badge{background:#f0a500;padding:2px 7px;border-radius:3px;font-size:8pt;font-weight:700}
 </style></head><body>
 <div class="noprint" style="text-align:center;padding:6px;background:#f5f5f5;margin-bottom:6px">
-  <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>
   <button onclick="window.close()" style="padding:7px 14px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;margin-left:6px">✕</button>
 </div>
 <div class="label">
@@ -1218,7 +1257,7 @@ async function openProfile(){
           <span id="pp-av-ini" style="${hasPhoto?'display:none':'display:flex'};align-items:center;justify-content:center;width:100%;height:100%">${ini}</span>
           <div class="pp-avatar-cam">📷</div>
         </div>
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: <div class="pp-change-photo">Change photo</div>
+        <div class="pp-change-photo">Change photo</div>
       </div>
       <input type="file" id="photo-file-inp" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
       <div class="pp-info">
@@ -1240,7 +1279,7 @@ async function openProfile(){
     el.innerHTML=`
       <div class="pp-avatar-wrap" onclick="triggerPhotoUpload()">
         <div class="pp-avatar">
-          ${lp?`<img src="${lp}">`:`<span>${ini}</span>`}
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: ${lp?`<img src="${lp}">`:`<span>${ini}</span>`}
           <div class="pp-avatar-cam">📷</div>
         </div>
         <div class="pp-change-photo">Change photo</div>
@@ -1294,9 +1333,143 @@ function showAlert(msg){
   pushNotif('🚚 YB Shipper',sanitizeStr(msg));
 }
 function dismissAlert(){
-[6/9/2026 7:58 AM] Y.B 9999 Electronics: document.getElementById('new-alert').classList.add('hidden');
+  document.getElementById('new-alert').classList.add('hidden');
   activeTab='pending';visibleCount=CHUNK;renderAll();
 }
+
+
+// ============ STOCK MODULE ============
+let _stockProducts=[];
+let _stockLoaded=false;
+
+async function openStockPopup(){
+  document.getElementById('stock-overlay').classList.add('on');
+  document.body.style.overflow='hidden';
+  const body=document.getElementById('stock-body');
+  if(!_stockLoaded){
+    body.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
+    try{
+      const prods=await gs('getPublicProducts');
+      if(!Array.isArray(prods))throw new Error('Invalid response');
+      _stockProducts=prods;_stockLoaded=true;
+    }catch(err){
+      body.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div>
+        <h3>Load failed</h3><p>${e(err.message)}</p>
+        <button onclick="_stockLoaded=false;openStockPopup()"
+          style="margin-top:12px;padding:10px 20px;background:var(--accent);color:#000;
+          border:none;border-radius:8px;font-weight:700;cursor:pointer">Retry</button></div>`;
+      return;
+    }
+  }
+  renderStockList();
+}
+
+function renderStockList(){
+  const body=document.getElementById('stock-body');if(!body)return;
+  const prods=_stockProducts;
+  const low=prods.filter(p=>isLowStock(p));
+  const out=prods.filter(p=>isOutStock(p));
+  const good=prods.
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: filter(p=>!isLowStock(p)&&!isOutStock(p));
+  const statsHtml=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+    <div style="background:var(--card);border-radius:10px;padding:10px;text-align:center">
+      <div style="font-size:20px;font-weight:700;color:var(--accent)">${prods.length}</div>
+      <div style="font-size:11px;color:var(--muted)">ផ្នែកស្តុក</div></div>
+    <div style="background:var(--card);border-radius:10px;padding:10px;text-align:center">
+      <div style="font-size:20px;font-weight:700;color:#f59e0b">${low.length}</div>
+      <div style="font-size:11px;color:var(--muted)">លក់ចេញ</div></div>
+    <div style="background:var(--card);border-radius:10px;padding:10px;text-align:center">
+      <div style="font-size:20px;font-weight:700;color:var(--green)">${good.length}</div>
+      <div style="font-size:11px;color:var(--muted)">នៅសល់</div></div>
+  </div>`;
+  let html=statsHtml;
+  if(low.length)html+=`<div class="stock-section-title">⚠️ ជិតអស់ (${low.length})</div><div class="stock-grid">${low.map(renderStockCard).join('')}</div>`;
+  if(good.length)html+=`<div class="stock-section-title">✅ មានស្តុក (${good.length})</div><div class="stock-grid">${good.map(renderStockCard).join('')}</div>`;
+  if(out.length)html+=`<div class="stock-section-title">❌ អស់ស្តុក (${out.length})</div><div class="stock-grid">${out.map(renderStockCard).join('')}</div>`;
+  if(!prods.length)html+=`<div class="empty"><div class="empty-icon">📦</div><h3>គ្មានស្តុក</h3><p>បន្ថែម Stock ទីដំបូង</p></div>`;
+  body.innerHTML=html;
+}
+
+function renderStockCard(p){
+  const low=isLowStock(p),out=isOutStock(p);
+  const cls=out?'out-stock':low?'low-stock':'';
+  const sc=out?'status-out':low?'status-low':'status-in';
+  const st=out?'❌ អស់':low?'⚠️ ជិតអស់':'✅ មាន';
+  const qty=parseQty(p.qty);
+  const img=p.photo&&p.photo.startsWith('http')
+    ?`<img class="stock-card-img" src="${e(p.photo)}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`:'';
+  const ph=`<div class="stock-card-img-placeholder" ${p.photo?'style="display:none"':''}>📦</div>`;
+  return`<div class="stock-card ${cls}" onclick="openStockDetail('${e(p.code)}')">
+    ${img}${ph}
+    <div class="stock-card-body">
+      <div class="stock-card-name">${e(p.name||'—')}</div>
+      <div class="stock-card-price">$${e(p.price||'—')}</div>
+      <div class="stock-card-qty" style="color:${out?'var(--red)':low?'#f59e0b':'var(--green)'}">
+        ${qty>=0?qty+' គ្រឿង':e(p.qty||'—')}</div>
+      <span class="stock-card-status ${sc}">${st}</span>
+    </div></div>`;
+}
+
+function isLowStock(p){const ss=(p.stockStatus||'').toLowerCase();const qty=parseQty(p.qty);return ss.includes('low')||(qty>=0&&qty>0&&qty<=3);}
+function isOutStock(p){const ss=(p.stockStatus||'').toLowerCase();const qty=parseQty(p.qty);return ss.includes('out')||qty===0;}
+function parseQty(v){const n=parseInt(String(v||'').replace(/[^0-9]/g,''));return isNaN(n)?-1:n;}
+
+function openStockDetail(code){
+  const p=_stockProducts.find(x=>x.code===code);if(!p)return;
+  const qty=parseQty(p.qty);const low=isLowStock(p),out=isOutStock(p);
+  const sc=out?'status-out':low?'status-low':'status-in';
+  const st=out?'❌ អស់ស្តុក':low?'⚠️ ជិតអស់':'✅ មានស្តុក';
+  document.getElementById('detail-title').textContent=e(p.name||'Product');
+  document.getElementById('detail-body').innerHTML=`
+    ${p.photo&&p.photo.startsWith('http')
+      ?`<img src="${e(p.photo)}" style="width:100%;border-radius:10px;margin-bottom:12px;object-fit:cover;max-height:220px">`
+      :`<div style="width:100%;height:150px;background:var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:12px">📦</div>`}
+    <div class="detail-grid">
+      <div class="detail-item"><div class="key">Code</div><div class="val" style="font-family:monospace">${e(p.code||'—')}</div></div>
+      <div class="detail-item"><div class="key">Category</div><div class="val">${e(p.category||'—')}</div></div>
+[6/9/2026 12:05 PM] Y.B 9999 Electronics: <div class="detail-item"><div class="key">តម្លៃ</div><div class="val" style="color:var(--accent)">$${e(p.price||'—')}</div></div>
+      <div class="detail-item"><div class="key">ចំនួន</div>
+        <div class="val" style="color:${out?'var(--red)':low?'#f59e0b':'var(--green)'}">
+        ${qty>=0?qty+' គ្រឿង':e(p.qty||'—')}</div></div>
+      <div class="detail-item full"><div class="key">Status</div>
+        <div class="val"><span class="stock-card-status ${sc}">${st}</span></div></div>
+      ${p.description?`<div class="detail-item full"><div class="key">Description</div><div class="val" style="font-size:14px">${e(p.description)}</div></div>`:''}
+    </div>`;
+  document.getElementById('detail-foot').innerHTML=`
+    <button onclick="closeDetail();setTimeout(openStockPopup,150)"
+      style="padding:11px 18px;background:var(--border);color:var(--text);border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
+    <button onclick="closeDetail();openAddStock('${e(p.code)}')"
+      style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
+      + បន្ថែម Stock</button>`;
+  closeStock();
+  setTimeout(()=>{document.getElementById('detail-overlay').classList.add('on');document.body.style.overflow='hidden';},150);
+}
+
+function openAddStock(code){showToast('🚧 Coming soon — Add Stock',false);}
+
+function closeStock(){document.getElementById('stock-overlay').classList.remove('on');document.body.style.overflow='';}
+function closeStockIfBg(ev){if(ev.target===document.getElementById('stock-overlay'))closeStock();}
+
+(function(){
+  let sy=0,dy=0,drag=false;
+  document.addEventListener('touchstart',ev=>{
+    const h=document.getElementById('stock-handle');
+    if(h&&h.contains(ev.target)){sy=ev.touches[0].clientY;drag=true;dy=0;
+      const p=document.getElementById('stock-popup');if(p)p.style.transition='none';}
+  },{passive:true});
+  document.addEventListener('touchmove',ev=>{
+    if(!drag)return;dy=ev.touches[0].clientY-sy;
+    if(dy>0){const p=document.getElementById('stock-popup');if(p)p.style.transform=`translateY(${dy}px)`;}
+  },{passive:true});
+  document.addEventListener('touchend',()=>{
+    if(!drag)return;drag=false;
+    const p=document.getElementById('stock-popup');if(p)p.style.transition='';
+    if(dy>80)closeStock();else if(p)p.style.transform='';
+    dy=0;
+  });
+})();
+// ============ END STOCK MODULE ============
 
 function showError(msg){
   document.getElementById('app-content').innerHTML=`
