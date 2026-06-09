@@ -39,6 +39,10 @@ body{
   overflow-x:hidden;
   padding-top:var(--safe-top);
 }
+body.login-open{
+  overflow:hidden;
+  height:100dvh;
+}
 
 /* ══════════════════════════════════════════
    PDF Rule 3: CIRCLE SPINNER (global, fixed center)
@@ -129,17 +133,52 @@ body{
    LOGIN
 ══════════════════════════════════════════ */
 #loginScreen{
-  min-height:100vh;display:flex;align-items:center;
+  position:fixed;inset:0;
+  display:flex;align-items:center;
   justify-content:center;
   background:radial-gradient(ellipse at 50% 0%,#1a120044 0%,transparent 60%),
              var(--bg);
   padding:20px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  z-index:500;
 }
 .login-box{
   background:var(--card);border:1px solid var(--border);
-  border-radius:24px;padding:32px 24px;
+  border-radius:24px;padding:28px 22px;
   width:100%;max-width:390px;
+  max-height:calc(100dvh - 40px);
+  overflow-y:auto;
 }
+/* Input validation states */
+.form-input.input-ok{border-color:#22c55e44}
+.form-input.input-err{border-color:#ef444466;background:#ef444408}
+.input-hint{font-size:11px;color:var(--muted);margin-top:4px;padding-left:2px}
+.input-hint.err{color:var(--red)}
+.input-hint.ok{color:var(--green)}
+/* OTP timer */
+.otp-timer{
+  font-size:13px;font-weight:600;
+  text-align:center;margin:8px 0 4px;
+  color:var(--accent);
+}
+.otp-timer.expired{color:var(--red)}
+.otp-resend{
+  background:none;border:none;
+  color:var(--blue);font-size:13px;
+  cursor:pointer;width:100%;text-align:center;
+  font-family:var(--font);padding:6px;
+  text-decoration:underline;
+}
+.otp-resend:disabled{color:var(--muted);text-decoration:none;cursor:not-allowed}
+/* No-TG delivery notice */
+.delivery-notice{
+  background:#3b82f618;border:1px solid #3b82f633;
+  border-radius:10px;padding:10px 12px;font-size:12px;
+  color:var(--blue);margin-bottom:12px;line-height:1.6;
+  display:none;
+}
+.delivery-notice.show{display:block}
 .login-logo{
   width:68px;height:68px;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -479,16 +518,19 @@ select.field-input{cursor:pointer}
       <div class="form-group">
         <label class="form-label">Phone / Username</label>
         <input class="form-input" id="inputId" type="text" placeholder="09xxxxxxxx"
-               autocomplete="username" inputmode="text">
+               autocomplete="username" inputmode="text"
+               oninput="validateIdInput(this)">
+        <div class="input-hint" id="hintId"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Password</label>
         <input class="form-input" id="inputPw" type="password" placeholder="••••••••"
                autocomplete="current-password"
+               oninput="validatePwInput(this)"
                onkeydown="if(event.key==='Enter')doLoginStep1()">
+        <div class="input-hint" id="hintPw"></div>
       </div>
       <div class="recaptcha-wrap">
-        <!-- TODO: Replace with your real reCAPTCHA v2 Site Key from console.cloud.google.com -->
         <div class="g-recaptcha" data-sitekey="6LccVxUtAAAAADwMsRysGzfAAX3Wt_CguC5ktLrF"></div>
       </div>
       <button class="btn-primary" id="btnLogin" onclick="doLoginStep1()">ចូល</button>
@@ -496,14 +538,21 @@ select.field-input{cursor:pointer}
 
     <!-- Step 2: OTP -->
     <div id="otpScreen">
-      <p class="otp-info">OTP បានផ្ញើទៅ Telegram<br>លេខ <strong id="otpHint">****</strong> · ផុតកំណត់ 5 នាទី</p>
-      <div class="form-group">
-        <label class="form-label">OTP Code</label>
-        <input class="form-input otp-input" id="inputOtp" type="number" placeholder="000000"
-               maxlength="6" inputmode="numeric"
-               oninput="if(this.value.length>=6)doLoginStep2()">
+      <p class="otp-info">OTP បានផ្ញើ — លេខ <strong id="otpHint">****</strong></p>
+      <!-- shown when user has no TG account — delivery via admin group -->
+      <div class="delivery-notice" id="deliveryNotice">
+        📢 អ្នកមិនមានគណនី Telegram ។ OTP ត្រូវបានផ្ញើទៅ Admin Group។ សូម ទំនាក់ទំនង Admin ដើម្បីទទួល OTP។
       </div>
-      <button class="btn-primary" id="btnOtp" onclick="doLoginStep2()">Verify</button>
+      <div class="otp-timer" id="otpTimer">⏱ 5:00</div>
+      <div class="form-group">
+        <label class="form-label">OTP Code (6 digits)</label>
+        <input class="form-input otp-input" id="inputOtp" type="tel" placeholder="000000"
+               maxlength="6" inputmode="numeric"
+               oninput="onOtpInput(this)">
+        <div class="input-hint" id="hintOtp"></div>
+      </div>
+      <button class="btn-primary" id="btnOtp" onclick="doLoginStep2()">Verify OTP</button>
+      <button class="otp-resend" id="btnResend" disabled onclick="doResendOTP()">Request new OTP</button>
       <button class="back-btn" onclick="backToCred()">← ត្រឡប់</button>
     </div>
   </div>
@@ -652,62 +701,170 @@ async function api(action, data){
 }
 
 // ════════════════════════════════════════
-// LOGIN
+// LOGIN — validation, OTP timer, resend
 // ════════════════════════════════════════
 let _loginPhone = '';
+let _loginId    = '';
+let _loginPw    = '';
+let _otpTimer   = null;
+let _otpExpiry  = 0;
+
+// ── Input validation ─────────────────────
+function validateIdInput(el){
+  const v = el.value.trim();
+  const hint = document.getElementById('hintId');
+  const isPhone = /^\d+$/.test(v.replace(/\s/g,''));
+  if(!v){ setHint(el, hint, '', ''); return; }
+  if(isPhone){
+    const d = v.replace(/\D/g,'');
+    if(d.length < 9){ setHint(el, hint, 'err', 'លេខទូរស័ព្ទ 9-10 ខ្ទង់'); }
+    else if(d.length > 10){ setHint(el, hint, 'err', 'លេខ 10 ខ្ទង់ ខ្លាំងពេក'); }
+    else { setHint(el, hint, 'ok', '✓'); }
+  } else {
+    if(v.length < 3){ setHint(el, hint, 'err', 'Username ≥ 3 តួ'); }
+    else { setHint(el, hint, 'ok', '✓'); }
+  }
+}
+function validatePwInput(el){
+  const v = el.value;
+  const hint = document.getElementById('hintPw');
+  if(!v){ setHint(el, hint, '', ''); return; }
+  if(v.length < 4){ setHint(el, hint, 'err', 'Password ≥ 4 តួ'); }
+  else if(v.length > 32){ setHint(el, hint, 'err', 'Password ≤ 32 តួ'); }
+  else { setHint(el, hint, 'ok', '✓'); }
+}
+function onOtpInput(el){
+  // type=tel doesn't enforce maxlength on some mobile keyboards — cap manually
+  if(el.value.length > 6) el.value = el.value.slice(0,6);
+  const hint = document.getElementById('hintOtp');
+  const v = el.value.replace(/\D/g,'');
+  el.value = v;
+  if(v.length === 6){ setHint(el, hint, 'ok', '✓ 6 ខ្ទង់'); doLoginStep2(); }
+  else if(v.length > 0){ setHint(el, hint, '', v.length + '/6'); }
+  else { setHint(el, hint, '', ''); }
+}
+function setHint(input, hint, state, msg){
+  input.classList.remove('input-ok','input-err');
+  hint.classList.remove('ok','err');
+  hint.textContent = msg;
+  if(state === 'ok'){ input.classList.add('input-ok'); hint.classList.add('ok'); }
+  if(state === 'err'){ input.classList.add('input-err'); hint.classList.add('err'); }
+}
 
 function showErr(m){
   const el = document.getElementById('loginErr');
   el.textContent = m; el.style.display = m ? 'block' : 'none';
 }
 
+// ── OTP Countdown timer ──────────────────
+// Counts down from 5:00. At 0 shows "Expired" + enables resend button.
+function startOtpTimer(){
+  clearInterval(_otpTimer);
+  _otpExpiry = Date.now() + 5*60*1000;
+  const el = document.getElementById('otpTimer');
+  const resend = document.getElementById('btnResend');
+  if(resend) resend.disabled = true;
+  _otpTimer = setInterval(()=>{
+    const left = Math.max(0, _otpExpiry - Date.now());
+    const m = Math.floor(left/60000);
+    const s = Math.floor((left%60000)/1000);
+    if(el){
+      el.textContent = `⏱ ${m}:${String(s).padStart(2,'0')}`;
+      el.className = left < 30000 ? 'otp-timer expired' : 'otp-timer';
+    }
+    if(left === 0){
+      clearInterval(_otpTimer);
+      if(el) el.textContent = '⌛ OTP ផុតកំណត់';
+      if(resend) resend.disabled = false;
+    }
+  }, 1000);
+}
+
+async function doResendOTP(){
+  const btn = document.getElementById('btnResend');
+  if(btn){ btn.disabled = true; btn.textContent = 'Sending...'; }
+  showErr('');
+  // Re-run step1 with saved credentials
+  const cap = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : 'resend_bypass';
+  const res = await api('loginStep1', { identifier:_loginId, password:_loginPw, recaptchaToken: cap||'resend_bypass' });
+  if(btn){ btn.textContent = 'Request new OTP'; }
+  if(res.error){ showErr(res.error); if(btn) btn.disabled = false; return; }
+  showOtpScreen(res);
+  toast('OTP ថ្មីបានផ្ញើ ✓','success');
+}
+
+function showOtpScreen(res){
+  _loginPhone = (_loginId || '').replace(/\D/g,'');
+  document.getElementById('otpHint').textContent = '***' + (res.phone || _loginPhone.slice(-4));
+  document.getElementById('credScreen').style.display = 'none';
+  document.getElementById('otpScreen').style.display  = 'block';
+  document.getElementById('inputOtp').value = '';
+  // Show delivery notice if OTP went to admin group (user has no TG)
+  const notice = document.getElementById('deliveryNotice');
+  if(notice) notice.className = 'delivery-notice' + (res.noTg || res.delivery === 'admin_group' || res.delivery === 'manual' ? ' show' : '');
+  setHint(document.getElementById('inputOtp'), document.getElementById('hintOtp'), '', '');
+  startOtpTimer();
+  setTimeout(()=>document.getElementById('inputOtp').focus(), 100);
+}
+
 async function doLoginStep1(){
-  const id   = document.getElementById('inputId').value.trim();
-  const pw   = document.getElementById('inputPw').value;
-  // FIX #1: TEST_MODE skips reCAPTCHA check (must match TEST_MODE_AUTH=true in auth.gs)
-  const cap  = TEST_MODE ? 'test_bypass'
-             : (typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '');
-  if(!id||!pw){ showErr('Phone/Username and password required'); return; }
-  if(!TEST_MODE && !cap){ showErr('Please complete reCAPTCHA'); return; }
+  _loginId = document.getElementById('inputId').value.trim();
+  _loginPw = document.getElementById('inputPw').value;
+  const cap = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '';
+  // Validate first
+  const idEl = document.getElementById('inputId');
+  const pwEl = document.getElementById('inputPw');
+  validateIdInput(idEl); validatePwInput(pwEl);
+  if(!_loginId)   { showErr('សូម វាយ Phone ឬ Username'); idEl.focus(); return; }
+  if(!_loginPw)   { showErr('សូម វាយ Password'); pwEl.focus(); return; }
+  if(_loginPw.length < 4) { showErr('Password ≥ 4 តួ'); pwEl.focus(); return; }
+  if(!cap)        { showErr('សូម បញ្ជាក់ reCAPTCHA'); return; }
 
   const btn = document.getElementById('btnLogin');
   btn.disabled = true; btn.textContent = 'Verifying...';
   showErr('');
 
-  const res = await api('loginStep1', { identifier:id, password:pw, recaptchaToken:cap });
+  const res = await api('loginStep1', { identifier:_loginId, password:_loginPw, recaptchaToken:cap });
   btn.disabled = false; btn.textContent = 'ចូល';
 
-  if(res.error){ showErr(res.error); if(typeof grecaptcha!=='undefined') grecaptcha.reset(); return; }
-
-  // FIX #2: always store full phone from user input (res.phone is only 4-digit hint)
-  _loginPhone = id.replace(/\D/g,'');
-  const _hint = res.phone || _loginPhone.slice(-4);
-  document.getElementById('otpHint').textContent = '***'+_hint;
-  document.getElementById('credScreen').style.display = 'none';
-  document.getElementById('otpScreen').style.display  = 'block';
-  document.getElementById('inputOtp').value = '';
-  setTimeout(()=>document.getElementById('inputOtp').focus(), 100);
+  if(res.error){
+    showErr(res.error);
+    if(typeof grecaptcha!=='undefined') grecaptcha.reset();
+    return;
+  }
+  showOtpScreen(res);
 }
 
 async function doLoginStep2(){
-  const code = String(document.getElementById('inputOtp').value).trim();
-  if(code.length < 6) return;
-
+  const code = String(document.getElementById('inputOtp').value).replace(/\D/g,'');
+  if(code.length < 6){ setHint(document.getElementById('inputOtp'), document.getElementById('hintOtp'), 'err', '6 ខ្ទង់ ត្រូវការ'); return; }
+  // Check timer
+  if(Date.now() > _otpExpiry){
+    showErr('OTP ផុតកំណត់ — សូម Request new OTP');
+    document.getElementById('btnResend').disabled = false;
+    return;
+  }
   const btn = document.getElementById('btnOtp');
   btn.disabled = true; btn.textContent = 'Checking...';
   showErr('');
 
   const res = await api('loginStep2', { phone:_loginPhone, otpCode:code });
-  btn.disabled = false; btn.textContent = 'Verify';
+  btn.disabled = false; btn.textContent = 'Verify OTP';
 
-  if(res.error){ showErr(res.error); document.getElementById('inputOtp').value=''; return; }
-
+  if(res.error){
+    showErr(res.error);
+    setHint(document.getElementById('inputOtp'), document.getElementById('hintOtp'), 'err', res.error);
+    document.getElementById('inputOtp').value='';
+    return;
+  }
+  clearInterval(_otpTimer);
   S = { token:res.token, expires:res.expires, name:res.name, role:res.role,
         tenantId:res.tenantId||'', photo:res.photo||'', permissions:{} };
   bootApp();
 }
 
 function backToCred(){
+  clearInterval(_otpTimer);
   document.getElementById('credScreen').style.display = 'block';
   document.getElementById('otpScreen').style.display  = 'none';
   document.getElementById('inputOtp').value = '';
@@ -717,13 +874,15 @@ function backToCred(){
 
 async function doLogout(){
   if(S) await api('logout');
-  S = null; location.reload();
+  S = null;
+  document.body.classList.add('login-open');
+  location.reload();
 }
-
 // ════════════════════════════════════════
 // BOOT
 // ════════════════════════════════════════
 async function bootApp(){
+  document.body.classList.remove('login-open');
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('mainApp').style.display     = 'block';
 
@@ -1394,6 +1553,7 @@ function toast(msg, type){
 // INIT
 // ════════════════════════════════════════
 (function(){
+  document.body.classList.add('login-open'); // disable scroll while on login
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('mainApp').style.display='none';
 })();
