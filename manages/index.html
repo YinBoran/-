@@ -159,6 +159,19 @@ body{
   outline:none;transition:border-color .2s;
 }
 .form-input:focus{border-color:var(--accent)}
+.form-input.valid{border-color:#22c55e}
+.form-input.invalid{border-color:#ef4444}
+.field-hint{font-size:11px;margin-top:4px;min-height:16px;transition:color .2s}
+.field-hint.ok{color:#22c55e}
+.field-hint.err{color:#ef4444}
+.field-hint.info{color:var(--muted)}
+.otp-delivery{text-align:center;font-size:12px;padding:10px 14px;border-radius:10px;margin-bottom:12px;line-height:1.6}
+.otp-delivery.warn{background:rgba(234,179,8,.12);color:#ca8a04;border:1px solid rgba(234,179,8,.3)}
+.otp-delivery.ok{background:rgba(34,197,94,.1);color:#16a34a;border:1px solid rgba(34,197,94,.25)}
+.resend-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.resend-btn{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;font-family:var(--font)}
+.resend-btn:disabled{color:var(--muted);cursor:default}
+.pw-strength{height:3px;border-radius:2px;margin-top:5px;transition:width .3s,background .3s;width:0}
 .btn-primary{
   width:100%;padding:14px;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -479,32 +492,45 @@ select.field-input{cursor:pointer}
       <div class="form-group">
         <label class="form-label">Phone / Username</label>
         <input class="form-input" id="inputId" type="text" placeholder="09xxxxxxxx"
-               autocomplete="username" inputmode="text">
+               autocomplete="username" inputmode="text"
+               oninput="validateId(this)">
+        <div class="field-hint info" id="hintId">លេខទូរស័ព្ទ 9-10 ខ្ទង់ ឬ username</div>
       </div>
       <div class="form-group">
         <label class="form-label">Password</label>
         <input class="form-input" id="inputPw" type="password" placeholder="••••••••"
                autocomplete="current-password"
+               oninput="validatePw(this)"
                onkeydown="if(event.key==='Enter')doLoginStep1()">
+        <div class="pw-strength" id="pwStrength"></div>
+        <div class="field-hint info" id="hintPw">យ៉ាងតិច 4 តួអក្សរ</div>
       </div>
       <div class="recaptcha-wrap">
         <!-- TODO: Replace with your real reCAPTCHA v2 Site Key from console.cloud.google.com -->
-        <div class="g-recaptcha" data-sitekey="6LccVxUtAAAAADwMsRysGzfAAX3Wt_CguC5ktLrF"></div>
+        <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
       </div>
       <button class="btn-primary" id="btnLogin" onclick="doLoginStep1()">ចូល</button>
     </div>
 
     <!-- Step 2: OTP -->
     <div id="otpScreen">
-      <p class="otp-info">OTP បានផ្ញើទៅ Telegram<br>លេខ <strong id="otpHint">****</strong> · ផុតកំណត់ 5 នាទី</p>
+      <div class="otp-delivery ok" id="otpDelivery">
+        📲 OTP បានផ្ញើទៅ Telegram<br>លេខ <strong id="otpHint">****</strong> · ផុតកំណត់ 5 នាទី
+      </div>
       <div class="form-group">
         <label class="form-label">OTP Code</label>
-        <input class="form-input otp-input" id="inputOtp" type="number" placeholder="000000"
-               maxlength="6" inputmode="numeric"
-               oninput="if(this.value.length>=6)doLoginStep2()">
+        <input class="form-input otp-input" id="inputOtp" type="text" placeholder="000000"
+               maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
+               oninput="validateOtp(this)">
+        <div class="field-hint info" id="hintOtp">បញ្ចូល 6 ខ្ទង់</div>
       </div>
-      <button class="btn-primary" id="btnOtp" onclick="doLoginStep2()">Verify</button>
-      <button class="back-btn" onclick="backToCred()">← ត្រឡប់</button>
+      <button class="btn-primary" id="btnOtp" onclick="doLoginStep2()" disabled>Verify</button>
+      <div class="resend-row">
+        <button class="back-btn" onclick="backToCred()">← ត្រឡប់</button>
+        <button class="resend-btn" id="btnResend" onclick="resendOTP()" disabled>
+          ផ្ញើម្ដងទៀត (<span id="resendCount">60</span>s)
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -661,14 +687,145 @@ function showErr(m){
   el.textContent = m; el.style.display = m ? 'block' : 'none';
 }
 
+// ── Input Validation ─────────────────────────────────────────
+function validateId(el) {
+  const v = el.value.trim();
+  const hint = document.getElementById('hintId');
+  const isPhone = /^0[0-9]{8,9}$/.test(v.replace(/\s/g,''));
+  const isUser  = v.length >= 3 && /^[a-zA-Z0-9_.]+$/.test(v);
+  if (!v) {
+    el.className = 'form-input';
+    hint.textContent = 'លេខទូរស័ព្ទ 9-10 ខ្ទង់ ឬ username';
+    hint.className = 'field-hint info';
+  } else if (isPhone || isUser) {
+    el.className = 'form-input valid';
+    hint.textContent = isPhone ? '✓ លេខទូរស័ព្ទត្រឹមត្រូវ' : '✓ Username ត្រឹមត្រូវ';
+    hint.className = 'field-hint ok';
+  } else {
+    el.className = 'form-input invalid';
+    hint.textContent = v.length < 3 ? 'ខ្លីពេក' : 'ទម្រង់មិនត្រឹមត្រូវ — 09xxxxxxxx ឬ username';
+    hint.className = 'field-hint err';
+  }
+}
+
+function validatePw(el) {
+  const v = el.value;
+  const hint = document.getElementById('hintPw');
+  const bar  = document.getElementById('pwStrength');
+  if (!v) {
+    el.className = 'form-input';
+    hint.textContent = 'យ៉ាងតិច 4 តួអក្សរ';
+    hint.className = 'field-hint info';
+    bar.style.cssText = 'width:0';
+    return;
+  }
+  const len = v.length;
+  if (len < 4) {
+    el.className = 'form-input invalid';
+    hint.textContent = `ខ្លីពេក — ${len}/4 តួអក្សរ`;
+    hint.className = 'field-hint err';
+    bar.style.cssText = 'width:25%;background:#ef4444;height:3px;border-radius:2px;margin-top:5px';
+  } else if (len < 8) {
+    el.className = 'form-input valid';
+    hint.textContent = '✓ OK (ខ្លី — ពិចារណាប្រើ 8+ ខ្ទង់)';
+    hint.className = 'field-hint ok';
+    bar.style.cssText = 'width:60%;background:#f59e0b;height:3px;border-radius:2px;margin-top:5px';
+  } else {
+    el.className = 'form-input valid';
+    hint.textContent = '✓ Password ខ្លាំង';
+    hint.className = 'field-hint ok';
+    bar.style.cssText = 'width:100%;background:#22c55e;height:3px;border-radius:2px;margin-top:5px';
+  }
+}
+
+function validateOtp(el) {
+  // strip non-digits, limit 6
+  el.value = el.value.replace(/\D/g,'').slice(0,6);
+  const hint = document.getElementById('hintOtp');
+  const btn  = document.getElementById('btnOtp');
+  const len  = el.value.length;
+  if (len === 0) {
+    el.className = 'form-input otp-input';
+    hint.textContent = 'បញ្ចូល 6 ខ្ទង់';
+    hint.className = 'field-hint info';
+    btn.disabled = true;
+  } else if (len < 6) {
+    el.className = 'form-input otp-input';
+    hint.textContent = `${len}/6 ខ្ទង់`;
+    hint.className = 'field-hint info';
+    btn.disabled = true;
+  } else {
+    el.className = 'form-input otp-input valid';
+    hint.textContent = '✓ ត្រៀមរួចហើយ';
+    hint.className = 'field-hint ok';
+    btn.disabled = false;
+    setTimeout(()=>doLoginStep2(), 300); // auto-submit
+  }
+}
+
+// ── Resend OTP countdown ──────────────────────────────────────
+let _resendTimer = null;
+function startResendCountdown() {
+  let sec = 60;
+  const btn   = document.getElementById('btnResend');
+  const count = document.getElementById('resendCount');
+  btn.disabled = true;
+  clearInterval(_resendTimer);
+  _resendTimer = setInterval(() => {
+    sec--;
+    count.textContent = sec;
+    if (sec <= 0) {
+      clearInterval(_resendTimer);
+      btn.disabled = false;
+      btn.textContent = 'ផ្ញើម្ដងទៀត';
+    }
+  }, 1000);
+}
+
+async function resendOTP() {
+  const btn = document.getElementById('btnResend');
+  btn.disabled = true;
+  const pw  = document.getElementById('inputPw').value;
+  const cap = TEST_MODE ? 'test_bypass'
+            : (typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '');
+  const res = await api('loginStep1', { identifier: _loginPhone, password: pw, recaptchaToken: cap });
+  if (res.error) { showErr(res.error); btn.disabled = false; return; }
+  showOTPDelivery(res);
+  startResendCountdown();
+  document.getElementById('inputOtp').value = '';
+  document.getElementById('btnOtp').disabled = true;
+  showErr('');
+}
+
+// ── OTP delivery status message ───────────────────────────────
+function showOTPDelivery(res) {
+  const box  = document.getElementById('otpDelivery');
+  const hint = document.getElementById('otpHint');
+  hint.textContent = '***' + (res.phone || _loginPhone.slice(-4));
+
+  if (res.noTelegram || res.deliveryFailed) {
+    // User has no Telegram linked
+    box.className = 'otp-delivery warn';
+    box.innerHTML = `⚠️ User នេះមិនមាន Telegram linked ទេ<br>
+      សូម​ទាក់ទង <strong>Admin</strong> ដើម្បីទទួល OTP<br>
+      <small style="opacity:.7">ឬ Admin ប្រើ #otp ${_loginPhone} នៅ Telegram bot</small>`;
+  } else {
+    box.className = 'otp-delivery ok';
+    box.innerHTML = `📲 OTP បានផ្ញើទៅ Telegram<br>
+      លេខ <strong id="otpHint">***${res.phone||_loginPhone.slice(-4)}</strong> · ផុតកំណត់ 5 នាទី`;
+  }
+}
+
 async function doLoginStep1(){
-  const id   = document.getElementById('inputId').value.trim();
-  const pw   = document.getElementById('inputPw').value;
-  // FIX #1: TEST_MODE skips reCAPTCHA check (must match TEST_MODE_AUTH=true in auth.gs)
-  const cap  = TEST_MODE ? 'test_bypass'
-             : (typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '');
-  if(!id||!pw){ showErr('Phone/Username and password required'); return; }
-  if(!TEST_MODE && !cap){ showErr('Please complete reCAPTCHA'); return; }
+  const id  = document.getElementById('inputId').value.trim();
+  const pw  = document.getElementById('inputPw').value;
+  const cap = TEST_MODE ? 'test_bypass'
+            : (typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '');
+
+  // Validate before submit
+  if (!id || !pw) { showErr('Phone/Username and password required'); return; }
+  if (pw.length < 4) { showErr('Password យ៉ាងតិច 4 តួអក្សរ'); return; }
+  if (!TEST_MODE && !cap) { showErr('Please complete reCAPTCHA'); return; }
 
   const btn = document.getElementById('btnLogin');
   btn.disabled = true; btn.textContent = 'Verifying...';
@@ -677,15 +834,18 @@ async function doLoginStep1(){
   const res = await api('loginStep1', { identifier:id, password:pw, recaptchaToken:cap });
   btn.disabled = false; btn.textContent = 'ចូល';
 
-  if(res.error){ showErr(res.error); if(typeof grecaptcha!=='undefined') grecaptcha.reset(); return; }
+  if (res.error) { showErr(res.error); if(typeof grecaptcha!=='undefined') grecaptcha.reset(); return; }
 
-  // FIX #2: always store full phone from user input (res.phone is only 4-digit hint)
+  // FIX: always store full phone from user input
   _loginPhone = id.replace(/\D/g,'');
-  const _hint = res.phone || _loginPhone.slice(-4);
-  document.getElementById('otpHint').textContent = '***'+_hint;
+
+  // Show OTP screen
+  showOTPDelivery(res);
   document.getElementById('credScreen').style.display = 'none';
   document.getElementById('otpScreen').style.display  = 'block';
   document.getElementById('inputOtp').value = '';
+  document.getElementById('btnOtp').disabled = true;
+  startResendCountdown();
   setTimeout(()=>document.getElementById('inputOtp').focus(), 100);
 }
 
@@ -711,6 +871,10 @@ function backToCred(){
   document.getElementById('credScreen').style.display = 'block';
   document.getElementById('otpScreen').style.display  = 'none';
   document.getElementById('inputOtp').value = '';
+  document.getElementById('btnOtp').disabled = true;
+  document.getElementById('hintOtp').textContent = 'បញ្ចូល 6 ខ្ទង់';
+  document.getElementById('hintOtp').className = 'field-hint info';
+  clearInterval(_resendTimer);
   if(typeof grecaptcha!=='undefined') grecaptcha.reset();
   showErr('');
 }
