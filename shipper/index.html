@@ -11,38 +11,55 @@
 <title>YB Shipper</title>
 <style>
 :root {
-  --bg:#0f0f0f; --surface:#1a1a1a; --card:#222; --border:#333;
-  --accent:#f0a500; --accent2:#e05c00;
-  --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
-  --text:#f0f0f0; --muted:#888;
-  --font:'Segoe UI',system-ui,sans-serif;
   --safe-top: env(safe-area-inset-top);
   --hdr-h: 64px;
 }
-*{
-  margin:0;padding:0;box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none;
+
+/* ── Hide scrollbars everywhere ─────────────────────────── */
+html, body { overflow-x: hidden; }
+* {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge */
 }
-input,textarea,select,[contenteditable]{
-  -webkit-user-select:text;user-select:text;
+*::-webkit-scrollbar {
+  display: none;                /* Chrome/Safari/WebKit */
 }
+
 body{
-  background:var(--bg);color:var(--text);font-family:var(--font);
-  min-height:100vh;padding-bottom:80px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  min-height:100vh;
+  padding-bottom:80px;
   padding-top:calc(var(--hdr-h) + env(safe-area-inset-top));
 }
-/* HEADER — fixed, top:0, safe-area padding inside, auto-hide on scroll */
 .hdr{
-  background:#0f0f0f;border-bottom:1px solid var(--border);
-  padding:env(safe-area-inset-top) 16px 0;
+  background:#0f0f0f;
+  border-bottom:1px solid var(--border);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:50;
+  height:var(--hdr-h);
+  transform:translateY(env(safe-area-inset-top));
+  transition:transform .28s ease;
+  will-change:transform;
+}
+
+.hdr-spacer {
+  display:none;
+}
+/* HEADER — fixed + auto-hide */
+.hdr{background:#0f0f0f;border-bottom:1px solid var(--border);
+  padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));
   display:flex;align-items:center;gap:10px;
   position:fixed;top:0;left:0;right:0;z-index:50;
   height:calc(var(--hdr-h) + env(safe-area-inset-top));
-  transition:transform .28s ease;will-change:transform;
-}
+  transition:transform .28s ease;will-change:transform}
 .hdr.hdr-hidden{transform:translateY(-100%)}
-.hdr-spacer{display:none}
+.hdr-spacer{height:var(--hdr-h);transition:height .28s ease;flex-shrink:0}
+.hdr-spacer.hdr-hidden{height:0}
 .hdr-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:10px;display:flex;align-items:center;justify-content:center;
   font-size:19px;font-weight:700;color:#000;flex-shrink:0;cursor:pointer;
@@ -139,8 +156,7 @@ body{
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:fixed;inset:0;
-  gap:14px;color:var(--muted);font-size:14px;
+  position:fixed;inset:0;top:var(--hdr-h);gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
 .loading-sm{position:relative;inset:auto;min-height:120px;background:transparent;z-index:auto}
 .spinner{width:36px;height:36px;border:3px solid var(--border);
@@ -166,7 +182,7 @@ body{
   font-size:22px;animation:hold-pulse .6s ease infinite alternate}
 @keyframes hold-pulse{from{transform:scale(1)}to{transform:scale(1.15)}}
 
-/* ── FULLSCREEN POPUP ────────────────────────────────────── */
+/* ── FULLSCREEN POPUP (Dynamic Island aware) ────────────── */
 .popup-overlay{
   position:fixed;inset:0;
   background:rgba(0,0,0,.7);
@@ -176,15 +192,14 @@ body{
 .popup-overlay.on{opacity:1;pointer-events:all}
 .popup{
   position:fixed;
-  top:0;left:0;right:0;bottom:0;
+  top:env(safe-area-inset-top,59px);
+  left:0;right:0;bottom:0;
   background:var(--surface);
-  border-radius:0;
+  border-radius:16px 16px 0 0;
   display:flex;flex-direction:column;
   transform:translateY(110%);
   transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
   overflow:hidden;
-  /* push content below notch/Dynamic Island */
-  padding-top:env(safe-area-inset-top,0px);
 }
 .popup-overlay.on .popup{transform:translateY(0)}
 .popup-handle{width:40px;height:5px;background:var(--border);border-radius:3px;
@@ -237,8 +252,7 @@ body{
 
 /* LOGIN */
 .login-box{background:var(--card);border:1px solid var(--accent)44;
-  border-radius:16px;padding:24px;text-align:center;
-  width:100%;max-width:360px}
+  border-radius:16px;padding:24px;text-align:center;width:100%;max-width:340px}
 .login-box h3{font-size:17px;font-weight:700;color:var(--accent);margin-bottom:6px}
 .login-box p{font-size:13px;color:var(--muted);margin-bottom:16px}
 .login-input{width:100%;padding:13px;border-radius:10px;
@@ -321,54 +335,44 @@ body{
   padding:8px 12px;display:flex;gap:8px;align-items:center;
   border-bottom:1px solid #ddd;z-index:1}
 @media print{
-  body>*:not(#invoice-overlay):not(#label-overlay){display:none!important}
-  #invoice-overlay,#label-overlay{display:block!important;position:static!important;overflow:visible!important}
+  body>*:not(#invoice-overlay){display:none!important}
+  #invoice-overlay{display:block!important;position:static!important;overflow:visible!important}
   .inv-toolbar{display:none!important}
-  #invoice-content,#label-content{padding:0!important}
+  #invoice-content{padding:0!important}
 }
 
 /* ── STOCK MODULE ─────────────────────────────────────── */
-.stock-toolbar{
-  padding:10px 12px;display:flex;align-items:center;
-  justify-content:space-between;gap:8px;
-  background:var(--surface);border-bottom:1px solid var(--border);
-}
-.stock-list{padding:10px;display:flex;flex-direction:column;gap:8px;padding-bottom:20px}
-.stock-row{
-  background:var(--card);border:1px solid var(--border);border-radius:10px;
-  padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer;
-  transition:border-color .15s;
-}
-.stock-row:active{transform:scale(.98)}
-.stock-row-low{border-color:var(--red)66;background:#ef444408}
-.stock-row-left{flex:1;min-width:0}
-.stock-row-name{
-  font-size:13px;font-weight:600;color:var(--text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;
-}
-.stock-row-price{font-size:11px;color:var(--muted)}
-.stock-qty-val{
-  min-width:34px;text-align:center;font-size:16px;font-weight:700;color:var(--accent);
-}
-.stock-add-btn{
-  width:34px;height:34px;background:var(--accent);color:#000;border:none;
+.stock-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.stock-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:10px;cursor:pointer;transition:transform .15s,border-color .15s}
+.stock-card:active{transform:scale(.97)}
+.stock-card.low-stock{border-color:var(--red)88;background:#ef444410}
+.stock-card-img{width:100%;height:88px;border-radius:7px;margin-bottom:7px;
+  background:var(--border);object-fit:cover;display:block}
+.stock-card-img-placeholder{width:100%;height:88px;border-radius:7px;margin-bottom:7px;
+  background:var(--border);display:flex;align-items:center;justify-content:center;font-size:30px}
+.stock-card-name{font-size:12px;font-weight:600;margin-bottom:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.stock-card-bottom{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.stock-card-qty{font-size:21px;font-weight:700;line-height:1}
+.stock-card-min{font-size:10px;color:var(--muted);margin-top:2px}
+.stock-card-price{font-size:11px;color:var(--muted);margin-top:3px}
+.stock-add-btn{width:34px;height:34px;background:var(--accent);color:#000;border:none;
   border-radius:8px;font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;line-height:1;
-  transition:opacity .15s;
-}
+  transition:opacity .15s}
 .stock-add-btn:active{opacity:.75}
-.stock-info-box{
-  padding:12px;background:var(--card);border-radius:8px;
-  font-size:13px;color:var(--muted);margin-bottom:14px;
-  border-left:3px solid var(--accent);
-}
 .stock-form-label{font-size:12px;color:var(--muted);margin-bottom:4px;display:block;font-weight:600}
-.stock-form-input{
-  width:100%;padding:12px;background:var(--card);
+.stock-form-input{width:100%;padding:12px;background:var(--card);
   border:1px solid var(--border);border-radius:8px;color:var(--text);
-  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none;
-}
+  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
 .stock-form-input:focus{outline:none;border-color:var(--accent)}
+.stock-form-select{width:100%;padding:12px;background:var(--card);
+  border:1px solid var(--border);border-radius:8px;color:var(--text);
+  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
+.stock-form-select:focus{outline:none;border-color:var(--accent)}
+.stock-info-box{padding:10px 12px;background:var(--card);border-radius:8px;
+  font-size:13px;color:var(--muted);margin-bottom:12px;border-left:3px solid var(--accent)}
 </style>
 </head>
 <body>
@@ -450,17 +454,6 @@ body{
   <div id="invoice-content" style="padding:10px;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
 </div>
 
-<!-- Label Overlay (in-page, replaces window.open — works in TG WebApp) -->
-<div class="invoice-overlay" id="label-overlay">
-  <div class="inv-toolbar">
-    <button onclick="closeLabelOverlay()"
-      style="padding:8px 14px;background:#333;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">← Back</button>
-    <button onclick="window.print()"
-      style="padding:8px 18px;background:#f0a500;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">🖨️ Print</button>
-  </div>
-  <div id="label-content" style="padding:6px;background:#fff"></div>
-</div>
-
 <script>
 const tg = window.Telegram.WebApp;
 try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
@@ -484,19 +477,22 @@ let _searchTimer = null;
 let _currentInvId = null;
 
 // ── STOCK STATE ───────────────────────────────────────────
-let stockItems  = [];
-let stockLoaded = false;
+let stockProducts = [];
+let stockLoaded   = false;
 
 // ── SCROLL AUTO-HIDE HEADER ──────────────────────────────
 let _lastScrollY = 0;
 window.addEventListener('scroll', () => {
   const y   = window.scrollY;
   const hdr = document.getElementById('main-hdr');
+  const sp  = document.getElementById('hdr-spacer');
   if (!hdr) return;
   if (y > _lastScrollY + 6 && y > 60) {
     hdr.classList.add('hdr-hidden');
+    if (sp) sp.classList.add('hdr-hidden');
   } else if (y < _lastScrollY - 6) {
     hdr.classList.remove('hdr-hidden');
+    if (sp) sp.classList.remove('hdr-hidden');
   }
   _lastScrollY = y;
 }, { passive: true });
@@ -524,149 +520,115 @@ function e(v){
                        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-// ── CALL PHONE → open Telegram chat ─────────────────────
+// ── CALL PHONE (TG WebApp safe) ───────────────────────────
 function callPhone(phone){
   const clean=String(phone||'').replace(/\D/g,'');
   if(!clean)return;
-  // Cambodia: 0XXXXXXXXX → +855XXXXXXXXX
-  let intl=clean;
-  if(clean.startsWith('0'))       intl='855'+clean.slice(1);
-  else if(!clean.startsWith('855'))intl='855'+clean;
-  try{ tg.openLink('https://t.me/+'+intl); }
+  try{ tg.openLink('tel:'+clean); }
   catch(_){ window.location.href='tel:'+clean; }
 }
 
-// ── API — POST + Bearer token (doc: token in POST body) ───
-let _token = null; // session token — MEMORY ONLY, never localStorage
-
+// ── API ───────────────────────────────────────────────────
+// Shipper uses dedicated GET endpoints (no token required)
 function gs(fn, arg) {
-  const body = { fn };
-  if (arg !== undefined) body.data = arg;
-  if (_token) body.token = _token;
-  return fetch(API + '?action=gs', {
+  // ── Shipper dedicated endpoints (GET) ─────────────────
+  if (fn === 'handleShipperLogin') {
+    const tgId = encodeURIComponent(String(arg || ''));
+    return fetch(`${API}?action=shipper_login&tg_id=${tgId}`)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  if (fn === 'handleShipperOrders') {
+    const phone = encodeURIComponent(String(arg || ''));
+    return fetch(`${API}?action=shipper_orders&phone=${phone}`)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  if (fn === 'handleShipperComplete') {
+    const pid   = encodeURIComponent(String((arg && arg[0]) || arg || ''));
+    const phone = encodeURIComponent(String((arg && arg[1]) || ''));
+    return fetch(`${API}?action=shipper_complete&profile_id=${pid}&phone=${phone}`)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  // ── verifyLogin — POST body ────────────────────────────
+  if (fn === 'verifyLogin') {
+    return fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'loginStep1', ...arg })
+    }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  // ── userProfile — GET legacy ───────────────────────────
+  if (fn === 'userProfile') {
+    const data = encodeURIComponent(JSON.stringify(typeof arg === 'object' ? arg : { identifier: arg }));
+    return fetch(`${API}?action=gs&fn=userProfile&data=${data}`)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  // ── getProducts → public catalog ─────────────────────────
+  if (fn === 'getProducts' || fn === 'getPublicProducts') {
+    return fetch(`${API}?action=products`)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
+  // ── Stock / other — POST body ──────────────────────────
+  const body = typeof arg === 'object' && arg !== null ? arg : { data: arg };
+  return fetch(API, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  }).then(r => {
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
-  }).then(d => {
-    // Auto-logout if server says token expired/invalid
-    if (d && (d.error === 'TOKEN_EXPIRED' || d.error === 'UNAUTHORIZED')) {
-      showToast('⚠️ Session expired — please login again', true);
-      setTimeout(doLogout, 1500);
-      throw new Error(d.error);
-    }
-    return d;
-  });
+    body: JSON.stringify({ action: fn, ...body })
+  }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
 }
 
-// ── SESSION — profile only in localStorage, token in memory ─
-const SESSION_TTL = 8 * 60 * 60 * 1000; // 8h — matches doc
-function saveSession(d) {
-  // Store ONLY non-sensitive profile data — NO token
-  try {
-    localStorage.setItem('yb_shipper', JSON.stringify({
-      phone:    sanitizeStr(d.phone),
-      name:     sanitizeStr(d.name || 'Shipper'),
-      role:     sanitizeStr(d.role || 'shipper'),
-      store_id: sanitizeStr(d.store_id || d.storeId || ''),
-      ts:       Date.now()
-    }));
-  } catch(_) {}
+// ── SESSION ───────────────────────────────────────────────
+const SESSION_TTL=12*60*60*1000;
+function saveSession(d){
+  try{localStorage.setItem('yb_shipper',JSON.stringify({
+    phone:sanitizeStr(d.phone),name:sanitizeStr(d.name||'Shipper'),
+    role:sanitizeStr(d.role||'shipper'),
+    store_id:sanitizeStr(d.store_id||d.storeId||''),
+    ts:Date.now()
+  }));}catch(_){}
 }
-function loadSession() {
-  try {
-    const s = JSON.parse(localStorage.getItem('yb_shipper') || '{}');
-    if (!s.phone) return null;
-    if (Date.now() - (s.ts || 0) > SESSION_TTL) {
-      localStorage.removeItem('yb_shipper'); return null;
-    }
+function loadSession(){
+  try{
+    const s=JSON.parse(localStorage.getItem('yb_shipper')||'{}');
+    if(!s.phone)return null;
+    if(Date.now()-(s.ts||0)>SESSION_TTL){localStorage.removeItem('yb_shipper');return null;}
     return s;
-  } catch(_) { return null; }
+  }catch(_){return null;}
 }
-function clearSession() {
-  try { localStorage.removeItem('yb_shipper'); } catch(_) {}
-  _token = null; // always clear memory token on session clear
-}
-function getLocalPhoto() {
-  try { return localStorage.getItem('yb_shipper_photo') || ''; } catch(_) { return ''; }
-}
-
-// ── LOGIN RATE LIMIT (reCAPTCHA alternative for TG WebApp) ─
-const _loginAttempts = { count: 0, since: 0 };
-function _checkRateLimit() {
-  const now = Date.now();
-  if (now - _loginAttempts.since > 5 * 60 * 1000) {
-    _loginAttempts.count = 0; _loginAttempts.since = now;
-  }
-  _loginAttempts.count++;
-  if (_loginAttempts.count > 3) {
-    const wait = Math.ceil((5 * 60 * 1000 - (now - _loginAttempts.since)) / 1000);
-    showToast(`❌ ព្យាយាមច្រើនពេក — wait ${wait}s`, true);
-    return false;
-  }
-  return true;
-}
-
-// ── HEADER VISIBILITY ─────────────────────────────────────
-function _showLoginMode() {
-  const hdr = document.getElementById('main-hdr');
-  if (hdr) hdr.style.display = 'none';
-  document.body.style.paddingTop    = '0';
-  document.body.style.paddingBottom = '0';
-  document.body.style.overflow      = 'hidden';
-}
-function _showAppMode() {
-  const hdr = document.getElementById('main-hdr');
-  if (hdr) hdr.style.display = '';
-  document.body.style.paddingTop    = '';
-  document.body.style.paddingBottom = '';
-  document.body.style.overflow      = '';
-}
+function clearSession(){try{localStorage.removeItem('yb_shipper');}catch(_){}}
+function getLocalPhoto(){try{return localStorage.getItem('yb_shipper_photo')||'';}catch(_){return '';}}
 
 // ── BOOT ──────────────────────────────────────────────────
-_showLoginMode(); // hide header immediately — shown again in bootWithData()
-const saved = loadSession();
-if (tgId) {
-  gs('handleShipperLogin', tgId)
-    .then(d => {
-      if (d.error) { saved ? bootWithData(saved) : showPhoneLogin(); return; }
-      if (d.token) _token = sanitizeStr(d.token); // store token in memory
-      saveSession(d);
-      bootWithData(d);
-    })
-    .catch(() => { saved ? bootWithData(saved) : showPhoneLogin(); });
-} else { saved ? bootWithData(saved) : showPhoneLogin(); }
+const saved=loadSession();
+if(tgId){
+  gs('handleShipperLogin',tgId)
+    .then(d=>{if(d.error){saved?bootWithData(saved):showPhoneLogin();}else{saveSession(d);bootWithData(d);}})
+    .catch(()=>{saved?bootWithData(saved):showPhoneLogin();});
+}else{saved?bootWithData(saved):showPhoneLogin();}
 
-function bootWithData(data) {
-  _showAppMode();
-  shipperData = {
-    phone:    sanitizeStr(data.phone),
-    name:     sanitizeStr(data.name || 'Shipper'),
-    role:     sanitizeStr(data.role || 'shipper'),
-    store_id: sanitizeStr(data.store_id || data.storeId || '')
+function bootWithData(data){
+  shipperData={
+    phone:sanitizeStr(data.phone),
+    name:sanitizeStr(data.name||'Shipper'),
+    role:sanitizeStr(data.role||'shipper'),
+    store_id:sanitizeStr(data.store_id||data.storeId||'')
   };
-  const role = (shipperData.role || '').toLowerCase();
-  if (role && role !== 'shipper' && role !== 'admin') {
-    clearSession(); showPhoneLogin(); return;
-  }
-  document.getElementById('hdr-actions').style.display = 'flex';
+  const role=(shipperData.role||'').toLowerCase();
+  if(role&&role!=='shipper'&&role!=='admin'){clearSession();showPhoneLogin();return;}
+  document.getElementById('hdr-actions').style.display='flex';
   loadOrders();
 }
 
 // ── NOTIFICATION ──────────────────────────────────────────
-function pushNotif(title, body) {
-  if (!('Notification' in window)) return;
-  try { if (Notification.permission === 'granted') new Notification(title, { body }); } catch(_) {}
+function pushNotif(title,body){
+  if(!('Notification' in window))return;
+  try{if(Notification.permission==='granted')new Notification(title,{body});}catch(_){}
 }
 
 // ── LOGIN ─────────────────────────────────────────────────
-let _pwVisible = false;
-function showPhoneLogin() {
-  _showLoginMode();
-  document.getElementById('app-content').innerHTML = `
-    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,24px) 20px env(safe-area-inset-bottom,20px);background:var(--bg);overflow-y:auto;z-index:5">
+let _pwVisible=false;
+function showPhoneLogin(){
+  document.getElementById('app-content').innerHTML=`
+    <div style="height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;padding-top:env(safe-area-inset-top)">
       <div class="login-box">
         <h3>🚚 YB Shipper Login</h3>
         <p>Phone + Password</p>
@@ -686,120 +648,37 @@ function showPhoneLogin() {
         <button class="login-btn" id="login-btn" onclick="loginByPhone()">Login →</button>
       </div>
     </div>`;
-  setTimeout(() => document.getElementById('phone-inp')?.focus(), 200);
+  setTimeout(()=>document.getElementById('phone-inp')?.focus(),200);
 }
-
-function togglePw() {
-  _pwVisible = !_pwVisible;
-  const i = document.getElementById('pw-inp'); if (i) i.type = _pwVisible ? 'text' : 'password';
-  const ey = document.getElementById('pw-eye'); if (ey) ey.textContent = _pwVisible ? '🙈' : '👁';
+function togglePw(){
+  _pwVisible=!_pwVisible;
+  const i=document.getElementById('pw-inp');if(i)i.type=_pwVisible?'text':'password';
+  const ey=document.getElementById('pw-eye');if(ey)ey.textContent=_pwVisible?'🙈':'👁';
 }
-
-// Step 1 — Phone + Password → may return {step:'otp', tempToken}
-async function loginByPhone() {
-  if (!_checkRateLimit()) return;
-  const rawP = document.getElementById('phone-inp')?.value.trim() || '';
-  const rawW = document.getElementById('pw-inp')?.value || '';
-  const btn  = document.getElementById('login-btn');
-  const pv = validatePhone(rawP);
-  if (!pv.ok) { document.getElementById('phone-inp')?.classList.add('input-error'); showToast('❌ ' + pv.msg, true); return; }
-  const wv = validatePassword(rawW);
-  if (!wv.ok) { document.getElementById('pw-inp')?.classList.add('input-error'); showToast('❌ ' + wv.msg, true); return; }
-  if (btn) { btn.disabled = true; btn.textContent = 'កំពុងផ្ទុក...'; }
-  try {
-    const r = await gs('verifyLogin', { identifier: pv.value, password: wv.value });
-    if (r.error) {
-      showToast('❌ ' + sanitizeStr(r.error), true);
-      document.getElementById('pw-inp')?.classList.add('input-error');
-      if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
-      return;
-    }
-    // Step 2 — OTP required
-    if (r.step === 'otp') {
-      showOTPScreen(pv.value, sanitizeStr(r.tempToken || ''));
-      return;
-    }
-    // Direct login (TG WebApp fallback — no OTP needed when TG verified)
-    const role = String(r.role || '').toLowerCase();
-    if (role !== 'shipper' && role !== 'admin') {
-      showToast('❌ គណនីនេះ មិនមែន Shipper', true);
-      if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
-      return;
-    }
-    if (r.token) _token = sanitizeStr(r.token); // memory only
-    _loginAttempts.count = 0; // reset on success
-    saveSession(r); bootWithData(r);
-  } catch(err) {
-    showToast('❌ ' + sanitizeStr(err.message), true);
-    if (btn) { btn.disabled = false; btn.textContent = 'Login →'; }
-  }
+async function loginByPhone(){
+  const rawP=document.getElementById('phone-inp')?.value.trim()||'';
+  const rawW=document.getElementById('pw-inp')?.value||'';
+  const btn=document.getElementById('login-btn');
+  const pv=validatePhone(rawP);
+  if(!pv.ok){document.getElementById('phone-inp')?.classList.add('input-error');showToast('❌ '+pv.msg,true);return;}
+  const wv=validatePassword(rawW);
+  if(!wv.ok){document.getElementById('pw-inp')?.classList.add('input-error');showToast('❌ '+wv.msg,true);return;}
+  if(btn){btn.disabled=true;btn.textContent='កំពុងផ្ទុក...';}
+  try{
+    const r=await gs('verifyLogin',{identifier:pv.value,password:wv.value});
+    if(r.error){showToast('❌ '+sanitizeStr(r.error),true);document.getElementById('pw-inp')?.classList.add('input-error');if(btn){btn.disabled=false;btn.textContent='Login →';}return;}
+    const role=String(r.role||'').toLowerCase();
+    if(role!=='shipper'&&role!=='admin'){showToast('❌ គណនីនេះ មិនមែន Shipper',true);if(btn){btn.disabled=false;btn.textContent='Login →';}return;}
+    saveSession(r);bootWithData(r);
+  }catch(err){showToast('❌ '+sanitizeStr(err.message),true);if(btn){btn.disabled=false;btn.textContent='Login →';}}
 }
-
-// Step 2 — OTP screen (6-digit code sent to Telegram)
-function showOTPScreen(phone, tempToken) {
-  _showLoginMode();
-  document.getElementById('app-content').innerHTML = `
-    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,24px) 20px env(safe-area-inset-bottom,20px);background:var(--bg);overflow-y:auto;z-index:5">
-      <div class="login-box">
-        <h3>🔐 OTP Verification</h3>
-        <p style="margin-bottom:4px">OTP ៦ ខ្ទង់ ត្រូវបានផ្ញើទៅ Telegram</p>
-        <p style="font-size:11px;color:var(--accent);margin-bottom:16px">
-          📱 ${phone} &nbsp;·&nbsp; 期5 min
-        </p>
-        <input id="otp-inp" class="login-input" type="number"
-          placeholder="000000" maxlength="6" inputmode="numeric"
-          autocomplete="one-time-code"
-          oninput="this.value=this.value.replace(/\D/g,'').slice(0,6);this.classList.remove('input-error')"
-          onkeydown="if(event.key==='Enter')submitOTP('${phone}','${tempToken}')">
-        <div class="input-hint">OTP ផុតកំណត់ ៥ នាទី — cleared after use</div>
-        <button class="login-btn" id="otp-btn" onclick="submitOTP('${phone}','${tempToken}')">
-          ✅ Verify OTP</button>
-        <button onclick="showPhoneLogin()"
-          style="width:100%;margin-top:8px;padding:11px;background:none;
-          border:1px solid var(--border);border-radius:10px;color:var(--muted);
-          font-size:14px;cursor:pointer">← Back</button>
-      </div>
-    </div>`;
-  setTimeout(() => document.getElementById('otp-inp')?.focus(), 200);
-}
-
-async function submitOTP(phone, tempToken) {
-  const otp = (document.getElementById('otp-inp')?.value || '').replace(/\D/g, '');
-  const btn = document.getElementById('otp-btn');
-  if (otp.length !== 6) {
-    document.getElementById('otp-inp')?.classList.add('input-error');
-    showToast('❌ OTP ត្រូវ ៦ ខ្ទង់', true); return;
-  }
-  if (btn) { btn.disabled = true; btn.textContent = 'Verifying...'; }
-  try {
-    const r = await gs('verifyOTP', { phone, otp, tempToken });
-    if (r.error) {
-      showToast('❌ ' + sanitizeStr(r.error), true);
-      document.getElementById('otp-inp')?.classList.add('input-error');
-      if (btn) { btn.disabled = false; btn.textContent = '✅ Verify OTP'; }
-      return;
-    }
-    const role = String(r.role || '').toLowerCase();
-    if (role !== 'shipper' && role !== 'admin') {
-      showToast('❌ គណនីនេះ មិនមែន Shipper', true);
-      showPhoneLogin(); return;
-    }
-    if (r.token) _token = sanitizeStr(r.token); // token in memory only
-    _loginAttempts.count = 0;
-    saveSession(r); bootWithData(r);
-  } catch(err) {
-    showToast('❌ ' + sanitizeStr(err.message), true);
-    if (btn) { btn.disabled = false; btn.textContent = '✅ Verify OTP'; }
-  }
-}
-
-function doLogout() {
-  stopPoll(); clearSession(); // clearSession() also sets _token = null
-  shipperData = null; allOrders = []; orders = []; lastCount = -1; _pwVisible = false;
-  stockItems = []; stockLoaded = false;
-  document.getElementById('hdr-actions').style.display = 'none';
-  document.getElementById('pending-count').textContent = '0';
-  closeProfile(); showPhoneLogin();
+function doLogout(){
+  stopPoll();clearSession();
+  shipperData=null;allOrders=[];orders=[];lastCount=-1;_pwVisible=false;
+  stockProducts=[];stockLoaded=false;
+  document.getElementById('hdr-actions').style.display='none';
+  document.getElementById('pending-count').textContent='0';
+  closeProfile();showPhoneLogin();
 }
 
 // ── LOAD ORDERS ───────────────────────────────────────────
@@ -1143,10 +1022,6 @@ async function openDetail(profileId){
   document.getElementById('detail-foot').innerHTML=`
     <button class="btn-call" onclick="callPhone('${phoneClean}')"
       style="padding:11px 18px;font-size:14px;border:1px solid #3b82f644;border-radius:10px;cursor:pointer">📞 Call</button>
-    <button onclick="closeDetail();printLabel('${sid}')"
-      style="padding:11px 14px;background:#3b82f622;color:var(--blue);
-      border:1px solid #3b82f644;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">
-      📦 Label</button>
     ${!done
       ?`<button onclick="closeDetail();askDeliver('${sid}','${e(o.name||'')}');"
           style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -1298,54 +1173,57 @@ function closeInvoiceOverlay(){
   document.body.style.overflow='';
 }
 
-// ── PRINT LABEL (in-page overlay — TG WebApp safe) ────────
+// ── PRINT LABEL ───────────────────────────────────────────
 function printLabel(profileId){
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o){showToast('❌ Order not found',true);return;}
-
-  // Close invoice overlay if open
-  document.getElementById('invoice-overlay').classList.remove('on');
-
-  // Build label HTML (inline styles only — no external deps needed)
-  const labelHtml=`
-<div style="
-  font-family:'Battambang','Khmer OS Siemreap',Arial,sans-serif;
-  font-size:9.5pt;color:#000;
-  border:1pt solid #000;padding:6px;
-  max-width:100mm;margin:0 auto;
-  box-sizing:border-box;
-">
-  <div style="display:flex;justify-content:space-between;
-    border-bottom:.5pt solid #ccc;padding-bottom:4px;margin-bottom:4px;font-size:8pt">
-    <span style="font-weight:700">📦 YB 9999 Electronics</span>
-    <span>076 9999 380</span>
-  </div>
-  <div style="font-size:15pt;font-weight:700;margin-bottom:2px">${e(o.name||'—')}</div>
-  <div style="font-size:12pt;font-weight:600;margin-bottom:3px">📞 ${e(o.phone||'—')}</div>
-  <div style="font-size:8.5pt;color:#333;margin-bottom:3px">📍 ${e(o.location||'—')}</div>
-  <div style="font-size:8pt;color:#555;
-    border-top:.5pt dashed #aaa;padding-top:3px;margin-bottom:4px">
-    🏷️ ${e((o.ordered||'—').substring(0,100))}${(o.ordered||'').length>100?'…':''}
-  </div>
-  <div style="display:flex;justify-content:space-between;align-items:center;
-    border-top:.5pt solid #000;padding-top:3px">
-    <span style="font-size:14pt;font-weight:700">${e(o.retail||o.pricing||'—')}</span>
-    <span style="background:#f0a500;padding:2px 8px;border-radius:3px;
-      font-size:8pt;font-weight:700">${e(o.payment||'COD')}</span>
+  const html=`<!DOCTYPE html><html lang="km"><head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
+<title>Label</title>
+<style>
+@page{size:100mm 70mm;margin:3mm}
+@media print{.noprint{display:none!important}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;color:#000}
+.label{border:1pt solid #000;padding:5px;height:calc(100% - 2mm)}
+.top{display:flex;justify-content:space-between;border-bottom:.5pt solid #ccc;padding-bottom:3px;margin-bottom:3px;font-size:8pt}
+.cname{font-size:15pt;font-weight:700;margin-bottom:2px}
+.cphone{font-size:12pt;font-weight:600}
+.addr{font-size:8.5pt;margin:3px 0;color:#333}
+.items{font-size:8pt;color:#555;border-top:.5pt dashed #aaa;padding-top:3px;margin-top:3px}
+.footer{display:flex;justify-content:space-between;align-items:center;border-top:.5pt solid #000;padding-top:3px;margin-top:4px}
+.price{font-size:14pt;font-weight:700}
+.pay-badge{background:#f0a500;padding:2px 7px;border-radius:3px;font-size:8pt;font-weight:700}
+</style></head><body>
+<div class="noprint" style="text-align:center;padding:6px;background:#f5f5f5;margin-bottom:6px">
+  <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>
+  <button onclick="window.close()" style="padding:7px 14px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;margin-left:6px">✕</button>
+</div>
+<div class="label">
+  <div class="top"><span style="font-weight:700">📦 YB 9999 Electronics</span><span>076 9999 380</span></div>
+  <div class="cname">${e(o.name||'—')}</div>
+  <div class="cphone">📞 ${e(o.phone||'—')}</div>
+  <div class="addr">📍 ${e(o.location||'—')}</div>
+  <div class="items">🏷️ ${e((o.ordered||'—').substring(0,80))}${(o.ordered||'').length>80?'…':''}</div>
+  <div class="footer">
+    <span class="price">${e(o.retail||o.pricing||'—')}</span>
+    <span class="pay-badge">${e(o.payment||'COD')}</span>
     <span style="font-size:8pt;color:#777">${e((o.orderDate||'').substring(0,10))}</span>
   </div>
-  <div style="font-size:7pt;color:#aaa;margin-top:2px;text-align:right">
-    ID: ${e(o.profileId||'')}
-  </div>
-</div>`;
-
-  document.getElementById('label-content').innerHTML=labelHtml;
-  document.getElementById('label-overlay').classList.add('on');
-  document.body.style.overflow='hidden';
-}
-function closeLabelOverlay(){
-  document.getElementById('label-overlay').classList.remove('on');
-  document.body.style.overflow='';
+  <div style="font-size:7pt;color:#aaa;margin-top:2px;text-align:right">ID: ${e(o.profileId||'')}</div>
+</div>
+<script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script>
+</body></html>`;
+  try{
+    const w=window.open('','_blank');
+    if(w){w.document.write(html);w.document.close();return;}
+  }catch(_){}
+  try{
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    tg.openLink(url);
+  }catch(_){showToast('❌ Please allow popups',true);}
 }
 
 // ── PROFILE PAGE ──────────────────────────────────────────
@@ -1467,9 +1345,6 @@ function showToast(msg,isErr){
 }
 
 // ============ STOCK MODULE ============
-// Connected to shop owner's Google Sheets Products
-// Load: getProducts(storeId)  — shop owner manages from admin dashboard
-// Update: addMovement({product_id, store_id, type, qty, note, created_by})
 
 async function loadStock(){
   if(!shipperData)return;
@@ -1478,9 +1353,9 @@ async function loadStock(){
     '<div class="loading"><div class="spinner"></div>ផ្ទុក Stock...</div>';
   try{
     const r=await gs('getProducts',storeId);
-    stockItems=Array.isArray(r)?r:(r.products||[]);
+    stockProducts=Array.isArray(r)?r:(r.products||[]);
     stockLoaded=true;
-    renderAll();
+    renderAll(); // activeTab is still 'stock' → triggers _renderStockView
   }catch(err){
     stockLoaded=false;
     showError('Load stock failed: '+sanitizeStr(err.message));
@@ -1490,93 +1365,89 @@ async function loadStock(){
 function _renderStockView(){
   const pending  =allOrders.filter(o=>!isCompleted(o));
   const completed=allOrders.filter(o=>isCompleted(o));
-  const low=stockItems.filter(p=>parseInt(p.stock_qty||0)<=parseInt(p.min_stock||0));
+  const low=stockProducts.filter(p=>parseInt(p.stock_qty||0)<=parseInt(p.min_stock||0));
+
+  const cards=stockProducts.length
+    ? stockProducts.map(_renderStockCard).join('')
+    : `<div class="empty" style="grid-column:1/-1">
+        <div class="empty-icon">📭</div>
+        <h3>គ្មាន Products</h3>
+        <p>ចុច Refresh</p>
+       </div>`;
 
   document.getElementById('app-content').innerHTML=`
     ${renderProfileCard()}
     <div class="stats">
-      <div class="stat">
-        <div class="stat-num">${stockItems.length}</div>
-        <div class="stat-lbl">Products</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" style="color:${low.length?'var(--red)':'var(--green)'}">
-          ${low.length}
-        </div>
-        <div class="stat-lbl">⚠️ Low Stock</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" style="color:var(--green)">${stockItems.length-low.length}</div>
-        <div class="stat-lbl">✅ OK</div>
-      </div>
+      <div class="stat"><div class="stat-num">${stockProducts.length}</div><div class="stat-lbl">Products</div></div>
+      <div class="stat"><div class="stat-num" style="color:${low.length?'var(--red)':'var(--green)'}">${low.length}</div><div class="stat-lbl">⚠️ Low Stock</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--green)">${stockProducts.length-low.length}</div><div class="stat-lbl">✅ OK</div></div>
     </div>
     <div class="tabs">
       <div class="tab" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
       <div class="tab" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
-      <div class="tab active">📦 Stock (${stockItems.length})</div>
+      <div class="tab active">📦 Stock (${stockProducts.length})</div>
     </div>
-    <div class="stock-toolbar">
-      <span style="font-size:12px;color:var(--muted)">ម្ចាស់ហាងគ្រប់គ្រងពី Admin</span>
+    <div style="padding:8px 12px;display:flex;justify-content:flex-end">
       <button onclick="stockLoaded=false;loadStock()"
         style="padding:7px 14px;background:var(--surface);border:1px solid var(--border);
         border-radius:7px;color:var(--muted);font-size:12px;cursor:pointer">🔄 Refresh</button>
     </div>
-    <div class="stock-list">
-      ${_renderStockList()}
-    </div>`;
+    <div class="stock-grid">${cards}</div>`;
 }
 
-function _renderStockList(){
-  if(!stockItems.length) return`
-    <div class="empty">
-      <div class="empty-icon">📭</div>
-      <h3>គ្មាន Products</h3>
-      <p>ម្ចាស់ហាងត្រូវបន្ថែម products ពី Admin dashboard</p>
-    </div>`;
-
-  return stockItems.map((p,i)=>{
-    const qty=parseInt(p.stock_qty||0);
-    const min=parseInt(p.min_stock||0);
-    const isLow=qty<=min;
-    const pid=e(p.product_id||String(i));
-    const pname=e(p.name||'—');
-    return`
-    <div class="stock-row ${isLow?'stock-row-low':''}"
-      onclick="openStockDetail('${pid}')">
-      <div class="stock-row-left">
-        <div class="stock-row-name">${pname}</div>
-        <div class="stock-row-price">${p.price?`$${parseFloat(p.price).toFixed(2)}/unit`:''}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div class="stock-qty-val" style="color:${isLow?'var(--red)':'var(--accent)'}">
+function _renderStockCard(p){
+  const qty=parseInt(p.stock_qty||0);
+  const min=parseInt(p.min_stock||0);
+  const isLow=qty<=min;
+  const hasImg=p.image_url&&!p.image_url.includes('INSERT')&&p.image_url.startsWith('http');
+  const pid=e(p.product_id||'');
+  const pname=e(p.name||'');
+  return`
+  <div class="stock-card ${isLow?'low-stock':''}" onclick="openStockDetail('${pid}')">
+    ${hasImg
+      ?`<img class="stock-card-img" src="${e(p.image_url)}" loading="lazy"
+          onerror="this.outerHTML='<div class=\\'stock-card-img-placeholder\\'>📦</div>'">`
+      :`<div class="stock-card-img-placeholder">📦</div>`}
+    <div class="stock-card-name" title="${pname}">${pname||'—'}</div>
+    <div class="stock-card-bottom">
+      <div>
+        <div class="stock-card-qty" style="color:${isLow?'var(--red)':'var(--accent)'}">
           ${isLow?'⚠️ ':''}${qty}
         </div>
-        <div style="font-size:10px;color:var(--muted)">min ${min}</div>
+        <div class="stock-card-min" style="color:${isLow?'var(--red)':'var(--muted)'}">
+          min: ${min}
+        </div>
       </div>
       <button class="stock-add-btn"
-        onclick="event.stopPropagation();openAddMovementForm('${pid}','${pname}',${qty})"
+        onclick="event.stopPropagation();openAddStockForm('${pid}','${pname}')"
         title="Add Stock">+</button>
-    </div>`;
-  }).join('');
+    </div>
+    <div class="stock-card-price">$${e(p.price||'—')}</div>
+  </div>`;
 }
 
 function openStockDetail(productId){
-  const p=stockItems.find(x=>String(x.product_id)===String(productId));
+  const p=stockProducts.find(x=>String(x.product_id)===String(productId));
   if(!p)return;
   const qty=parseInt(p.stock_qty||0);
   const min=parseInt(p.min_stock||0);
   const isLow=qty<=min;
+  const hasImg=p.image_url&&!p.image_url.includes('INSERT')&&p.image_url.startsWith('http');
   const pid=e(p.product_id||'');
   const pname=e(p.name||'');
 
-  document.getElementById('detail-title').textContent=p.name||'Product';
+  document.getElementById('detail-title').textContent=p.name||'Product Detail';
   document.getElementById('detail-body').innerHTML=`
     <div class="detail-section">
+      ${hasImg?`<img src="${e(p.image_url)}" style="width:100%;height:180px;object-fit:cover;
+        border-radius:10px;margin-bottom:12px"
+        onerror="this.style.display='none'">`:''}
       <div class="detail-grid">
         <div class="detail-item">
           <div class="key">Stock Qty</div>
           <div class="val" style="color:${isLow?'var(--red)':'var(--green)'}">
-            ${isLow?'⚠️ ':'✅ '}${qty}</div>
+            ${isLow?'⚠️ ':'✅ '}${qty}
+          </div>
         </div>
         <div class="detail-item">
           <div class="key">Min Stock</div>
@@ -1584,8 +1455,7 @@ function openStockDetail(productId){
         </div>
         <div class="detail-item">
           <div class="key">តម្លៃ</div>
-          <div class="val" style="color:var(--accent)">
-            $${parseFloat(p.price||0).toFixed(2)}</div>
+          <div class="val" style="color:var(--accent)">$${e(p.price||'—')}</div>
         </div>
         <div class="detail-item">
           <div class="key">Category</div>
@@ -1595,13 +1465,22 @@ function openStockDetail(productId){
           <div class="key">Description</div>
           <div class="val" style="font-size:13px;font-weight:400">${e(p.description)}</div>
         </div>`:''}
+        ${p.video_url?`<div class="detail-item full">
+          <div class="key">Video</div>
+          <div class="val" style="font-size:12px">
+            <a onclick="openExternalLink('${e(p.video_url)}')"
+              style="color:var(--accent);cursor:pointer">▶ YouTube</a>
+          </div>
+        </div>`:''}
       </div>
     </div>`;
+
   document.getElementById('detail-foot').innerHTML=`
-    <button onclick="openAddMovementForm('${pid}','${pname}',${qty})"
+    <button onclick="openAddStockForm('${pid}','${pname}')"
       style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
       color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
-      + Update Stock</button>`;
+      + បន្ថែម Stock</button>`;
+
   document.body.style.overflow='hidden';
   document.body.style.touchAction='none';
   document.getElementById('detail-overlay').classList.add('on');
@@ -1609,48 +1488,69 @@ function openStockDetail(productId){
   if(popup)popup.style.transform='';
 }
 
-function openAddMovementForm(productId,productName,currentQty){
-  document.getElementById('detail-title').textContent='Stock: '+productName;
+function openAddStockForm(productId,productName){
+  // close if open, then open new form
+  const wasOpen=document.getElementById('detail-overlay').classList.contains('on');
+  if(wasOpen){
+    const p=document.getElementById('detail-popup');if(p)p.style.transform='';
+    document.getElementById('detail-overlay').classList.remove('on');
+    document.body.style.overflow='';document.body.style.touchAction='';
+    setTimeout(()=>_showAddStockForm(productId,productName),360);
+  }else{
+    _showAddStockForm(productId,productName);
+  }
+}
+
+function _showAddStockForm(productId,productName){
+  const prod=stockProducts.find(x=>String(x.product_id)===String(productId));
+  const currentQty=parseInt(prod?.stock_qty||0);
+  const pid=e(productId||'');
+
+  document.getElementById('detail-title').textContent='+ Stock: '+(productName||'');
   document.getElementById('detail-body').innerHTML=`
     <div class="detail-section">
       <div class="stock-info-box">
-        Stock បច្ចុប្បន្ន:
-        <b style="color:var(--accent);font-size:18px">${currentQty}</b>
+        Stock បច្ចុប្បន្ន: <b style="color:var(--accent);font-size:16px">${currentQty}</b>
+        ${parseInt(prod?.min_stock||0)>0?` &nbsp;(Min: ${prod.min_stock})`:''}
       </div>
-      <label class="stock-form-label">ប្រភេទ</label>
-      <select id="mv-type" class="stock-form-input" style="appearance:none">
+      <label class="stock-form-label">ប្រភេទ Movement</label>
+      <select id="movement-type" class="stock-form-select">
         <option value="in">📦 ចូល — Restock</option>
-        <option value="out">📤 ចេញ — Deduct</option>
-        <option value="adjust">⚙️ Adjust — Set exact</option>
+        <option value="out">📤 ចេញ — Manual Deduct</option>
+        <option value="adjust">⚙️ Adjust — Set Exact Qty</option>
       </select>
-      <label class="stock-form-label">ចំនួន *</label>
-      <input id="mv-qty" class="stock-form-input" type="number"
+      <label class="stock-form-label">ចំនួន</label>
+      <input id="movement-qty" class="stock-form-input" type="number"
         min="1" max="99999" placeholder="0" inputmode="numeric">
-      <label class="stock-form-label">Note</label>
-      <input id="mv-note" class="stock-form-input" type="text"
-        placeholder="optional..." maxlength="100">
+      <label class="stock-form-label">Note (optional)</label>
+      <input id="movement-note" class="stock-form-input" type="text"
+        placeholder="ហេតុផល / reference..." maxlength="100">
     </div>`;
+
   document.getElementById('detail-foot').innerHTML=`
     <button onclick="closeDetail()"
-      style="padding:11px 18px;background:var(--border);color:var(--text);border:none;
-      border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Cancel</button>
-    <button onclick="submitMovement('${e(productId)}')"
+      style="padding:11px 18px;background:var(--border);color:var(--text);
+      border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">
+      Cancel</button>
+    <button onclick="submitStockMovement('${pid}')"
       style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
       color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
       💾 Save</button>`;
+
   document.body.style.overflow='hidden';
   document.body.style.touchAction='none';
   document.getElementById('detail-overlay').classList.add('on');
   const popup=document.getElementById('detail-popup');
   if(popup)popup.style.transform='';
-  setTimeout(()=>document.getElementById('mv-qty')?.focus(),400);
+  setTimeout(()=>document.getElementById('movement-qty')?.focus(),400);
 }
 
-async function submitMovement(productId){
-  const type=document.getElementById('mv-type')?.value||'in';
-  const qty =parseInt(document.getElementById('mv-qty')?.value||0);
-  const note=sanitizeStr(document.getElementById('mv-note')?.value||'');
+async function submitStockMovement(productId){
+  const type  =document.getElementById('movement-type')?.value||'in';
+  const qty   =parseInt(document.getElementById('movement-qty')?.value||0);
+  const note  =sanitizeStr(document.getElementById('movement-note')?.value||'');
   if(!qty||qty<1){showToast('❌ ចំនួនត្រូវ >= 1',true);return;}
+
   const storeId=shipperData?.store_id||shipperData?.storeId||'yb9999';
   try{
     const r=await gs('addMovement',{
@@ -1663,7 +1563,7 @@ async function submitMovement(productId){
       showToast('✅ Stock Updated!');
       try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
       closeDetail();
-      stockLoaded=false;
+      stockLoaded=false; // force reload
       loadStock();
     }else{
       showToast('❌ '+(sanitizeStr(r.error||r.message||'Failed')),true);
