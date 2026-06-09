@@ -4,64 +4,87 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="../config.js?v=2"></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>YB Shipper</title>
 <style>
-/* ============ CSS THEME FALLBACK (fix white screen) ============ */
-:root{
-  --bg:#0f0f0f;--surface:#1a1a1a;--card:#222;--border:#333;
-  --text:#f0f0f0;--muted:#888;--accent:#f0a500;--accent2:#e07800;
-  --green:#22c55e;--red:#ef4444;--blue:#3b82f6;
-  --font:-apple-system,'Segoe UI','Khmer OS Siemreap',sans-serif;
-  --hdr-h:64px;
+:root {
+  --safe-top: env(safe-area-inset-top);
+  --hdr-h: 64px;
 }
-*{-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;box-sizing:border-box}
-input,textarea{-webkit-user-select:text;user-select:text}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
-  min-height:100vh;padding-bottom:80px;
-  padding-top:calc(var(--hdr-h) + env(safe-area-inset-top,0px))}
-/* ============ END THEME FALLBACK ============ */
 
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  min-height:100vh;
+  padding-bottom:80px;
+  padding-top:calc(var(--hdr-h) + env(safe-area-inset-top));
+}
+.hdr{
+  background:#0f0f0f;
+  border-bottom:1px solid var(--border);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:10px;
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:50;
+  height:var(--hdr-h);
+  transform:translateY(env(safe-area-inset-top));
+  transition:transform .28s ease;
+  will-change:transform;
+}
+
+.hdr-spacer {
+  display:none;
+}
+/* HEADER — fixed + auto-hide */
 .hdr{background:#0f0f0f;border-bottom:1px solid var(--border);
-  padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));
+  padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));
   display:flex;align-items:center;gap:10px;
   position:fixed;top:0;left:0;right:0;z-index:50;
-  height:calc(var(--hdr-h) + env(safe-area-inset-top,0px));
+  height:calc(var(--hdr-h) + env(safe-area-inset-top));
   transition:transform .28s ease;will-change:transform}
 .hdr.hdr-hidden{transform:translateY(-100%)}
-.hdr-spacer{height:var(--hdr-h);transition:height .28s ease}
+.hdr-spacer{height:var(--hdr-h);transition:height .28s ease;flex-shrink:0}
 .hdr-spacer.hdr-hidden{height:0}
 .hdr-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:10px;display:flex;align-items:center;justify-content:center;
-  font-size:19px;font-weight:700;color:#000;flex-shrink:0;cursor:pointer;transition:transform .15s}
+  font-size:19px;font-weight:700;color:#000;flex-shrink:0;cursor:pointer;
+  transition:transform .15s;user-select:none}
 .hdr-logo:active{transform:scale(.92)}
 .hdr-info{cursor:pointer}
-.hdr-info h1{font-size:16px;font-weight:700;margin:0}
-.hdr-info p{font-size:12px;color:var(--muted);margin:0}
+.hdr-info h1{font-size:16px;font-weight:700}
+.hdr-info p{font-size:12px;color:var(--muted)}
 .hdr-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
 .hdr-badge{background:var(--accent);color:#000;font-size:12px;font-weight:700;
   padding:4px 10px;border-radius:20px;min-width:28px;text-align:center}
+
+/* HEADER SEARCH */
 .hdr-search{flex:1;background:var(--card);border:1px solid var(--border);
   border-radius:9px;padding:8px 12px;color:var(--text);font-size:13px;
   min-width:0;outline:none;transition:border-color .2s}
 .hdr-search:focus{border-color:var(--accent)}
 .hdr-search::placeholder{color:var(--muted);font-size:12px}
 
+/* NEW ORDER ALERT */
 .new-order-alert{background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;padding:10px 16px;font-size:14px;font-weight:700;
-  display:flex;align-items:center;gap:8px;cursor:pointer;animation:pulse-bg 1.5s infinite}
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  animation:pulse-bg 1.5s infinite}
 @keyframes pulse-bg{0%,100%{opacity:1}50%{opacity:.85}}
 .new-order-alert.hidden{display:none}
 
+/* STATS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
   background:var(--border);border-bottom:1px solid var(--border)}
-.stat{background:var(--surface);padding:11px;text-align:center;cursor:pointer;transition:background .15s}
-.stat:active{background:var(--card)}
+.stat{background:var(--surface);padding:11px;text-align:center}
 .stat-num{font-size:22px;font-weight:700;color:var(--accent)}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
 
+/* FILTER BAR */
 .fbar{background:var(--surface);border-bottom:1px solid var(--border);
   padding:8px 12px;display:flex;align-items:center;gap:8px}
 .fbar-label{font-size:13px;color:var(--muted)}
@@ -74,11 +97,13 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
 .toggle-track.on .toggle-thumb{left:18px}
 .toggle-text{font-size:13px;font-weight:600;color:var(--text)}
 
+/* TABS */
 .tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
-.tab{flex:1;padding:12px 8px;font-size:13px;font-weight:600;color:var(--muted);
+.tab{flex:1;padding:12px 8px;font-size:12px;font-weight:600;color:var(--muted);
   text-align:center;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
+/* ORDERS */
 .orders{padding:10px;display:flex;flex-direction:column;gap:8px}
 .order-card{background:var(--card);border:1px solid var(--border);
   border-radius:12px;overflow:hidden;cursor:pointer;
@@ -94,8 +119,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
 .card-body{flex:1;min-width:0}
 .card-name{font-size:14px;font-weight:700;margin-bottom:3px;color:var(--text);display:block}
 .card-phone{font-size:13px;color:var(--accent);font-family:monospace;font-weight:600}
-.card-loc{font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-item{font-size:12px;color:#aaa;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-loc{font-size:12px;color:var(--muted);margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-item{font-size:12px;color:#aaa;margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0}
 .badge-cod{background:#f0a50022;color:var(--accent);border:1px solid var(--accent)44}
 .badge-paid{background:#22c55e22;color:var(--green);border:1px solid var(--green)44}
@@ -105,130 +132,115 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
 .card-date{font-size:11px;color:var(--muted)}
 .btn-deliver{background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;font-size:12px;font-weight:700;padding:8px 15px;border-radius:7px;
-  border:none;cursor:pointer;white-space:nowrap}
+  border:none;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.btn-deliver:disabled{opacity:.4;cursor:not-allowed}
 .btn-done{background:#22c55e22;color:var(--green);border:1px solid var(--green)44;
-  font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px}
-.btn-call{background:#3b82f622;color:var(--blue);
+  font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px;cursor:default}
+.btn-call{background:#3b82f622;color:var(--blue);border:1px solid #3b82f644;
   font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px;
-  display:inline-flex;align-items:center;gap:4px;cursor:pointer;border:none}
-.btn-tg{background:#2481cc22;color:#2481cc;
-  font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px;
-  display:inline-flex;align-items:center;gap:4px;cursor:pointer;border:1px solid #2481cc44}
+  text-decoration:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;border:none}
 
+/* EMPTY / LOADING */
 .empty{text-align:center;padding:50px 20px;color:var(--muted)}
 .empty-icon{font-size:44px;margin-bottom:12px}
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:fixed;inset:0;gap:14px;color:var(--muted);font-size:14px;
+  position:fixed;inset:0;top:var(--hdr-h);gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
-.loading-sm{position:relative;inset:auto;min-height:100px;background:transparent;z-index:auto}
+.loading-sm{position:relative;inset:auto;min-height:120px;background:transparent;z-index:auto}
 .spinner{width:36px;height:36px;border:3px solid var(--border);
   border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* TOAST */
 .toast{position:fixed;bottom:24px;left:50%;
   transform:translateX(-50%) translateY(100px);
   background:var(--green);color:#000;font-size:14px;font-weight:600;
-  padding:13px 22px;border-radius:12px;transition:transform .3s;z-index:9999;
+  padding:13px 22px;border-radius:12px;transition:transform .3s;z-index:900;
   white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.error{background:var(--red);color:#fff}
 
+/* HOLD PROGRESS RING */
 .hold-ring{position:fixed;inset:0;pointer-events:none;z-index:800;
   display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .1s}
 .hold-ring.on{opacity:1}
-.hold-ring-inner{width:70px;height:70px;border-radius:50%;border:3px solid var(--accent);
-  background:rgba(240,165,0,.15);display:flex;align-items:center;justify-content:center;
+.hold-ring-inner{width:70px;height:70px;border-radius:50%;
+  border:3px solid var(--accent);background:rgba(240,165,0,.15);
+  display:flex;align-items:center;justify-content:center;
   font-size:22px;animation:hold-pulse .6s ease infinite alternate}
 @keyframes hold-pulse{from{transform:scale(1)}to{transform:scale(1.15)}}
 
-/* ============ POPUP FULLSCREEN (Dynamic Island) ============ */
-.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;
-  display:flex;align-items:flex-end;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .25s}
+/* ── FULLSCREEN POPUP (Dynamic Island aware) ────────────── */
+.popup-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.7);
+  z-index:100;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
 .popup-overlay.on{opacity:1;pointer-events:all}
-.popup{background:var(--surface);border-radius:16px 16px 0 0;width:100%;
-  height:calc(100dvh - env(safe-area-inset-top,59px));
+.popup{
+  position:fixed;
+  top:env(safe-area-inset-top,59px);
+  left:0;right:0;bottom:0;
+  background:var(--surface);
+  border-radius:16px 16px 0 0;
   display:flex;flex-direction:column;
-  transform:translateY(100%);transition:transform .35s cubic-bezier(.32,.72,0,1);will-change:transform}
+  transform:translateY(110%);
+  transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+  overflow:hidden;
+}
 .popup-overlay.on .popup{transform:translateY(0)}
 .popup-handle{width:40px;height:5px;background:var(--border);border-radius:3px;
-  margin:12px auto 0;flex-shrink:0;cursor:grab}
+  margin:12px auto 0;flex-shrink:0;cursor:grab;touch-action:none}
 .popup-head{padding:14px 18px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.popup-title{font-size:16px;font-weight:700}
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+  cursor:grab;touch-action:pan-y;user-select:none}
+.popup-title{font-size:16px;font-weight:700;pointer-events:none}
 .popup-close{width:30px;height:30px;background:var(--border);border:none;border-radius:50%;
-  cursor:pointer;color:var(--text);font-size:15px;display:flex;align-items:center;justify-content:center}
-.popup-body{overflow-y:auto;flex:1;padding:16px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-.popup-foot{padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
-  border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
-/* ============ END POPUP ============ */
+  cursor:pointer;color:var(--text);font-size:15px;
+  display:flex;align-items:center;justify-content:center;touch-action:auto;pointer-events:auto}
+.popup-body{overflow-y:auto;flex:1;padding:16px;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain}
+.popup-foot{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
 
-/* ============ STOCK STYLES ============ */
-.stock-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
-.stock-stat-box{background:var(--card);border-radius:10px;padding:10px;text-align:center}
-.stock-stat-num{font-size:20px;font-weight:700}
-.stock-stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
-
-.stock-section-title{font-size:12px;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.5px;padding:10px 0 6px;
-  border-top:1px solid var(--border);margin-top:6px}
-.stock-section-title:first-of-type{border-top:none;margin-top:0}
-
-/* Table card style */
-.stock-table{width:100%;border-collapse:collapse;margin-bottom:8px}
-.stock-table th{font-size:11px;color:var(--muted);font-weight:600;
-  padding:6px 8px;border-bottom:1px solid var(--border);text-align:left}
-.stock-table td{padding:10px 8px;border-bottom:1px solid var(--border)22;
-  font-size:13px;vertical-align:middle}
-.stock-table tr:last-child td{border-bottom:none}
-.stock-table tr:active td{background:var(--card)}
-.stock-row-img{width:36px;height:36px;border-radius:8px;object-fit:cover;background:var(--border)}
-.stock-row-name{font-weight:600;color:var(--text)}
-.stock-row-code{font-size:11px;color:var(--muted);font-family:monospace}
-.stock-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px}
-.sb-in{background:#22c55e22;color:var(--green);border:1px solid var(--green)44}
-.sb-low{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
-.sb-out{background:#ef444422;color:var(--red);border:1px solid var(--red)44}
-
-.catalog-copy-bar{background:var(--card);border:1px solid var(--border);
-  border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-bottom:14px}
-.catalog-url{flex:1;font-size:12px;color:var(--muted);font-family:monospace;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.catalog-copy-btn{background:var(--accent);color:#000;border:none;border-radius:7px;
-  padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
-/* ============ END STOCK STYLES ============ */
-
+/* DETAIL */
 .detail-section{margin-bottom:16px}
 .detail-label{font-size:11px;font-weight:700;color:var(--muted);
   text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .detail-item{background:var(--card);border-radius:8px;padding:11px}
 .detail-item .key{font-size:12px;color:var(--muted);margin-bottom:4px}
-.detail-item .val{font-size:15px;font-weight:600}
+.detail-item .val{font-size:16px;font-weight:600}
 .detail-item.full{grid-column:1/-1}
-.history-item{background:var(--card);border-radius:8px;padding:10px;margin-bottom:6px;border-left:3px solid var(--border)}
+.history-item{background:var(--card);border-radius:8px;padding:10px;margin-bottom:6px;
+  border-left:3px solid var(--border)}
 .history-item.completed{border-left-color:var(--green)}
 .history-item.pending{border-left-color:var(--accent)}
 .history-item.cancelled{border-left-color:var(--red)}
 .history-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 
+/* CONFIRM */
 .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;
   display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .2s;padding:20px}
 .confirm-overlay.on{opacity:1;pointer-events:all}
 .confirm-box{background:var(--surface);border-radius:16px;padding:24px;
-  width:100%;max-width:320px;text-align:center;transform:scale(.9);transition:transform .2s}
+  width:100%;max-width:320px;text-align:center;
+  transform:scale(.9);transition:transform .2s}
 .confirm-overlay.on .confirm-box{transform:scale(1)}
 .confirm-icon{font-size:40px;margin-bottom:12px}
 .confirm-title{font-size:17px;font-weight:700;margin-bottom:8px}
 .confirm-sub{font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:20px}
 .confirm-btns{display:flex;gap:10px}
-.confirm-btn{flex:1;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer}
+.confirm-btn{flex:1;padding:13px;border:none;border-radius:10px;
+  font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.confirm-btn:hover{opacity:.85}
 .confirm-yes{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000}
 .confirm-no{background:var(--border);color:var(--text)}
 
+/* LOGIN */
 .login-box{background:var(--card);border:1px solid var(--accent)44;
   border-radius:16px;padding:24px;text-align:center;width:100%;max-width:340px}
 .login-box h3{font-size:17px;font-weight:700;color:var(--accent);margin-bottom:6px}
@@ -248,8 +260,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
   background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px}
 .input-hint{font-size:12px;color:var(--muted);margin-bottom:10px;text-align:left;padding-left:4px}
 
+/* PROFILE CARD (mini) */
 .profile{margin:10px;background:var(--card);border:1px solid var(--border);
   border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.profile:hover{border-color:var(--accent)66}
 .profile-av{width:42px;height:42px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:19px;font-weight:700;color:#000;flex-shrink:0;overflow:hidden}
@@ -259,49 +273,96 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
 .profile-role{margin-left:auto;font-size:11px;font-weight:700;padding:3px 8px;
   border-radius:6px;background:var(--accent)22;color:var(--accent);border:1px solid var(--accent)44}
 
+/* PROFILE PAGE */
 .profile-page{position:fixed;inset:0;background:var(--bg);z-index:150;
   transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
   overflow-y:auto;padding-bottom:80px}
 .profile-page.on{transform:none}
 .pp-back{position:sticky;top:0;background:rgba(15,15,15,.9);backdrop-filter:blur(8px);
-  padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top,0px));
-  display:flex;align-items:center;gap:10px;z-index:10}
+  padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:10}
 .pp-back-btn{width:36px;height:36px;background:var(--surface);border:none;
   border-radius:50%;cursor:pointer;color:var(--text);font-size:19px;
   display:flex;align-items:center;justify-content:center}
-.pp-avatar-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 0 4px;cursor:pointer}
+.pp-cover{display:none}
+.pp-avatar-wrap{position:relative;display:flex;flex-direction:column;align-items:center;
+  padding-top:24px;padding-bottom:4px;cursor:pointer}
 .pp-avatar{width:96px;height:96px;border-radius:50%;border:3px solid var(--accent)44;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   display:flex;align-items:center;justify-content:center;
   font-size:38px;font-weight:700;color:#000;overflow:hidden;position:relative}
 .pp-avatar img{width:100%;height:100%;object-fit:cover}
-.pp-avatar-cam{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);
-  display:flex;align-items:center;justify-content:center;padding:5px;font-size:16px;color:#fff}
+.pp-avatar-cam{position:absolute;bottom:0;left:0;right:0;
+  background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;
+  padding:5px;font-size:16px;color:#fff}
 .pp-change-photo{display:block;text-align:center;margin-top:8px;color:var(--accent);
   font-size:14px;font-weight:600;background:none;border:none;cursor:pointer;padding:4px}
 .pp-info{text-align:center;padding:8px 20px 16px}
 .pp-name{font-size:23px;font-weight:800;margin-bottom:4px}
 .pp-username{font-size:14px;color:var(--muted);margin-bottom:10px}
-.pp-bio{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:12px;max-width:280px;margin-left:auto;margin-right:auto}
-.pp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin:16px 0}
+.pp-bio{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:12px;
+  max-width:280px;margin-left:auto;margin-right:auto}
+.pp-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent);
+  font-size:14px;font-weight:600;cursor:pointer;
+  background:var(--accent)11;padding:6px 14px;border-radius:20px;
+  border:1px solid var(--accent)33;text-decoration:none}
+.pp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--border);margin:16px 0}
 .pp-stat{background:var(--surface);padding:17px 8px;text-align:center}
 .pp-stat-num{font-size:25px;font-weight:800;color:var(--accent)}
 .pp-stat-lbl{font-size:11px;color:var(--muted);margin-top:4px}
 .pp-logout{margin:0 16px 16px;padding:15px;background:var(--red)22;color:var(--red);
   border:1px solid var(--red)44;border-radius:12px;font-size:15px;font-weight:700;
-  cursor:pointer;width:calc(100% - 32px);display:flex;align-items:center;justify-content:center;gap:8px}
+  cursor:pointer;width:calc(100% - 32px);display:flex;align-items:center;
+  justify-content:center;gap:8px}
+.pp-logout:hover{background:var(--red)44}
 .pp-divider{height:1px;background:var(--border);margin:0 16px 16px}
 
+/* INVOICE OVERLAY (in-page) */
 .invoice-overlay{position:fixed;inset:0;background:#fff;color:#000;z-index:600;
-  overflow-y:auto;display:none}
+  overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
 .invoice-overlay.on{display:block}
-.inv-toolbar{position:sticky;top:0;background:#f5f5f5;padding:8px 12px;
-  display:flex;gap:8px;align-items:center;border-bottom:1px solid #ddd;z-index:1}
+.inv-toolbar{position:sticky;top:0;background:#f5f5f5;
+  padding:8px 12px;display:flex;gap:8px;align-items:center;
+  border-bottom:1px solid #ddd;z-index:1}
 @media print{
   body>*:not(#invoice-overlay){display:none!important}
   #invoice-overlay{display:block!important;position:static!important;overflow:visible!important}
   .inv-toolbar{display:none!important}
+  #invoice-content{padding:0!important}
 }
+
+/* ── STOCK MODULE ─────────────────────────────────────── */
+.stock-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.stock-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:10px;cursor:pointer;transition:transform .15s,border-color .15s}
+.stock-card:active{transform:scale(.97)}
+.stock-card.low-stock{border-color:var(--red)88;background:#ef444410}
+.stock-card-img{width:100%;height:88px;border-radius:7px;margin-bottom:7px;
+  background:var(--border);object-fit:cover;display:block}
+.stock-card-img-placeholder{width:100%;height:88px;border-radius:7px;margin-bottom:7px;
+  background:var(--border);display:flex;align-items:center;justify-content:center;font-size:30px}
+.stock-card-name{font-size:12px;font-weight:600;margin-bottom:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.stock-card-bottom{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.stock-card-qty{font-size:21px;font-weight:700;line-height:1}
+.stock-card-min{font-size:10px;color:var(--muted);margin-top:2px}
+.stock-card-price{font-size:11px;color:var(--muted);margin-top:3px}
+.stock-add-btn{width:34px;height:34px;background:var(--accent);color:#000;border:none;
+  border-radius:8px;font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;line-height:1;
+  transition:opacity .15s}
+.stock-add-btn:active{opacity:.75}
+.stock-form-label{font-size:12px;color:var(--muted);margin-bottom:4px;display:block;font-weight:600}
+.stock-form-input{width:100%;padding:12px;background:var(--card);
+  border:1px solid var(--border);border-radius:8px;color:var(--text);
+  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
+.stock-form-input:focus{outline:none;border-color:var(--accent)}
+.stock-form-select{width:100%;padding:12px;background:var(--card);
+  border:1px solid var(--border);border-radius:8px;color:var(--text);
+  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
+.stock-form-select:focus{outline:none;border-color:var(--accent)}
+.stock-info-box{padding:10px 12px;background:var(--card);border-radius:8px;
+  font-size:13px;color:var(--muted);margin-bottom:12px;border-left:3px solid var(--accent)}
 </style>
 </head>
 <body>
@@ -313,8 +374,10 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
     <p id="hdr-sub"></p>
   </div>
   <div class="hdr-actions" id="hdr-actions" style="display:none">
-    <input class="hdr-search" id="hdr-search-inp" placeholder="🔍 ស្វែងរក..."
-      oninput="debounceSearch(this.value)" onsearch="debounceSearch(this.value)">
+    <input class="hdr-search" id="hdr-search-inp"
+      placeholder="🔍 ស្វែងរក..."
+      oninput="debounceSearch(this.value)"
+      onsearch="debounceSearch(this.value)">
     <div class="hdr-badge" id="pending-count">0</div>
   </div>
 </div>
@@ -325,13 +388,13 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
 </div>
 
 <div id="app-content">
-  <div class="loading"><div class="spinner"></div></div>
+  <div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>
 </div>
 
 <div class="toast" id="toast"></div>
 <div class="hold-ring" id="hold-ring"><div class="hold-ring-inner">🧾</div></div>
 
-<!-- Detail Popup -->
+<!-- Detail / Stock Popup (fullscreen) -->
 <div class="popup-overlay" id="detail-overlay" onclick="closeDetailIfBg(event)">
   <div class="popup" id="detail-popup">
     <div class="popup-handle" id="popup-handle"></div>
@@ -341,28 +404,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
     </div>
     <div class="popup-body" id="detail-body"></div>
     <div class="popup-foot" id="detail-foot"></div>
-  </div>
-</div>
-
-<!-- Stock Popup -->
-<div class="popup-overlay" id="stock-overlay" onclick="closeStockIfBg(event)">
-  <div class="popup" id="stock-popup">
-    <div class="popup-handle" id="stock-handle"></div>
-    <div class="popup-head">
-      <span class="popup-title">📦 គ្រប់គ្រងស្តុក</span>
-      <button class="popup-close" onclick="closeStock()">✕</button>
-    </div>
-    <div class="popup-body" id="stock-body">
-      <div class="loading loading-sm"><div class="spinner"></div></div>
-    </div>
-    <div class="popup-foot">
-      <button onclick="refreshStock()"
-        style="padding:12px 16px;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">🔄</button>
-      <button onclick="openAddStock()"
-        style="flex:1;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-        color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
-        + បន្ថែម Stock</button>
-    </div>
   </div>
 </div>
 
@@ -385,108 +426,169 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
     <button class="pp-back-btn" onclick="closeProfile()">←</button>
     <span style="font-size:16px;font-weight:700">Profile</span>
   </div>
-  <div id="pp-content"><div class="loading loading-sm"><div class="spinner"></div></div></div>
+  <div id="pp-content">
+    <div class="loading loading-sm"><div class="spinner"></div></div>
+  </div>
 </div>
 
-<!-- Invoice Overlay -->
+<!-- Invoice Overlay (in-page, works in TG WebApp) -->
 <div class="invoice-overlay" id="invoice-overlay">
   <div class="inv-toolbar">
     <button onclick="closeInvoiceOverlay()"
       style="padding:8px 14px;background:#333;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">← Back</button>
     <button onclick="window.print()"
       style="padding:8px 18px;background:#f0a500;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">🖨️ Print</button>
-    <button onclick="printLabel(_currentInvId)"
+    <button id="label-btn-inv" onclick="printLabel(_currentInvId)"
       style="padding:8px 14px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">📦 Label</button>
   </div>
   <div id="invoice-content" style="padding:10px;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
 </div>
 
 <script>
-const tg=window.Telegram.WebApp;
-try{tg.expand();tg.setHeaderColor('#0f0f0f');tg.setBackgroundColor('#0f0f0f');}catch(_){}
+const tg = window.Telegram.WebApp;
+try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
 
-const user=tg.initDataUnsafe?.user||{};
-const tgId=String(user.id||'');
-const tgName=((user.first_name||'')+' '+(user.last_name||'')).trim();
+const user   = tg.initDataUnsafe?.user || {};
+const tgId   = String(user.id || "");
+const tgName = ((user.first_name||"") + " " + (user.last_name||"")).trim();
 
-let shipperData=null,allOrders=[],orders=[],activeTab='pending';
-let codOnly=false,lastCount=-1,pollTimer=null,visibleCount=9;
-const CHUNK=9;
-let _searchAll='',_searchTimer=null,_currentInvId=null;
+let shipperData  = null;
+let allOrders    = [];
+let orders       = [];
+let activeTab    = "pending";
+let codOnly      = false;
+let lastCount    = -1;
+let pollTimer    = null;
+let visibleCount = 9;
+const CHUNK      = 9;
 
-// ── SCROLL HIDE HEADER ──
-let _lastY=0;
-window.addEventListener('scroll',()=>{
-  const y=window.scrollY,hdr=document.getElementById('main-hdr'),sp=document.getElementById('hdr-spacer');
-  if(!hdr)return;
-  if(y>_lastY+6&&y>60){hdr.classList.add('hdr-hidden');sp&&sp.classList.add('hdr-hidden');}
-  else if(y<_lastY-6){hdr.classList.remove('hdr-hidden');sp&&sp.classList.remove('hdr-hidden');}
-  _lastY=y;
-},{passive:true});
+let _searchAll   = '';
+let _searchTimer = null;
+let _currentInvId = null;
 
-// ── VALIDATION ──
-const PH_MIN=9,PH_MAX=10,PW_MIN=4,PW_MAX=32;
-function validatePhone(v){
+// ── STOCK STATE ───────────────────────────────────────────
+let stockProducts = [];
+let stockLoaded   = false;
+
+// ── SCROLL AUTO-HIDE HEADER ──────────────────────────────
+let _lastScrollY = 0;
+window.addEventListener('scroll', () => {
+  const y   = window.scrollY;
+  const hdr = document.getElementById('main-hdr');
+  const sp  = document.getElementById('hdr-spacer');
+  if (!hdr) return;
+  if (y > _lastScrollY + 6 && y > 60) {
+    hdr.classList.add('hdr-hidden');
+    if (sp) sp.classList.add('hdr-hidden');
+  } else if (y < _lastScrollY - 6) {
+    hdr.classList.remove('hdr-hidden');
+    if (sp) sp.classList.remove('hdr-hidden');
+  }
+  _lastScrollY = y;
+}, { passive: true });
+
+// ── VALIDATION ────────────────────────────────────────────
+const PH_MIN=9, PH_MAX=10, PW_MIN=4, PW_MAX=32;
+function validatePhone(v) {
   const p=String(v||'').replace(/\D/g,'');
-  if(!p)return{ok:false,msg:'សូមបញ្ចូលលេខទូរស័ព្ទ'};
-  if(p.length<PH_MIN||p.length>PH_MAX)return{ok:false,msg:`លេខ ${PH_MIN}-${PH_MAX} ខ្ទង់`};
-  if(!/^0/.test(p))return{ok:false,msg:'ចាប់ផ្ដើមដោយ 0'};
+  if(!p)              return{ok:false,msg:'សូមបញ្ចូលលេខទូរស័ព្ទ'};
+  if(p.length<PH_MIN) return{ok:false,msg:`លេខទូរស័ព្ទត្រូវ ${PH_MIN}-${PH_MAX} ខ្ទង់`};
+  if(p.length>PH_MAX) return{ok:false,msg:`លេខទូរស័ព្ទត្រូវ ${PH_MIN}-${PH_MAX} ខ្ទង់`};
+  if(!/^0/.test(p))   return{ok:false,msg:'ត្រូវចាប់ផ្តើមដោយ 0'};
   return{ok:true,value:p};
 }
-function validatePassword(v){
+function validatePassword(v) {
   const p=String(v||'');
-  if(!p.trim())return{ok:false,msg:'សូមបញ្ចូល Password'};
-  if(p.length<PW_MIN||p.length>PW_MAX)return{ok:false,msg:`Password ${PW_MIN}-${PW_MAX} តួ`};
+  if(!p||p.trim().length===0) return{ok:false,msg:'សូមបញ្ចូល Password'};
+  if(p.length<PW_MIN)         return{ok:false,msg:`Password ត្រូវ ${PW_MIN}-${PW_MAX} តួ`};
+  if(p.length>PW_MAX)         return{ok:false,msg:'Password ច្រើនពេក'};
   return{ok:true,value:p};
 }
 function sanitizeStr(v){return String(v||'').replace(/<[^>]*>/g,'').trim().substring(0,256);}
-function e(v){return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
-function callPhone(p){const c=String(p||'').replace(/\D/g,'');if(!c)return;try{tg.openLink('tel:'+c);}catch(_){location.href='tel:'+c;}}
+function e(v){
+  return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                       .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
 
-// ── API ──
+// ── CALL PHONE (TG WebApp safe) ───────────────────────────
+function callPhone(phone){
+  const clean=String(phone||'').replace(/\D/g,'');
+  if(!clean)return;
+  try{ tg.openLink('tel:'+clean); }
+  catch(_){ window.location.href='tel:'+clean; }
+}
+
+// ── API ───────────────────────────────────────────────────
 function gs(fn,arg){
   const data=arg!==undefined?encodeURIComponent(JSON.stringify(arg)):'';
   return fetch(`${API}?action=gs&fn=${fn}${data?'&data='+data:''}`)
     .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
 }
 
-// ── SESSION ──
-const TTL=12*60*60*1000;
-function saveSession(d){try{localStorage.setItem('yb_shipper',JSON.stringify({phone:sanitizeStr(d.phone),name:sanitizeStr(d.name||'Shipper'),role:sanitizeStr(d.role||'shipper'),ts:Date.now()}));}catch(_){}}
-function loadSession(){try{const s=JSON.parse(localStorage.getItem('yb_shipper')||'{}');if(!s.phone)return null;if(Date.now()-(s.ts||0)>TTL){localStorage.removeItem('yb_shipper');return null;}return s;}catch(_){return null;}}
+// ── SESSION ───────────────────────────────────────────────
+const SESSION_TTL=12*60*60*1000;
+function saveSession(d){
+  try{localStorage.setItem('yb_shipper',JSON.stringify({
+    phone:sanitizeStr(d.phone),name:sanitizeStr(d.name||'Shipper'),
+    role:sanitizeStr(d.role||'shipper'),
+    store_id:sanitizeStr(d.store_id||d.storeId||''),
+    ts:Date.now()
+  }));}catch(_){}
+}
+function loadSession(){
+  try{
+    const s=JSON.parse(localStorage.getItem('yb_shipper')||'{}');
+    if(!s.phone)return null;
+    if(Date.now()-(s.ts||0)>SESSION_TTL){localStorage.removeItem('yb_shipper');return null;}
+    return s;
+  }catch(_){return null;}
+}
 function clearSession(){try{localStorage.removeItem('yb_shipper');}catch(_){}}
 function getLocalPhoto(){try{return localStorage.getItem('yb_shipper_photo')||'';}catch(_){return '';}}
 
-// ── BOOT ──
+// ── BOOT ──────────────────────────────────────────────────
 const saved=loadSession();
-if(tgId){gs('handleShipperLogin',tgId).then(d=>{if(d.error){saved?bootWithData(saved):showPhoneLogin();}else{saveSession(d);bootWithData(d);}}).catch(()=>{saved?bootWithData(saved):showPhoneLogin();});}
-else{saved?bootWithData(saved):showPhoneLogin();}
+if(tgId){
+  gs('handleShipperLogin',tgId)
+    .then(d=>{if(d.error){saved?bootWithData(saved):showPhoneLogin();}else{saveSession(d);bootWithData(d);}})
+    .catch(()=>{saved?bootWithData(saved):showPhoneLogin();});
+}else{saved?bootWithData(saved):showPhoneLogin();}
 
 function bootWithData(data){
-  shipperData={phone:sanitizeStr(data.phone),name:sanitizeStr(data.name||'Shipper'),role:sanitizeStr(data.role||'shipper')};
+  shipperData={
+    phone:sanitizeStr(data.phone),
+    name:sanitizeStr(data.name||'Shipper'),
+    role:sanitizeStr(data.role||'shipper'),
+    store_id:sanitizeStr(data.store_id||data.storeId||'')
+  };
   const role=(shipperData.role||'').toLowerCase();
   if(role&&role!=='shipper'&&role!=='admin'){clearSession();showPhoneLogin();return;}
   document.getElementById('hdr-actions').style.display='flex';
   loadOrders();
 }
-function pushNotif(t,b){if(!('Notification'in window))return;try{if(Notification.permission==='granted')new Notification(t,{body:b});}catch(_){}}
 
-// ── LOGIN ──
-let _pwVis=false;
+// ── NOTIFICATION ──────────────────────────────────────────
+function pushNotif(title,body){
+  if(!('Notification' in window))return;
+  try{if(Notification.permission==='granted')new Notification(title,{body});}catch(_){}
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
+let _pwVisible=false;
 function showPhoneLogin(){
   document.getElementById('app-content').innerHTML=`
-    <div style="min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px">
+    <div style="height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;padding-top:env(safe-area-inset-top)">
       <div class="login-box">
         <h3>🚚 YB Shipper Login</h3>
         <p>Phone + Password</p>
-        <input id="phone-inp" class="login-input" type="tel" placeholder="Ex: 0769999380"
-          maxlength="${PH_MAX}" autocomplete="tel"
+        <input id="phone-inp" class="login-input" type="tel"
+          placeholder="Ex: 0769999380" maxlength="${PH_MAX}" autocomplete="tel"
           oninput="this.classList.remove('input-error')"
           onkeydown="if(event.key==='Enter')document.getElementById('pw-inp').focus()">
         <div class="input-hint">លេខ ${PH_MIN}-${PH_MAX} ខ្ទង់ ចាប់ដោយ 0</div>
         <div class="pw-wrap">
-          <input id="pw-inp" class="login-input" type="password" placeholder="Password"
-            maxlength="${PW_MAX}" autocomplete="current-password"
+          <input id="pw-inp" class="login-input" type="password"
+            placeholder="Password" maxlength="${PW_MAX}" autocomplete="current-password"
             oninput="this.classList.remove('input-error')"
             onkeydown="if(event.key==='Enter')loginByPhone()">
           <button class="pw-eye" onclick="togglePw()" tabindex="-1" id="pw-eye">👁</button>
@@ -497,13 +599,19 @@ function showPhoneLogin(){
     </div>`;
   setTimeout(()=>document.getElementById('phone-inp')?.focus(),200);
 }
-function togglePw(){_pwVis=!_pwVis;const i=document.getElementById('pw-inp');if(i)i.type=_pwVis?'text':'password';const ey=document.getElementById('pw-eye');if(ey)ey.textContent=_pwVis?'🙈':'👁';}
+function togglePw(){
+  _pwVisible=!_pwVisible;
+  const i=document.getElementById('pw-inp');if(i)i.type=_pwVisible?'text':'password';
+  const ey=document.getElementById('pw-eye');if(ey)ey.textContent=_pwVisible?'🙈':'👁';
+}
 async function loginByPhone(){
   const rawP=document.getElementById('phone-inp')?.value.trim()||'';
   const rawW=document.getElementById('pw-inp')?.value||'';
   const btn=document.getElementById('login-btn');
-  const pv=validatePhone(rawP);if(!pv.ok){document.getElementById('phone-inp')?.classList.add('input-error');showToast('❌ '+pv.msg,true);return;}
-  const wv=validatePassword(rawW);if(!wv.ok){document.getElementById('pw-inp')?.classList.add('input-error');showToast('❌ '+wv.msg,true);return;}
+  const pv=validatePhone(rawP);
+  if(!pv.ok){document.getElementById('phone-inp')?.classList.add('input-error');showToast('❌ '+pv.msg,true);return;}
+  const wv=validatePassword(rawW);
+  if(!wv.ok){document.getElementById('pw-inp')?.classList.add('input-error');showToast('❌ '+wv.msg,true);return;}
   if(btn){btn.disabled=true;btn.textContent='កំពុងផ្ទុក...';}
   try{
     const r=await gs('verifyLogin',{identifier:pv.value,password:wv.value});
@@ -513,11 +621,19 @@ async function loginByPhone(){
     saveSession(r);bootWithData(r);
   }catch(err){showToast('❌ '+sanitizeStr(err.message),true);if(btn){btn.disabled=false;btn.textContent='Login →';}}
 }
-function doLogout(){stopPoll();clearSession();shipperData=null;allOrders=[];orders=[];lastCount=-1;_pwVis=false;document.getElementById('hdr-actions').style.display='none';document.getElementById('pending-count').textContent='0';closeProfile();showPhoneLogin();}
+function doLogout(){
+  stopPoll();clearSession();
+  shipperData=null;allOrders=[];orders=[];lastCount=-1;_pwVisible=false;
+  stockProducts=[];stockLoaded=false;
+  document.getElementById('hdr-actions').style.display='none';
+  document.getElementById('pending-count').textContent='0';
+  closeProfile();showPhoneLogin();
+}
 
-// ── LOAD ORDERS ──
+// ── LOAD ORDERS ───────────────────────────────────────────
 async function loadOrders(){
-  document.getElementById('app-content').innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  document.getElementById('app-content').innerHTML=
+    '<div class="loading"><div class="spinner"></div>កំពុងផ្ទើកទិន្ន័យ...</div>';
   try{
     const r=await gs('handleShipperOrders',shipperData?.phone||'');
     if(!Array.isArray(r)){if(r&&r.error)throw new Error(r.error);throw new Error('Invalid response');}
@@ -536,6 +652,8 @@ async function refreshOrders(silent=false){
     if(!silent)showToast('🔄 Updated!');
   }catch(_){if(!silent)showToast('❌ Refresh failed',true);}
 }
+
+// ── POLL ──────────────────────────────────────────────────
 function startPoll(){
   stopPoll();
   pollTimer=setInterval(async()=>{
@@ -544,38 +662,76 @@ function startPoll(){
       const fresh=await gs('handleShipperOrders',shipperData.phone||'');
       if(!Array.isArray(fresh))return;
       const newP=fresh.filter(o=>!isCompleted(o)).length;
-      if(lastCount>=0&&newP>lastCount){showAlert(`មានការដឹកថ្មី +${newP-lastCount}`);pushNotif('🚚 YB Shipper',`+${newP-lastCount}`);try{tg.HapticFeedback.notificationOccurred('warning');}catch(_){}}
+      if(lastCount>=0&&newP>lastCount){
+        showAlert(`មានការដឹកថ្មី +${newP-lastCount}`);
+        pushNotif('🚚 YB Shipper',`មានការដឹកថ្មី +${newP-lastCount}`);
+        try{tg.HapticFeedback.notificationOccurred('warning');}catch(_){}
+      }
       lastCount=newP;allOrders=fresh;applyFilter();
     }catch(_){}
   },60000);
 }
 function stopPoll(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
 
-// ── SEARCH / FILTER ──
-function debounceSearch(v){_searchAll=(v||'').toLowerCase().trim();clearTimeout(_searchTimer);_searchTimer=setTimeout(()=>{visibleCount=CHUNK;applyFilter();},200);}
+// ── SEARCH ────────────────────────────────────────────────
+function debounceSearch(v){
+  _searchAll=(v||'').toLowerCase().trim();
+  clearTimeout(_searchTimer);
+  _searchTimer=setTimeout(()=>{visibleCount=CHUNK;applyFilter();},200);
+}
+function clearSearch(){
+  _searchAll='';
+  const el=document.getElementById('hdr-search-inp');if(el)el.value='';
+  visibleCount=CHUNK;applyFilter();
+}
 function hasActiveSearch(){return !!_searchAll;}
+
+// ── FILTER ────────────────────────────────────────────────
 function applyFilter(){
   let res=allOrders;
   if(codOnly)res=res.filter(o=>(o.payment||'').toLowerCase().includes('cod'));
-  if(_searchAll){const q=_searchAll;res=res.filter(o=>(o.name||'').toLowerCase().includes(q)||(o.phone||'').toLowerCase().includes(q)||(o.location||'').toLowerCase().includes(q)||(o.ordered||'').toLowerCase().includes(q)||(o.pricing||'').toLowerCase().includes(q)||(o.retail||'').toLowerCase().includes(q)||(o.payment||'').toLowerCase().includes(q));}
+  if(_searchAll){
+    const q=_searchAll;
+    res=res.filter(o=>
+      (o.name    ||'').toLowerCase().includes(q)||
+      (o.phone   ||'').toLowerCase().includes(q)||
+      (o.location||'').toLowerCase().includes(q)||
+      (o.ordered ||'').toLowerCase().includes(q)||
+      (o.pricing ||'').toLowerCase().includes(q)||
+      (o.retail  ||'').toLowerCase().includes(q)||
+      (o.payment ||'').toLowerCase().includes(q)
+    );
+  }
   orders=res;renderAll();
 }
-function toggleCOD(){codOnly=!codOnly;visibleCount=CHUNK;const t=document.getElementById('cod-track');if(t)t.classList.toggle('on',codOnly);applyFilter();}
+function toggleCOD(){
+  codOnly=!codOnly;visibleCount=CHUNK;
+  const t=document.getElementById('cod-track');if(t)t.classList.toggle('on',codOnly);
+  applyFilter();
+}
 
-// ── RENDER ALL ──
+// ── RENDER ALL ────────────────────────────────────────────
 function renderAll(){
-  const pending=orders.filter(o=>!isCompleted(o));
-  const completed=orders.filter(o=>isCompleted(o));
+  // Stock tab — delegate to stock renderer
+  if(activeTab==='stock'){
+    _renderStockView();
+    return;
+  }
+
+  const pending   = orders.filter(o=>!isCompleted(o));
+  const completed = orders.filter(o=>isCompleted(o));
   lastCount=allOrders.filter(o=>!isCompleted(o)).length;
   document.getElementById('pending-count').textContent=pending.length;
+
   const searching=hasActiveSearch();
-  const list=searching?orders:(activeTab==='pending'?pending:completed);
+  const listToRender = searching ? orders : (activeTab==='pending' ? pending : completed);
+
   document.getElementById('app-content').innerHTML=`
     ${searching?'':renderProfileCard()}
     ${searching?'':`<div class="stats">
       <div class="stat"><div class="stat-num">${orders.length}</div><div class="stat-lbl">សរុប</div></div>
       <div class="stat"><div class="stat-num" style="color:var(--green)">${completed.length}</div><div class="stat-lbl">ដឹកដល់</div></div>
-      <div class="stat" onclick="openStockPopup()" style="cursor:pointer"><div class="stat-num">📦</div><div class="stat-lbl">សុគ</div></div>
+      <div class="stat"><div class="stat-num">${pending.length}</div><div class="stat-lbl">រង់ចាំ</div></div>
     </div>`}
     <div class="fbar">
       <span class="fbar-label">Filter${searching?` <span style="background:var(--accent);color:#000;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700">${orders.length}</span>`:''}</span>
@@ -584,38 +740,51 @@ function renderAll(){
         <span class="toggle-text">COD ប៉ុណ្ណោះ</span>
       </label>
     </div>
-    ${searching?`<div style="padding:8px 12px;font-size:12px;color:var(--muted)">🔍 លទ្ធផល ${orders.length}</div>`:`<div class="tabs">
-      <div class="tab ${activeTab==='pending'?'active':''}" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
-      <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
-    </div>`}
-    <div class="orders" id="orders-list">${renderList(list)}</div>`;
+    ${searching
+      ?`<div style="padding:8px 12px;font-size:12px;color:var(--muted)">🔍 លទ្ធផល ${orders.length} — Search All</div>`
+      :`<div class="tabs">
+        <div class="tab ${activeTab==='pending'?'active':''}" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
+        <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
+        <div class="tab" onclick="setTab('stock')">📦 Stock</div>
+      </div>`}
+    <div class="orders" id="orders-list">
+      ${renderList(listToRender)}
+    </div>`;
 }
 
 function renderProfileCard(){
   if(!shipperData)return'';
   const ini=(shipperData.name||'S').charAt(0).toUpperCase();
   const lp=getLocalPhoto();
-  const av=lp?`<img src="${lp}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`${ini}`;
+  const avHtml=lp?`<img src="${lp}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`${ini}`;
   return`<div class="profile" onclick="openProfile()">
-    <div class="profile-av" id="mini-av">${av}</div>
-    <div><div class="profile-name">${e(shipperData.name||tgName||'Shipper')}</div>
-    <div class="profile-phone">${e(shipperData.phone||'—')}</div></div>
+    <div class="profile-av" id="mini-av">${avHtml}</div>
+    <div>
+      <div class="profile-name">${e(shipperData.name||tgName||'Shipper')}</div>
+      <div class="profile-phone">${e(shipperData.phone||'—')}</div>
+    </div>
     <div class="profile-role">SHIPPER ›</div>
   </div>`;
 }
 
 function renderList(list){
-  if(!list.length)return`<div class="empty">
-    <div class="empty-icon">${hasActiveSearch()?'🔍':activeTab==='pending'?'📭':'🎉'}</div>
-    <h3>${hasActiveSearch()?'គ្មានលទ្ធផល':activeTab==='pending'?'គ្មានការដឹករង់ចាំ':'ដឹកគ្រប់ហើយ!'}</h3>
-    <p>${hasActiveSearch()?'ព្យាយាម keyword ផ្សេង':activeTab==='pending'?'ការដឹកថ្មីនឹងលេចនៅទីនេះ':'ប្រវត្តិការដឹកនឹងបង្ហាញនៅទីនេះ'}</p></div>`;
+  if(!list.length)return`
+    <div class="empty">
+      <div class="empty-icon">${hasActiveSearch()?'🔍':activeTab==='pending'?'📭':'🎉'}</div>
+      <h3>${hasActiveSearch()?'គ្មានលទ្ធផល':activeTab==='pending'?'គ្មានការដឹករង់ចាំ':'អបអរ! ដឹកគ្រប់ហើយ'}</h3>
+      <p>${hasActiveSearch()?'ព្យាយាម keyword ផ្សេង':activeTab==='pending'?'ការដឹកថ្មីនឹងលេចនៅទីនេះ':'ប្រវត្តិការដឹកនឹងបង្ហាញនៅទីនេះ'}</p>
+    </div>`;
+
   const visible=list.slice(0,visibleCount);
   const hasMore=list.length>visibleCount;
+
   const cards=visible.map(o=>{
     const isCod=(o.payment||'').toLowerCase().includes('cod');
-    const done=isCompleted(o);const sid=e(o.profileId);
-    const ph=e((o.phone||'').replace(/\D/g,''));
-    return`<div class="order-card ${isCod?'cod-highlight':''}" data-pid="${sid}"
+    const done=isCompleted(o);
+    const sid=e(o.profileId);
+    return`
+    <div class="order-card ${isCod?'cod-highlight':''}"
+      data-pid="${sid}"
       onclick="cardClick(event,'${sid}')"
       ontouchstart="startHold(this,'${sid}')" ontouchend="endHold(event)" ontouchcancel="cancelHold()"
       onmousedown="startHold(this,'${sid}')" onmouseup="endHold(event)" onmouseleave="cancelHold()">
@@ -623,7 +792,7 @@ function renderList(list){
         <div class="card-icon">📦</div>
         <div class="card-body">
           <span class="card-name">${e(o.name||'FB User')}</span>
-          <div class="card-phone" onclick="event.stopPropagation();callPhone('${ph}')" style="cursor:pointer">📞 ${e(o.phone||'—')}</div>
+          <div class="card-phone" onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" style="cursor:pointer">📞 ${e(o.phone||'—')}</div>
           <div class="card-loc">📍 ${e(o.location||'—')}</div>
           <div class="card-item">🏷️ ${e((o.ordered||'—').substring(0,42))}${(o.ordered||'').length>42?'…':''}</div>
         </div>
@@ -631,100 +800,148 @@ function renderList(list){
       </div>
       <div class="card-divider"></div>
       <div class="card-bottom">
-        <div><div class="card-price">$${e(o.pricing||o.retail||'—')}</div><div class="card-date">${e(o.orderDate||'')}</div></div>
+        <div>
+          <div class="card-price">$${e(o.pricing||o.retail||'—')}</div>
+          <div class="card-date">${e(o.orderDate||'')}</div>
+        </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <button class="btn-call" onclick="event.stopPropagation();callPhone('${ph}')">📞</button>
-          <button class="btn-tg" onclick="event.stopPropagation();pushToTelegram('${sid}')">✈️ TG</button>
+          <button class="btn-call" onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" >📞</button>
           ${done
             ?`<div class="btn-done">✅ ${e(o.receiveDate||'ដឹកដល់')}</div>`
-            :`<button class="btn-deliver" onclick="event.stopPropagation();askDeliver('${sid}','${e(o.name||'')}')">🚚 ដឹកដល់</button>`}
+            :`<button class="btn-deliver"
+                onclick="event.stopPropagation();askDeliver('${sid}','${e(o.name||'')}')">
+                🚚 ដឹកដល់
+               </button>`}
         </div>
       </div>
     </div>`;
   }).join('');
-  const sentinel=hasMore?`<div id="scroll-sentinel" style="height:50px;display:flex;align-items:center;justify-content:center"><div class="spinner" style="width:22px;height:22px;border-width:2px"></div></div>`:'';
+
+  const sentinel=hasMore
+    ?`<div id="scroll-sentinel" style="height:50px;display:flex;align-items:center;
+        justify-content:center"><div class="spinner" style="width:22px;height:22px;border-width:2px"></div></div>`
+    :'';
   setTimeout(()=>setupScrollObserver(list),100);
   return cards+sentinel;
 }
 
-function loadMore(){visibleCount+=CHUNK;const list=hasActiveSearch()?orders:(activeTab==='pending'?orders.filter(o=>!isCompleted(o)):orders.filter(o=>isCompleted(o)));document.getElementById('orders-list').innerHTML=renderList(list);}
-function setupScrollObserver(list){const s=document.getElementById('scroll-sentinel');if(!s)return;const io=new IntersectionObserver(entries=>{if(!entries[0].isIntersecting)return;if(visibleCount>=list.length){io.disconnect();return;}io.disconnect();loadMore();},{rootMargin:'120px'});io.observe(s);}
-function setTab(t){activeTab=t;visibleCount=CHUNK;renderAll();}
+function loadMore(){
+  visibleCount+=CHUNK;
+  const list=hasActiveSearch()?orders:(activeTab==='pending'?orders.filter(o=>!isCompleted(o)):orders.filter(o=>isCompleted(o)));
+  document.getElementById('orders-list').innerHTML=renderList(list);
+}
+function setupScrollObserver(list){
+  const s=document.getElementById('scroll-sentinel');if(!s)return;
+  const io=new IntersectionObserver(entries=>{
+    if(!entries[0].isIntersecting)return;
+    if(visibleCount>=list.length){io.disconnect();return;}
+    io.disconnect();loadMore();
+  },{rootMargin:'120px'});
+  io.observe(s);
+}
+function setTab(t){
+  activeTab=t;visibleCount=CHUNK;
+  if(t==='stock'&&!stockLoaded){loadStock();return;}
+  renderAll();
+}
 function isCompleted(o){return o.status==='Completed'||!!o.receiveDate;}
 
-// ── TELEGRAM PUSH ──
-function pushToTelegram(profileId){
-  const o=allOrders.find(x=>x.profileId===profileId);if(!o)return;
-  const msg=`📦 *Order Detail*\n👤 ${o.name||'—'}\n📞 \`${o.phone||'—'}\`\n📍 ${o.location||'—'}\n🏷️ ${o.ordered||'—'}\n💰 $${o.pricing||o.retail||'—'}\n💳 ${o.payment||'COD'}\n📅 ${o.orderDate||'—'}\n🆔 \`${o.profileId||'—'}\``;
-  try{
-    tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent('yinboran.github.io/shipper')}&text=${encodeURIComponent(msg)}`);
-  }catch(_){
-    try{window.open(`https://t.me/share/url?url=&text=${encodeURIComponent(msg)}`);}
-    catch(_){showToast('❌ Cannot open Telegram',true);}
-  }
-}
-
-// ── HOLD PRESS → INVOICE ──
+// ── LONG PRESS 3s → Invoice ───────────────────────────────
 let _holdTimer=null,_holdEl=null,_holdFired=false;
+
 function startHold(el,pid){
-  cancelHold();_holdEl=el;_holdFired=false;
-  const ring=document.getElementById('hold-ring');let count=0;
+  cancelHold();
+  _holdEl=el;_holdFired=false;
+  const ring=document.getElementById('hold-ring');
+  let count=0;
   _holdTimer=setInterval(()=>{
-    count+=100;if(count>=300)el.classList.add('holding');
-    if(count>=3000){clearInterval(_holdTimer);_holdTimer=null;_holdFired=true;el.classList.remove('holding');
-      if(ring)ring.classList.add('on');try{tg.HapticFeedback.impactOccurred('heavy');}catch(_){}
-      setTimeout(()=>{if(ring)ring.classList.remove('on');},500);openInvoice(pid);_holdEl=null;}
+    count+=100;
+    if(count>=300)el.classList.add('holding');
+    if(count>=3000){
+      clearInterval(_holdTimer);_holdTimer=null;
+      _holdFired=true;
+      el.classList.remove('holding');
+      if(ring)ring.classList.add('on');
+      try{tg.HapticFeedback.impactOccurred('heavy');}catch(_){}
+      setTimeout(()=>{if(ring)ring.classList.remove('on');},500);
+      openInvoice(pid);
+      _holdEl=null;
+    }
   },100);
 }
-function endHold(ev){if(_holdFired){ev&&ev.stopPropagation&&ev.stopPropagation();cancelHold();return;}cancelHold();}
-function cancelHold(){clearInterval(_holdTimer);_holdTimer=null;if(_holdEl){_holdEl.classList.remove('holding');_holdEl=null;}const ring=document.getElementById('hold-ring');if(ring)ring.classList.remove('on');}
-function cardClick(ev,sid){if(_holdFired){_holdFired=false;ev.stopPropagation();return;}openDetail(sid);}
+function endHold(ev){
+  if(_holdFired){ev&&ev.stopPropagation&&ev.stopPropagation();cancelHold();return;}
+  cancelHold();
+}
+function cancelHold(){
+  clearInterval(_holdTimer);_holdTimer=null;
+  if(_holdEl){_holdEl.classList.remove('holding');_holdEl=null;}
+  const ring=document.getElementById('hold-ring');
+  if(ring)ring.classList.remove('on');
+}
+function cardClick(ev,sid){
+  if(_holdFired){_holdFired=false;ev.stopPropagation();return;}
+  openDetail(sid);
+}
 
-// ── POPUP SWIPE ──
+// ── POPUP SWIPE GESTURE ───────────────────────────────────
 (function(){
-  let sy=0,dy=0,drag=false,targetId=null;
-  function getSwipePopup(el){
-    const ids=['popup-handle','stock-handle'];
-    for(const id of ids){const h=document.getElementById(id);if(h&&h.contains(el))return id==='popup-handle'?'detail-popup':'stock-popup';}
-    return null;
+  let sy=0,dy=0,drag=false;
+  function isSwipeTarget(el){
+    const h=document.getElementById('popup-handle');
+    const head=document.querySelector('.popup-head');
+    const close=document.querySelector('.popup-close');
+    if(close&&close.contains(el))return false;
+    return(h&&h.contains(el))||(head&&head.contains(el));
   }
   document.addEventListener('touchstart',ev=>{
-    const pid=getSwipePopup(ev.target);if(!pid)return;
-    targetId=pid;sy=ev.touches[0].clientY;drag=true;dy=0;
-    const p=document.getElementById(pid);if(p)p.style.transition='none';
+    if(isSwipeTarget(ev.target)){
+      sy=ev.touches[0].clientY;drag=true;dy=0;
+      const p=document.getElementById('detail-popup');if(p)p.style.transition='none';
+    }
   },{passive:true});
   document.addEventListener('touchmove',ev=>{
-    if(!drag||!targetId)return;dy=ev.touches[0].clientY-sy;
-    if(dy>0){const p=document.getElementById(targetId);if(p)p.style.transform=`translateY(${dy}px)`;}
+    if(!drag)return;
+    dy=ev.touches[0].clientY-sy;
+    if(dy>0){const p=document.getElementById('detail-popup');if(p)p.style.transform=`translateY(${dy}px)`;}
   },{passive:true});
   document.addEventListener('touchend',()=>{
-    if(!drag||!targetId)return;drag=false;
-    const p=document.getElementById(targetId);if(p)p.style.transition='';
-    if(dy>80){if(targetId==='detail-popup')closeDetail();else closeStock();}
-    else{if(p)p.style.transform='';}
-    dy=0;targetId=null;
+    if(!drag)return;
+    drag=false;
+    const p=document.getElementById('detail-popup');if(p)p.style.transition='';
+    if(dy>80){closeDetail();}else{if(p)p.style.transform='';}
+    dy=0;
   });
 })();
 
-// ── DETAIL POPUP ──
+// ── DETAIL POPUP ──────────────────────────────────────────
 async function openDetail(profileId){
   if(!profileId)return;
-  const o=allOrders.find(x=>x.profileId===profileId);if(!o)return;
+  const o=allOrders.find(x=>x.profileId===profileId);
+  if(!o)return;
   document.body.style.overflow='hidden';
+  document.body.style.touchAction='none';
   document.getElementById('detail-title').textContent=o.name||'Order Detail';
-  document.getElementById('detail-body').innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
+  document.getElementById('detail-body').innerHTML=
+    '<div class="loading loading-sm"><div class="spinner"></div></div>';
   document.getElementById('detail-foot').innerHTML='';
   document.getElementById('detail-overlay').classList.add('on');
   const p=document.getElementById('detail-popup');if(p)p.style.transform='';
+
   const isCod=(o.payment||'').toLowerCase().includes('cod');
-  const done=isCompleted(o);const sid=e(o.profileId);const ph=e((o.phone||'').replace(/\D/g,''));
+  const done=isCompleted(o);
+  const sid=e(o.profileId);
+  const phoneClean=e((o.phone||'').replace(/\D/g,''));
+
   document.getElementById('detail-body').innerHTML=`
     <div class="detail-section">
       <div class="detail-label">អ្នកទទួល</div>
       <div class="detail-grid">
-        <div class="detail-item"><div class="key">ឈ្មោះ</div><div class="val">${e(o.name||'—')}</div></div>
+        <div class="detail-item"><div class="key">ឈ្មោះ</div>
+          <div class="val">${e(o.name||'—')}</div></div>
         <div class="detail-item"><div class="key">ទូរស័ព្ទ</div>
-          <div class="val" onclick="callPhone('${ph}')" style="cursor:pointer;color:var(--accent)">${e(o.phone||'—')} 📞</div></div>
+          <div class="val" onclick="callPhone('${phoneClean}')"
+            style="cursor:pointer;color:var(--accent)">${e(o.phone||'—')} 📞</div></div>
         <div class="detail-item full"><div class="key">ទីតាំង</div><div class="val">${e(o.location||'—')}</div></div>
       </div>
     </div>
@@ -732,238 +949,212 @@ async function openDetail(profileId){
       <div class="detail-label">ការបញ្ជាទិញ</div>
       <div class="detail-grid">
         <div class="detail-item full"><div class="key">ទំនិញ</div><div class="val">${e(o.ordered||'—')}</div></div>
-        <div class="detail-item"><div class="key">តម្លៃ</div><div class="val" style="color:var(--accent)">$${e(o.pricing||o.retail||'—')}</div></div>
-        <div class="detail-item"><div class="key">ការទូទាត់</div><div class="val" style="color:${isCod?'var(--accent)':'var(--green)'}">${e(o.payment||'COD')}</div></div>
+        <div class="detail-item"><div class="key">តម្លៃ</div>
+          <div class="val" style="color:var(--accent)">$${e(o.pricing||o.retail||'—')}</div></div>
+        <div class="detail-item"><div class="key">ការទូទាត់</div>
+          <div class="val" style="color:${isCod?'var(--accent)':'var(--green)'}">${e(o.payment||'COD')}</div></div>
         <div class="detail-item"><div class="key">កាលបរិច្ឆេទ</div><div class="val">${e(o.orderDate||'—')}</div></div>
-        <div class="detail-item"><div class="key">Status</div><div class="val" style="color:${done?'var(--green)':'var(--accent)'}">${e(o.status||'Pending')}</div></div>
-        ${o.apvCodes?`<div class="detail-item full"><div class="key">APV</div><div class="val" style="font-family:monospace">${e(o.apvCodes)}</div></div>`:''}
-        ${o.receiveDate?`<div class="detail-item full"><div class="key">ដឹកដល់នៅ</div><div class="val" style="color:var(--green)">${e(o.receiveDate)}</div></div>`:''}
+        <div class="detail-item"><div class="key">Status</div>
+          <div class="val" style="color:${done?'var(--green)':'var(--accent)'}">${e(o.status||'Pending')}</div></div>
+        ${o.apvCodes?`<div class="detail-item full"><div class="key">APV</div>
+          <div class="val" style="font-family:monospace">${e(o.apvCodes)}</div></div>`:''}
+        ${o.receiveDate?`<div class="detail-item full"><div class="key">ដឹកដល់នៅ</div>
+          <div class="val" style="color:var(--green)">${e(o.receiveDate)}</div></div>`:''}
       </div>
     </div>
     <div class="detail-section">
       <div class="detail-label">ប្រវត្តិ (${e(o.phone||'')})</div>
-      <div id="history-list"><div class="loading loading-sm"><div class="spinner" style="width:24px;height:24px"></div></div></div>
+      <div id="history-list"><div class="loading loading-sm">
+        <div class="spinner" style="width:24px;height:24px"></div></div></div>
     </div>`;
+
   document.getElementById('detail-foot').innerHTML=`
-    <button class="btn-call" onclick="callPhone('${ph}')" style="padding:11px 16px;font-size:14px;border:none;border-radius:10px;cursor:pointer">📞 Call</button>
-    <button class="btn-tg" onclick="pushToTelegram('${sid}')" style="padding:11px 16px;font-size:14px;border-radius:10px;cursor:pointer">✈️ TG</button>
+    <button class="btn-call" onclick="callPhone('${phoneClean}')"
+      style="padding:11px 18px;font-size:14px;border:1px solid #3b82f644;border-radius:10px;cursor:pointer">📞 Call</button>
     ${!done
       ?`<button onclick="closeDetail();askDeliver('${sid}','${e(o.name||'')}');"
           style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-          color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">🚚 ដឹកដល់</button>`
-      :`<div style="flex:1;text-align:center;color:var(--green);font-weight:700;padding:11px;font-size:14px">✅ ${e(o.receiveDate||'ដឹកដល់')}</div>`}`;
+          color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
+          🚚 ដឹកដល់</button>`
+      :`<div style="flex:1;text-align:center;color:var(--green);font-weight:700;padding:11px;font-size:14px">
+          ✅ ដឹកដល់ ${e(o.receiveDate||'')}</div>`}`;
+
   loadHistory(o.phone||'',o.profileId);
 }
+
 async function loadHistory(phone,currentId){
   try{
-    const cp=phone.replace(/\D/g,'').slice(-8);
-    const hist=allOrders.filter(o=>o.phone&&o.phone.replace(/\D/g,'').endsWith(cp)).sort((a,b)=>(b.orderDate||'').localeCompare(a.orderDate||''));
+    const cleanPhone=phone.replace(/\D/g,'').slice(-8);
+    const history=allOrders
+      .filter(o=>o.phone&&o.phone.replace(/\D/g,'').endsWith(cleanPhone))
+      .sort((a,b)=>(b.orderDate||'').localeCompare(a.orderDate||''));
     const el=document.getElementById('history-list');if(!el)return;
-    if(!hist.length){el.innerHTML=`<p style="font-size:13px;color:var(--muted)">គ្មានប្រវត្តិ</p>`;return;}
-    el.innerHTML=hist.map(h=>{
+    if(!history.length){el.innerHTML=`<p style="font-size:13px;color:var(--muted)">គ្មានប្រវត្តិ</p>`;return;}
+    el.innerHTML=history.map(h=>{
       const done=isCompleted(h),isCur=h.profileId===currentId;
       const color=done?'var(--green)':h.status?.toLowerCase().includes('cancel')?'var(--red)':'var(--accent)';
       const cls=done?'completed':h.status?.toLowerCase().includes('cancel')?'cancelled':'pending';
       return`<div class="history-item ${cls}" style="${isCur?'border-left-color:var(--blue)':''}">
-        <div class="history-row"><span style="font-size:13px;font-weight:600">${e((h.ordered||'—').substring(0,30))}</span><span style="font-size:12px;color:${color}">${e(h.status||'Pending')}</span></div>
-        <div class="history-row"><span style="font-size:12px;color:var(--muted)">${e(h.orderDate||'—')}</span><span style="font-size:13px;font-weight:700;color:var(--accent)">$${e(h.pricing||h.retail||'—')}</span></div>
+        <div class="history-row">
+          <span style="font-size:13px;font-weight:600">${e((h.ordered||'—').substring(0,30))}</span>
+          <span style="font-size:12px;color:${color}">${e(h.status||'Pending')}</span>
+        </div>
+        <div class="history-row">
+          <span style="font-size:12px;color:var(--muted)">${e(h.orderDate||'—')}</span>
+          <span style="font-size:13px;font-weight:700;color:var(--accent)">$${e(h.pricing||h.retail||'—')}</span>
+        </div>
         ${isCur?'<span style="font-size:11px;color:var(--blue);font-weight:600">← ការបញ្ជានេះ</span>':''}
       </div>`;
     }).join('');
-  }catch(_){const el=document.getElementById('history-list');if(el)el.innerHTML=`<p style="font-size:13px;color:var(--muted)">មិនអាចផ្ទុក</p>`;}
+  }catch(_){
+    const el=document.getElementById('history-list');
+    if(el)el.innerHTML=`<p style="font-size:13px;color:var(--muted)">មិនអាចផ្ទុក</p>`;
+  }
 }
-function closeDetail(){const p=document.getElementById('detail-popup');if(p)p.style.transform='';document.getElementById('detail-overlay').classList.remove('on');document.body.style.overflow='';}
+
+function closeDetail(){
+  const p=document.getElementById('detail-popup');if(p)p.style.transform='';
+  document.getElementById('detail-overlay').classList.remove('on');
+  document.body.style.overflow='';
+  document.body.style.touchAction='';
+}
 function closeDetailIfBg(ev){if(ev.target===document.getElementById('detail-overlay'))closeDetail();}
 
-// ── CONFIRM ──
+// ── CONFIRM ───────────────────────────────────────────────
 let _pid=null;
-function askDeliver(profileId,name){if(!profileId)return;_pid=profileId;document.getElementById('confirm-sub').textContent=`ដឹកដល់ "${name}" ហើយ?`;document.getElementById('confirm-overlay').classList.add('on');document.getElementById('confirm-yes-btn').onclick=confirmDeliver;}
+function askDeliver(profileId,name){
+  if(!profileId)return;
+  _pid=profileId;
+  document.getElementById('confirm-sub').textContent=`ដឹកដល់ "${name}" ហើយ?`;
+  document.getElementById('confirm-overlay').classList.add('on');
+  document.getElementById('confirm-yes-btn').onclick=confirmDeliver;
+}
 function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('on');_pid=null;}
 async function confirmDeliver(){
-  if(!_pid)return;const pid=_pid;closeConfirm();
+  if(!_pid)return;
+  const pid=_pid;closeConfirm();
   try{tg.HapticFeedback.impactOccurred('medium');}catch(_){}
   try{
     const d=await gs('handleShipperComplete',[pid,shipperData?.phone||'']);
-    if(d.success||d.completed){showToast('✅ ដឹកដល់ — Completed!');try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}setTimeout(loadOrders,800);}
-    else{showToast('❌ '+(sanitizeStr(d.error)||'Failed'),true);}
+    if(d.success||d.completed){
+      showToast('✅ ដឹកដល់ — Completed!');
+      try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
+      setTimeout(loadOrders,800);
+    }else{showToast('❌ '+(sanitizeStr(d.error)||'Failed'),true);}
   }catch(err){showToast('❌ '+sanitizeStr(err.message),true);}
 }
 
-// ============ STOCK MODULE ============
-let _stockProds=[],_stockLoaded=false;
-
-async function openStockPopup(){
-  document.getElementById('stock-overlay').classList.add('on');
-  document.body.style.overflow='hidden';
-  if(!_stockLoaded)await loadStock();
-  else renderStockBody();
-}
-async function loadStock(){
-  const body=document.getElementById('stock-body');
-  body.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
-  try{
-    const prods=await gs('getPublicProducts');
-    if(!Array.isArray(prods))throw new Error('Invalid');
-    _stockProds=prods;_stockLoaded=true;renderStockBody();
-  }catch(err){
-    body.innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div><h3>Load failed</h3><p>${e(err.message)}</p>
-      <button onclick="loadStock()" style="margin-top:12px;padding:10px 20px;background:var(--accent);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer">Retry</button></div>`;
-  }
-}
-async function refreshStock(){_stockLoaded=false;await loadStock();}
-
-function renderStockBody(){
-  const body=document.getElementById('stock-body');if(!body)return;
-  const prods=_stockProds;
-  const low=prods.filter(p=>isStockLow(p)&&!isStockOut(p));
-  const out=prods.filter(p=>isStockOut(p));
-  const good=prods.filter(p=>!isStockLow(p)&&!isStockOut(p));
-
-  // Catalog copy bar
-  const storeId=shipperData?.phone?'yb9999':'store';
-  const catUrl=`yinboran.github.io/s/${storeId}`;
-
-  let html=`
-    <div class="catalog-copy-bar">
-      <span class="catalog-url">🔗 ${catUrl}</span>
-      <button class="catalog-copy-btn" onclick="copyCatalog('${catUrl}')">📋 Copy</button>
-    </div>
-    <div class="stock-stats">
-      <div class="stock-stat-box"><div class="stock-stat-num" style="color:var(--accent)">${prods.length}</div><div class="stock-stat-lbl">ផ្នែកស្តុក</div></div>
-      <div class="stock-stat-box"><div class="stock-stat-num" style="color:#f59e0b">${low.length}</div><div class="stock-stat-lbl">⚠️ ជិតអស់</div></div>
-      <div class="stock-stat-box"><div class="stock-stat-num" style="color:var(--green)">${good.length}</div><div class="stock-stat-lbl">✅ មានស្តុក</div></div>
-    </div>`;
-
-  if(low.length){
-    html+=`<div class="stock-section-title">⚠️ ជិតអស់ស្តុក (${low.length})</div>${renderStockTable(low)}`;
-  }
-  if(out.length){
-    html+=`<div class="stock-section-title">❌ អស់ស្តុក (${out.length})</div>${renderStockTable(out)}`;
-  }
-  if(good.length){
-    html+=`<div class="stock-section-title">✅ មានស្តុក (${good.length})</div>${renderStockTable(good)}`;
-  }
-  if(!prods.length){
-    html+=`<div class="empty"><div class="empty-icon">📦</div><h3>គ្មានស្តុក</h3><p>បន្ថែម Stock ទីដំបូង</p></div>`;
-  }
-  body.innerHTML=html;
-}
-
-function renderStockTable(prods){
-  return`<table class="stock-table">
-    <thead><tr>
-      <th></th><th>ឈ្មោះ</th><th>ចំនួន</th><th>តម្លៃ</th><th>Status</th>
-    </tr></thead>
-    <tbody>
-    ${prods.map(p=>{
-      const qty=parseQty(p.qty);const low=isStockLow(p),out=isStockOut(p);
-      const sc=out?'sb-out':low?'sb-low':'sb-in';
-      const st=out?'❌ អស់':low?'⚠️ ជិតអស់':'✅ មាន';
-      const qtyColor=out?'var(--red)':low?'#f59e0b':'var(--green)';
-      const imgHtml=p.photo&&p.photo.startsWith('http')
-        ?`<img class="stock-row-img" src="${e(p.photo)}" loading="lazy" onerror="this.src=''">`
-        :`<div class="stock-row-img" style="display:flex;align-items:center;justify-content:center;font-size:18px">📦</div>`;
-      return`<tr onclick="openStockDetail('${e(p.code)}')" style="cursor:pointer">
-        <td>${imgHtml}</td>
-        <td><div class="stock-row-name">${e(p.name||'—')}</div><div class="stock-row-code">${e(p.code||'')}</div></td>
-        <td style="color:${qtyColor};font-weight:700">${qty>=0?qty:'—'}</td>
-        <td style="color:var(--accent);font-weight:600">$${e(p.price||'—')}</td>
-        <td><span class="stock-badge ${sc}">${st}</span></td>
-      </tr>`;
-    }).join('')}
-    </tbody>
-  </table>`;
-}
-
-function isStockLow(p){const ss=(p.stockStatus||'').toLowerCase();const qty=parseQty(p.qty);return ss.includes('low')||(qty>=0&&qty>0&&qty<=3);}
-function isStockOut(p){const ss=(p.stockStatus||'').toLowerCase();const qty=parseQty(p.qty);return ss.includes('out')||qty===0;}
-function parseQty(v){const n=parseInt(String(v||'').replace(/[^0-9]/g,''));return isNaN(n)?-1:n;}
-
-function copyCatalog(url){
-  try{navigator.clipboard.writeText('https://'+url).then(()=>showToast('✅ Copied: '+url)).catch(()=>showToast('URL: '+url));}
-  catch(_){showToast('URL: '+url);}
-}
-
-function openStockDetail(code){
-  const p=_stockProds.find(x=>x.code===code);if(!p)return;
-  const qty=parseQty(p.qty);const low=isStockLow(p),out=isStockOut(p);
-  const sc=out?'sb-out':low?'sb-low':'sb-in';const st=out?'❌ អស់ស្តុក':low?'⚠️ ជិតអស់':'✅ មានស្តុក';
-  document.getElementById('detail-title').textContent=e(p.name||'Product');
-  document.getElementById('detail-body').innerHTML=`
-    ${p.photo&&p.photo.startsWith('http')
-      ?`<img src="${e(p.photo)}" style="width:100%;border-radius:10px;margin-bottom:12px;object-fit:cover;max-height:200px">`
-      :`<div style="width:100%;height:120px;background:var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:12px">📦</div>`}
-    <div class="detail-grid">
-      <div class="detail-item"><div class="key">Code</div><div class="val" style="font-family:monospace;font-size:13px">${e(p.code||'—')}</div></div>
-      <div class="detail-item"><div class="key">Category</div><div class="val">${e(p.category||'—')}</div></div>
-      <div class="detail-item"><div class="key">តម្លៃ</div><div class="val" style="color:var(--accent)">$${e(p.price||'—')}</div></div>
-      <div class="detail-item"><div class="key">ចំនួន</div><div class="val" style="color:${out?'var(--red)':low?'#f59e0b':'var(--green)'}">${qty>=0?qty+' គ្រឿង':e(p.qty||'—')}</div></div>
-      <div class="detail-item full"><div class="key">Status</div><div class="val"><span class="stock-badge ${sc}">${st}</span></div></div>
-      ${p.description?`<div class="detail-item full"><div class="key">Description</div><div class="val" style="font-size:13px">${e(p.description)}</div></div>`:''}
-    </div>`;
-  document.getElementById('detail-foot').innerHTML=`
-    <button onclick="closeDetail();setTimeout(openStockPopup,150)"
-      style="padding:11px 16px;background:var(--border);color:var(--text);border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">← Back</button>
-    <button onclick="closeDetail();openAddStock('${e(p.code)}')"
-      style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">+ Stock</button>`;
-  closeStock();
-  setTimeout(()=>{document.getElementById('detail-overlay').classList.add('on');document.body.style.overflow='hidden';},150);
-}
-function openAddStock(code){showToast('🚧 Coming soon',false);}
-function closeStock(){const p=document.getElementById('stock-popup');if(p)p.style.transform='';document.getElementById('stock-overlay').classList.remove('on');document.body.style.overflow='';}
-function closeStockIfBg(ev){if(ev.target===document.getElementById('stock-overlay'))closeStock();}
-// ============ END STOCK MODULE ============
-
-// ── INVOICE ──
+// ── INVOICE (in-page overlay) ─────────────────────────────
 function openInvoice(profileId){
-  const o=allOrders.find(x=>x.profileId===profileId);if(!o){showToast('❌ Not found',true);return;}
+  const o=allOrders.find(x=>x.profileId===profileId);
+  if(!o){showToast('❌ Order not found',true);return;}
   _currentInvId=profileId;
+
   const items=(o.ordered||'').split(/[,،]/).map(s=>s.trim()).filter(Boolean);
-  const dp=(o.orderDate||'').split('/');let rows='';
-  for(let i=0;i<12;i++){const item=items[i]||'';rows+=`<tr><td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${i+1}</td><td style="border:.5pt solid #000;padding:2.5px 4px">${item}</td><td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${item?'1':''}</td><td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td><td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td></tr>`;}
-  document.getElementById('invoice-content').innerHTML=`<div style="max-width:550px;margin:0 auto;font-size:10.5pt">
+  const dp=(o.orderDate||'').split('/');
+  const day=dp[0]||'....';const mon=dp[1]||'....';
+  const yr=(dp[2]||'').split(' ')[0]||'........';
+
+  let rows='';
+  for(let i=0;i<12;i++){
+    const item=items[i]||'';
+    rows+=`<tr><td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${i+1}</td>
+      <td style="border:.5pt solid #000;padding:2.5px 4px">${item}</td>
+      <td style="text-align:center;border:.5pt solid #000;padding:2.5px 4px">${item?'1':''}</td>
+      <td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td>
+      <td style="text-align:right;border:.5pt solid #000;padding:2.5px 4px">${item&&i===0?e(o.retail||o.pricing||''):''}</td></tr>`;
+  }
+
+  document.getElementById('invoice-content').innerHTML=`
+<div style="max-width:550px;margin:0 auto;font-size:10.5pt">
   <div style="text-align:center;padding-bottom:6px;border-bottom:1.5pt solid #000;margin-bottom:6px">
-    <div style="font-size:30pt;font-weight:700">Y<span style="color:#e05c00">·</span>B</div>
-    <div style="font-size:13pt;font-weight:700">Y.B 9999 Electronics</div>
+    <div style="font-size:30pt;font-weight:700;letter-spacing:-1px">Y<span style="color:#e05c00">·</span>B</div>
+    <div style="font-size:13pt;font-weight:700;margin:2px 0">Y.B 9999 Electronics</div>
     <div style="font-size:15pt;font-weight:700;margin:4px 0">វិក្កយបត្រ</div>
   </div>
   <div style="display:flex;justify-content:space-between;margin:4px 0;font-size:9.5pt">
-    <span><b>អតិថិជន:</b> ${e(o.name||'')}</span><span><b>ទូរស័ព្ទ:</b> ${e(o.phone||'')}</span>
+    <span><b>អតិថិជន:</b> <span style="border-bottom:1pt dotted #000;min-width:80px;display:inline-block;padding:0 4px">${e(o.name||'')}</span></span>
+    <span><b>ទូរស័ព្ទ:</b> ${e(o.phone||'')}</span>
   </div>
-  <div style="font-size:9.5pt;margin:4px 0"><b>ទីតាំង:</b> ${e(o.location||'')}</div>
+  <div style="display:flex;justify-content:space-between;margin:4px 0;font-size:9.5pt">
+    <span><b>ទីតាំង:</b> <span style="border-bottom:1pt dotted #000;min-width:120px;display:inline-block">${e(o.location||'')}</span></span>
+    <span>ថ្ងៃ<span style="border-bottom:1pt dotted #000;min-width:20px;display:inline-block;margin:0 2px">${day}</span>ខែ<span style="border-bottom:1pt dotted #000;min-width:20px;display:inline-block;margin:0 2px">${mon}</span>ឆ្នាំ<span style="border-bottom:1pt dotted #000;min-width:32px;display:inline-block;margin:0 2px">${yr}</span></span>
+  </div>
   <table style="width:100%;border-collapse:collapse;margin:6px 0;font-size:9.5pt">
     <thead><tr>
       <th style="width:28px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">លរ</th>
-      <th style="border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0">រាយមុខទំនិញ</th>
-      <th style="width:38px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">ចំ</th>
-      <th style="width:64px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:right">តំ</th>
-      <th style="width:64px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:right">សរុប</th>
+      <th style="border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">រាយមុខទំនិញ</th>
+      <th style="width:38px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">ចំនួន</th>
+      <th style="width:64px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">តំលៃរាយ</th>
+      <th style="width:64px;border:.5pt solid #000;padding:2.5px 4px;background:#f0f0f0;text-align:center">តំលៃសរុប</th>
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>
-  <div style="text-align:right;font-size:9.5pt;margin-top:6px">
-    <b>ប្រាក់សរុប: ${e(o.retail||o.pricing||'')}</b>
-  </div></div>`;
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px">
+    <div style="display:flex;gap:20px">
+      <div style="text-align:center"><div style="font-size:9pt;font-weight:700">អ្នកលក់</div>
+        <div style="border-bottom:.5pt solid #000;margin-top:22px;width:80px"></div></div>
+      <div style="text-align:center"><div style="font-size:9pt;font-weight:700">អ្នករិញ</div>
+        <div style="border-bottom:.5pt solid #000;margin-top:22px;width:80px"></div></div>
+    </div>
+    <div style="font-size:9.5pt">
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+        <span>ប្រាក់សរុប</span>
+        <span style="border:.5pt solid #000;min-width:70px;min-height:15px;display:inline-block;padding:1px 4px;text-align:right">${e(o.retail||o.pricing||'')}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+        <span>ប្រាក់កក់&nbsp;&nbsp;</span>
+        <span style="border:.5pt solid #000;min-width:70px;min-height:15px;display:inline-block;padding:1px 4px"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span>ប្រាក់នៅខ</span>
+        <span style="border:.5pt solid #000;min-width:70px;min-height:15px;display:inline-block;padding:1px 4px"></span>
+      </div>
+    </div>
+  </div>
+</div>`;
+
   document.getElementById('invoice-overlay').classList.add('on');
   document.body.style.overflow='hidden';
 }
-function closeInvoiceOverlay(){document.getElementById('invoice-overlay').classList.remove('on');document.body.style.overflow='';}
+function closeInvoiceOverlay(){
+  document.getElementById('invoice-overlay').classList.remove('on');
+  document.body.style.overflow='';
+}
 
+// ── PRINT LABEL ───────────────────────────────────────────
 function printLabel(profileId){
-  const o=allOrders.find(x=>x.profileId===profileId);if(!o){showToast('❌ Not found',true);return;}
-  const html=`<!DOCTYPE html><html lang="km"><head><meta charset="UTF-8">
+  const o=allOrders.find(x=>x.profileId===profileId);
+  if(!o){showToast('❌ Order not found',true);return;}
+  const html=`<!DOCTYPE html><html lang="km"><head>
+<meta charset="UTF-8">
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
 <title>Label</title>
-<style>@page{size:100mm 70mm;margin:3mm}@media print{.noprint{display:none!important}}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Battambang',sans-serif;font-size:9.5pt;color:#000}.label{border:1pt solid #000;padding:5px;height:calc(100% - 2mm)}.top{display:flex;justify-content:space-between;border-bottom:.5pt solid #ccc;padding-bottom:3px;margin-bottom:3px;font-size:8pt}.cname{font-size:15pt;font-weight:700}.cphone{font-size:12pt;font-weight:600}.addr{font-size:8.5pt;margin:3px 0;color:#333}.items{font-size:8pt;color:#555;border-top:.5pt dashed #aaa;padding-top:3px;margin-top:3px}.footer{display:flex;justify-content:space-between;align-items:center;border-top:.5pt solid #000;padding-top:3px;margin-top:4px}.price{font-size:14pt;font-weight:700}.pay-badge{background:#f0a500;padding:2px 7px;border-radius:3px;font-size:8pt;font-weight:700}</style></head><body>
+<style>
+@page{size:100mm 70mm;margin:3mm}
+@media print{.noprint{display:none!important}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;color:#000}
+.label{border:1pt solid #000;padding:5px;height:calc(100% - 2mm)}
+.top{display:flex;justify-content:space-between;border-bottom:.5pt solid #ccc;padding-bottom:3px;margin-bottom:3px;font-size:8pt}
+.cname{font-size:15pt;font-weight:700;margin-bottom:2px}
+.cphone{font-size:12pt;font-weight:600}
+.addr{font-size:8.5pt;margin:3px 0;color:#333}
+.items{font-size:8pt;color:#555;border-top:.5pt dashed #aaa;padding-top:3px;margin-top:3px}
+.footer{display:flex;justify-content:space-between;align-items:center;border-top:.5pt solid #000;padding-top:3px;margin-top:4px}
+.price{font-size:14pt;font-weight:700}
+.pay-badge{background:#f0a500;padding:2px 7px;border-radius:3px;font-size:8pt;font-weight:700}
+</style></head><body>
 <div class="noprint" style="text-align:center;padding:6px;background:#f5f5f5;margin-bottom:6px">
-  <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer">🖨️ Print</button>
-  <button onclick="window.close()" style="padding:7px 14px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-left:6px">✕</button>
+  <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>
+  <button onclick="window.close()" style="padding:7px 14px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;margin-left:6px">✕</button>
 </div>
 <div class="label">
   <div class="top"><span style="font-weight:700">📦 YB 9999 Electronics</span><span>076 9999 380</span></div>
-  <div class="cname">${e(o.name||'—')}</div><div class="cphone">📞 ${e(o.phone||'—')}</div>
+  <div class="cname">${e(o.name||'—')}</div>
+  <div class="cphone">📞 ${e(o.phone||'—')}</div>
   <div class="addr">📍 ${e(o.location||'—')}</div>
-  <div class="items">🏷️ ${e((o.ordered||'—').substring(0,80))}</div>
+  <div class="items">🏷️ ${e((o.ordered||'—').substring(0,80))}${(o.ordered||'').length>80?'…':''}</div>
   <div class="footer">
     <span class="price">${e(o.retail||o.pricing||'—')}</span>
     <span class="pay-badge">${e(o.payment||'COD')}</span>
@@ -971,12 +1162,20 @@ function printLabel(profileId){
   </div>
   <div style="font-size:7pt;color:#aaa;margin-top:2px;text-align:right">ID: ${e(o.profileId||'')}</div>
 </div>
-<script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script></body></html>`;
-  try{const w=window.open('','_blank');if(w){w.document.write(html);w.document.close();return;}}catch(_){}
-  try{const blob=new Blob([html],{type:'text/html'});tg.openLink(URL.createObjectURL(blob));}catch(_){showToast('❌ Allow popups',true);}
+<script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script>
+</body></html>`;
+  try{
+    const w=window.open('','_blank');
+    if(w){w.document.write(html);w.document.close();return;}
+  }catch(_){}
+  try{
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    tg.openLink(url);
+  }catch(_){showToast('❌ Please allow popups',true);}
 }
 
-// ── PROFILE ──
+// ── PROFILE PAGE ──────────────────────────────────────────
 async function openProfile(){
   document.getElementById('profile-page').classList.add('on');
   document.body.style.overflow='hidden';
@@ -1003,7 +1202,7 @@ async function openProfile(){
         <div class="pp-name">${e(p.name||'Shipper')}</div>
         ${p.username?`<div class="pp-username">@${e(p.username)}</div>`:''}
         ${p.bio?`<div class="pp-bio">${e(p.bio)}</div>`:''}
-        ${hasLink?`<a class="pp-link" href="${e(p.link)}" onclick="event.preventDefault();openExternalLink('${e(p.link)}')">🔗 ${e(p.link.replace(/^https?:\/\//,'').substring(0,32))}</a>`:''}
+        ${hasLink?`<button class="pp-link" onclick="openExternalLink('${e(p.link)}')">🔗 ${e(p.link.replace(/^https?:\/\//,'').substring(0,32))}</button>`:''}
       </div>
       <div class="pp-stats">
         <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.achievements)||0}</div><div class="pp-stat-lbl">✅ ដឹកបាន</div></div>
@@ -1013,14 +1212,21 @@ async function openProfile(){
       <div class="pp-divider"></div>
       <button class="pp-logout" onclick="doLogout()">🚪 Logout</button>`;
   }catch(_){
-    const ini=(shipperData?.name||'S').charAt(0).toUpperCase();const lp=getLocalPhoto();
+    const ini=(shipperData?.name||'S').charAt(0).toUpperCase();
+    const lp=getLocalPhoto();
     el.innerHTML=`
       <div class="pp-avatar-wrap" onclick="triggerPhotoUpload()">
-        <div class="pp-avatar">${lp?`<img src="${lp}">`:`<span>${ini}</span>`}<div class="pp-avatar-cam">📷</div></div>
+        <div class="pp-avatar">
+          ${lp?`<img src="${lp}">`:`<span>${ini}</span>`}
+          <div class="pp-avatar-cam">📷</div>
+        </div>
         <div class="pp-change-photo">Change photo</div>
       </div>
       <input type="file" id="photo-file-inp" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-      <div class="pp-info"><div class="pp-name">${e(shipperData?.name||'Shipper')}</div><div class="pp-username">${e(shipperData?.phone||'')}</div></div>
+      <div class="pp-info">
+        <div class="pp-name">${e(shipperData?.name||'Shipper')}</div>
+        <div class="pp-username">${e(shipperData?.phone||'')}</div>
+      </div>
       <div class="pp-stats">
         <div class="pp-stat"><div class="pp-stat-num">—</div><div class="pp-stat-lbl">✅ ដឹកបាន</div></div>
         <div class="pp-stat"><div class="pp-stat-num">—</div><div class="pp-stat-lbl">🚚 កំពុងដឹក</div></div>
@@ -1036,26 +1242,287 @@ function handlePhotoUpload(ev){
   if(!file.type.startsWith('image/')){showToast('❌ Images only',true);return;}
   if(file.size>3*1024*1024){showToast('❌ Max 3MB',true);return;}
   const r=new FileReader();
-  r.onload=re=>{const d=re.target.result;try{localStorage.setItem('yb_shipper_photo',d);}catch(_){}
-    const ai=document.getElementById('pp-av-img');if(ai){ai.src=d;ai.style.display='';}
-    const an=document.getElementById('pp-av-ini');if(an)an.style.display='none';
-    const ma=document.getElementById('mini-av');if(ma)ma.innerHTML=`<img src="${d}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-    showToast('✅ Photo updated!');};
+  r.onload=re=>{
+    const durl=re.target.result;
+    try{localStorage.setItem('yb_shipper_photo',durl);}catch(_){}
+    const avImg=document.getElementById('pp-av-img');if(avImg){avImg.src=durl;avImg.style.display='';}
+    const avIni=document.getElementById('pp-av-ini');if(avIni)avIni.style.display='none';
+    const miniAv=document.getElementById('mini-av');
+    if(miniAv)miniAv.innerHTML=`<img src="${durl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    showToast('✅ Photo updated!');
+  };
   r.readAsDataURL(file);
 }
 function closeProfile(){document.getElementById('profile-page').classList.remove('on');document.body.style.overflow='';}
-function openExternalLink(url){try{tg.openLink(url);}catch(_){try{window.open(url,'_blank','noopener');}catch(_){}}}
+function openExternalLink(url){
+  try{tg.openLink(url);}catch(_){try{window.open(url,'_blank','noopener');}catch(_){}}
+}
 
+// ── ALERT ─────────────────────────────────────────────────
 function showAlert(msg){
   document.getElementById('new-alert-txt').textContent=sanitizeStr(msg);
   document.getElementById('new-alert').classList.remove('hidden');
-  try{const ctx=new AudioContext();const osc=ctx.createOscillator();const g=ctx.createGain();osc.connect(g);g.connect(ctx.destination);osc.frequency.value=520;g.gain.setValueAtTime(.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.6);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.6);}catch(_){}
+  try{
+    const ctx=new AudioContext();const osc=ctx.createOscillator();const gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=520;
+    gain.gain.setValueAtTime(.3,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.6);
+    osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.6);
+  }catch(_){}
   pushNotif('🚚 YB Shipper',sanitizeStr(msg));
 }
-function dismissAlert(){document.getElementById('new-alert').classList.add('hidden');activeTab='pending';visibleCount=CHUNK;renderAll();}
+function dismissAlert(){
+  document.getElementById('new-alert').classList.add('hidden');
+  activeTab='pending';visibleCount=CHUNK;renderAll();
+}
 
-function showError(msg){document.getElementById('app-content').innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div><h3>Error</h3><p>${e(msg)}</p><button onclick="loadOrders()" style="margin-top:16px;padding:11px 22px;background:var(--accent);color:#000;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px">Retry</button></div>`;}
-function showToast(msg,isErr){const t=document.getElementById('toast');t.textContent=sanitizeStr(msg);t.className='toast show'+(isErr?' error':'');setTimeout(()=>{t.className='toast';},3000);}
+// ── ERROR / TOAST ─────────────────────────────────────────
+function showError(msg){
+  document.getElementById('app-content').innerHTML=`
+    <div class="empty">
+      <div class="empty-icon">⚠️</div><h3>Error</h3><p>${e(msg)}</p>
+      <button onclick="loadOrders()"
+        style="margin-top:16px;padding:11px 22px;background:var(--accent);color:#000;
+        border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px">Retry</button>
+    </div>`;
+}
+function showToast(msg,isErr){
+  const t=document.getElementById('toast');
+  t.textContent=sanitizeStr(msg);
+  t.className='toast show'+(isErr?' error':'');
+  setTimeout(()=>{t.className='toast';},3000);
+}
+
+// ============ STOCK MODULE ============
+
+async function loadStock(){
+  if(!shipperData)return;
+  const storeId=shipperData.store_id||shipperData.storeId||'yb9999';
+  document.getElementById('app-content').innerHTML=
+    '<div class="loading"><div class="spinner"></div>ផ្ទុក Stock...</div>';
+  try{
+    const r=await gs('getProducts',storeId);
+    stockProducts=Array.isArray(r)?r:(r.products||[]);
+    stockLoaded=true;
+    renderAll(); // activeTab is still 'stock' → triggers _renderStockView
+  }catch(err){
+    stockLoaded=false;
+    showError('Load stock failed: '+sanitizeStr(err.message));
+  }
+}
+
+function _renderStockView(){
+  const pending  =allOrders.filter(o=>!isCompleted(o));
+  const completed=allOrders.filter(o=>isCompleted(o));
+  const low=stockProducts.filter(p=>parseInt(p.stock_qty||0)<=parseInt(p.min_stock||0));
+
+  const cards=stockProducts.length
+    ? stockProducts.map(_renderStockCard).join('')
+    : `<div class="empty" style="grid-column:1/-1">
+        <div class="empty-icon">📭</div>
+        <h3>គ្មាន Products</h3>
+        <p>ចុច Refresh</p>
+       </div>`;
+
+  document.getElementById('app-content').innerHTML=`
+    ${renderProfileCard()}
+    <div class="stats">
+      <div class="stat"><div class="stat-num">${stockProducts.length}</div><div class="stat-lbl">Products</div></div>
+      <div class="stat"><div class="stat-num" style="color:${low.length?'var(--red)':'var(--green)'}">${low.length}</div><div class="stat-lbl">⚠️ Low Stock</div></div>
+      <div class="stat"><div class="stat-num" style="color:var(--green)">${stockProducts.length-low.length}</div><div class="stat-lbl">✅ OK</div></div>
+    </div>
+    <div class="tabs">
+      <div class="tab" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
+      <div class="tab" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
+      <div class="tab active">📦 Stock (${stockProducts.length})</div>
+    </div>
+    <div style="padding:8px 12px;display:flex;justify-content:flex-end">
+      <button onclick="stockLoaded=false;loadStock()"
+        style="padding:7px 14px;background:var(--surface);border:1px solid var(--border);
+        border-radius:7px;color:var(--muted);font-size:12px;cursor:pointer">🔄 Refresh</button>
+    </div>
+    <div class="stock-grid">${cards}</div>`;
+}
+
+function _renderStockCard(p){
+  const qty=parseInt(p.stock_qty||0);
+  const min=parseInt(p.min_stock||0);
+  const isLow=qty<=min;
+  const hasImg=p.image_url&&!p.image_url.includes('INSERT')&&p.image_url.startsWith('http');
+  const pid=e(p.product_id||'');
+  const pname=e(p.name||'');
+  return`
+  <div class="stock-card ${isLow?'low-stock':''}" onclick="openStockDetail('${pid}')">
+    ${hasImg
+      ?`<img class="stock-card-img" src="${e(p.image_url)}" loading="lazy"
+          onerror="this.outerHTML='<div class=\\'stock-card-img-placeholder\\'>📦</div>'">`
+      :`<div class="stock-card-img-placeholder">📦</div>`}
+    <div class="stock-card-name" title="${pname}">${pname||'—'}</div>
+    <div class="stock-card-bottom">
+      <div>
+        <div class="stock-card-qty" style="color:${isLow?'var(--red)':'var(--accent)'}">
+          ${isLow?'⚠️ ':''}${qty}
+        </div>
+        <div class="stock-card-min" style="color:${isLow?'var(--red)':'var(--muted)'}">
+          min: ${min}
+        </div>
+      </div>
+      <button class="stock-add-btn"
+        onclick="event.stopPropagation();openAddStockForm('${pid}','${pname}')"
+        title="Add Stock">+</button>
+    </div>
+    <div class="stock-card-price">$${e(p.price||'—')}</div>
+  </div>`;
+}
+
+function openStockDetail(productId){
+  const p=stockProducts.find(x=>String(x.product_id)===String(productId));
+  if(!p)return;
+  const qty=parseInt(p.stock_qty||0);
+  const min=parseInt(p.min_stock||0);
+  const isLow=qty<=min;
+  const hasImg=p.image_url&&!p.image_url.includes('INSERT')&&p.image_url.startsWith('http');
+  const pid=e(p.product_id||'');
+  const pname=e(p.name||'');
+
+  document.getElementById('detail-title').textContent=p.name||'Product Detail';
+  document.getElementById('detail-body').innerHTML=`
+    <div class="detail-section">
+      ${hasImg?`<img src="${e(p.image_url)}" style="width:100%;height:180px;object-fit:cover;
+        border-radius:10px;margin-bottom:12px"
+        onerror="this.style.display='none'">`:''}
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="key">Stock Qty</div>
+          <div class="val" style="color:${isLow?'var(--red)':'var(--green)'}">
+            ${isLow?'⚠️ ':'✅ '}${qty}
+          </div>
+        </div>
+        <div class="detail-item">
+          <div class="key">Min Stock</div>
+          <div class="val">${min}</div>
+        </div>
+        <div class="detail-item">
+          <div class="key">តម្លៃ</div>
+          <div class="val" style="color:var(--accent)">$${e(p.price||'—')}</div>
+        </div>
+        <div class="detail-item">
+          <div class="key">Category</div>
+          <div class="val" style="font-size:13px">${e(p.category||'—')}</div>
+        </div>
+        ${p.description?`<div class="detail-item full">
+          <div class="key">Description</div>
+          <div class="val" style="font-size:13px;font-weight:400">${e(p.description)}</div>
+        </div>`:''}
+        ${p.video_url?`<div class="detail-item full">
+          <div class="key">Video</div>
+          <div class="val" style="font-size:12px">
+            <a onclick="openExternalLink('${e(p.video_url)}')"
+              style="color:var(--accent);cursor:pointer">▶ YouTube</a>
+          </div>
+        </div>`:''}
+      </div>
+    </div>`;
+
+  document.getElementById('detail-foot').innerHTML=`
+    <button onclick="openAddStockForm('${pid}','${pname}')"
+      style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
+      + បន្ថែម Stock</button>`;
+
+  document.body.style.overflow='hidden';
+  document.body.style.touchAction='none';
+  document.getElementById('detail-overlay').classList.add('on');
+  const popup=document.getElementById('detail-popup');
+  if(popup)popup.style.transform='';
+}
+
+function openAddStockForm(productId,productName){
+  // close if open, then open new form
+  const wasOpen=document.getElementById('detail-overlay').classList.contains('on');
+  if(wasOpen){
+    const p=document.getElementById('detail-popup');if(p)p.style.transform='';
+    document.getElementById('detail-overlay').classList.remove('on');
+    document.body.style.overflow='';document.body.style.touchAction='';
+    setTimeout(()=>_showAddStockForm(productId,productName),360);
+  }else{
+    _showAddStockForm(productId,productName);
+  }
+}
+
+function _showAddStockForm(productId,productName){
+  const prod=stockProducts.find(x=>String(x.product_id)===String(productId));
+  const currentQty=parseInt(prod?.stock_qty||0);
+  const pid=e(productId||'');
+
+  document.getElementById('detail-title').textContent='+ Stock: '+(productName||'');
+  document.getElementById('detail-body').innerHTML=`
+    <div class="detail-section">
+      <div class="stock-info-box">
+        Stock បច្ចុប្បន្ន: <b style="color:var(--accent);font-size:16px">${currentQty}</b>
+        ${parseInt(prod?.min_stock||0)>0?` &nbsp;(Min: ${prod.min_stock})`:''}
+      </div>
+      <label class="stock-form-label">ប្រភេទ Movement</label>
+      <select id="movement-type" class="stock-form-select">
+        <option value="in">📦 ចូល — Restock</option>
+        <option value="out">📤 ចេញ — Manual Deduct</option>
+        <option value="adjust">⚙️ Adjust — Set Exact Qty</option>
+      </select>
+      <label class="stock-form-label">ចំនួន</label>
+      <input id="movement-qty" class="stock-form-input" type="number"
+        min="1" max="99999" placeholder="0" inputmode="numeric">
+      <label class="stock-form-label">Note (optional)</label>
+      <input id="movement-note" class="stock-form-input" type="text"
+        placeholder="ហេតុផល / reference..." maxlength="100">
+    </div>`;
+
+  document.getElementById('detail-foot').innerHTML=`
+    <button onclick="closeDetail()"
+      style="padding:11px 18px;background:var(--border);color:var(--text);
+      border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">
+      Cancel</button>
+    <button onclick="submitStockMovement('${pid}')"
+      style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
+      💾 Save</button>`;
+
+  document.body.style.overflow='hidden';
+  document.body.style.touchAction='none';
+  document.getElementById('detail-overlay').classList.add('on');
+  const popup=document.getElementById('detail-popup');
+  if(popup)popup.style.transform='';
+  setTimeout(()=>document.getElementById('movement-qty')?.focus(),400);
+}
+
+async function submitStockMovement(productId){
+  const type  =document.getElementById('movement-type')?.value||'in';
+  const qty   =parseInt(document.getElementById('movement-qty')?.value||0);
+  const note  =sanitizeStr(document.getElementById('movement-note')?.value||'');
+  if(!qty||qty<1){showToast('❌ ចំនួនត្រូវ >= 1',true);return;}
+
+  const storeId=shipperData?.store_id||shipperData?.storeId||'yb9999';
+  try{
+    const r=await gs('addMovement',{
+      product_id:String(productId),
+      store_id:storeId,
+      type,qty,note,
+      created_by:shipperData?.phone||''
+    });
+    if(r.success||r.ok||r.result==='ok'){
+      showToast('✅ Stock Updated!');
+      try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
+      closeDetail();
+      stockLoaded=false; // force reload
+      loadStock();
+    }else{
+      showToast('❌ '+(sanitizeStr(r.error||r.message||'Failed')),true);
+    }
+  }catch(err){
+    showToast('❌ '+sanitizeStr(err.message),true);
+  }
+}
+
+// ============ END STOCK MODULE ============
 </script>
 </body>
 </html>
