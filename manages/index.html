@@ -488,6 +488,7 @@ select.field-input{cursor:pointer}
                onkeydown="if(event.key==='Enter')doLoginStep1()">
       </div>
       <div class="recaptcha-wrap">
+        <!-- TODO: Replace with your real reCAPTCHA v2 Site Key from console.cloud.google.com -->
         <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
       </div>
       <button class="btn-primary" id="btnLogin" onclick="doLoginStep1()">ចូល</button>
@@ -571,6 +572,9 @@ select.field-input{cursor:pointer}
 // CONFIG
 // ════════════════════════════════════════
 const API_URL = (typeof window.API !== 'undefined' ? window.API : 'https://mr.yinboran.workers.dev/');
+
+// ── Dev bypass: set true to skip reCAPTCHA on frontend (must match TEST_MODE_AUTH in auth.gs) ──
+const TEST_MODE = false; // ← true = skip reCAPTCHA check (dev only)
 
 // ── Session IN MEMORY ONLY — never localStorage ──
 let S = null; // { token, expires, name, role, tenantId, permissions }
@@ -660,9 +664,11 @@ function showErr(m){
 async function doLoginStep1(){
   const id   = document.getElementById('inputId').value.trim();
   const pw   = document.getElementById('inputPw').value;
-  const cap  = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : 'test';
+  // FIX #1: TEST_MODE skips reCAPTCHA check (must match TEST_MODE_AUTH=true in auth.gs)
+  const cap  = TEST_MODE ? 'test_bypass'
+             : (typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '');
   if(!id||!pw){ showErr('Phone/Username and password required'); return; }
-  if(!cap)    { showErr('Please complete reCAPTCHA'); return; }
+  if(!TEST_MODE && !cap){ showErr('Please complete reCAPTCHA'); return; }
 
   const btn = document.getElementById('btnLogin');
   btn.disabled = true; btn.textContent = 'Verifying...';
@@ -673,8 +679,10 @@ async function doLoginStep1(){
 
   if(res.error){ showErr(res.error); if(typeof grecaptcha!=='undefined') grecaptcha.reset(); return; }
 
-  _loginPhone = res.phone || id.replace(/\D/g,'');
-  document.getElementById('otpHint').textContent = '***'+_loginPhone.slice(-4);
+  // FIX #2: always store full phone from user input (res.phone is only 4-digit hint)
+  _loginPhone = id.replace(/\D/g,'');
+  const _hint = res.phone || _loginPhone.slice(-4);
+  document.getElementById('otpHint').textContent = '***'+_hint;
   document.getElementById('credScreen').style.display = 'none';
   document.getElementById('otpScreen').style.display  = 'block';
   document.getElementById('inputOtp').value = '';
@@ -805,9 +813,8 @@ function renderOrders(data){
     return mq && ms;
   });
 
-  document.getElementById('tabContent').innerHTML = `
-    <div class="fbar">
-      <input class="search-input" id="oSearch" placeholder="Search name, phone..." value="${esc(_qOrder)}"
+  _flOrders = fl;
+  document.getElementById('tabContent').innerHTML = ` placeholder="Search name, phone..." value="${esc(_qOrder)}"
              oninput="_qOrder=this.value;renderOrders(_orders)">
       <select class="filter-select" onchange="_statusFilter=this.value;renderOrders(_orders)">
         <option value="">All</option>
@@ -824,8 +831,8 @@ function renderOrders(data){
           <th>Name</th><th>Phone</th><th>Ordered</th><th>Pricing</th><th>Status</th><th>Date</th>
           ${canEdit?'<th></th>':''}
         </tr></thead>
-        <tbody>${fl.length ? fl.map(o=>`
-          <tr onclick='openOrderDetail(${JSON.stringify(o)})' style="cursor:pointer">
+        <tbody>${fl.length ? fl.map((o,i)=>`
+          <tr onclick="_openOrderByIdx(${i})" style="cursor:pointer">
             <td style="font-weight:600">${esc(o.name||'—')}</td>
             <td><code style="font-size:12px">${esc(o.phone||'—')}</code></td>
             <td style="font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc((o.ordered||'—').slice(0,50))}</td>
@@ -833,7 +840,7 @@ function renderOrders(data){
             <td>${sbadge(o.status)}</td>
             <td style="font-size:11px;color:var(--muted)">${esc((o.orderDate||'').slice(0,10))}</td>
             ${canEdit?`<td onclick="event.stopPropagation()"><div class="action-btns">
-              <button class="btn-sm be" onclick='openEditOrder(${JSON.stringify(o)})'>Edit</button>
+              <button class="btn-sm be" onclick="_openEditOrderByIdx(${i})">Edit</button>
               <button class="btn-sm bd" onclick="delOrder('${esc(o.profileId)}',event)">Del</button>
             </div></td>`:''}
           </tr>`).join('') : `<tr><td colspan="8" style="text-align:center;padding:36px;color:var(--muted)">No orders</td></tr>`}
@@ -841,6 +848,11 @@ function renderOrders(data){
       </table>
     </div>`;
 }
+
+// store filtered list for index lookup (avoids JSON.stringify in onclick)
+let _flOrders = [];
+function _openOrderByIdx(i){ openOrderDetail(_flOrders[i]||{}); }
+function _openEditOrderByIdx(i){ openEditOrder(_flOrders[i]||{}); }
 
 // PDF: order detail → fullscreen sheet
 function openOrderDetail(o){
@@ -898,13 +910,14 @@ function renderProdGrid(rows){
   if(!el) return;
   if(!rows.length){ el.innerHTML=`<div class="empty"><div class="empty-icon">📦</div>No products</div>`; return; }
   const canEdit = S.permissions && S.permissions.stock;
-  el.innerHTML = `<div class="prod-grid">${rows.map(p=>{
+  window._prodRows = rows;
+  el.innerHTML = `<div class="prod-grid">${rows.map((p,i)=>{
     const qty   = parseInt(p['Available']||p['Quantity']||'0');
     const thresh= parseInt(p['Low Stock Alert']||'5');
     const low   = qty <= thresh;
-    return `<div class="prod-card${low?' low-stock':''}" onclick='openProductDetail(${JSON.stringify(p)})'>
+    return `<div class="prod-card${low?' low-stock':''}" onclick="_openProdByIdx(${i})">
       ${p['Photo']
-        ? `<img class="prod-img" src="${esc(p['Photo'])}" loading="lazy" onerror="this.parentNode.innerHTML='<div class=prod-img-placeholder>📦</div>'+this.parentNode.innerHTML.replace(this.outerHTML,'')">`
+        ? `<img class="prod-img" src="${esc(p['Photo'])}" loading="lazy" onerror="this.style.display='none'">`
         : `<div class="prod-img-placeholder">📦</div>`}
       <div class="prod-info">
         <div class="prod-name">${esc(p['Item Name']||'—')}</div>
@@ -915,12 +928,17 @@ function renderProdGrid(rows){
   }).join('')}</div>`;
 }
 
+function _openProdByIdx(i){ openProductDetail(window._prodRows[i]||{}); }
+
 function filterProds(q){
-  renderProdGrid(_products.filter(p=>['Item Name','Code','Category'].some(k=>(p[k]||'').toLowerCase().includes(q.toLowerCase()))));
+  const fl = _products.filter(p=>['Item Name','Code','Category'].some(k=>(p[k]||'').toLowerCase().includes(q.toLowerCase())));
+  window._prodRows = fl;
+  renderProdGrid(fl);
 }
 
 // PDF: product detail → fullscreen sheet
 function openProductDetail(p){
+  window._curProd = p;
   const canEdit = S.permissions && S.permissions.stock;
   openFullSheet(p['Item Name']||'Product', `
     ${p['Photo']?`<img src="${esc(p['Photo'])}" style="width:100%;border-radius:12px;margin-bottom:16px;max-height:220px;object-fit:cover">`:''}
@@ -940,7 +958,7 @@ function openProductDetail(p){
       </div>`:''}
     </div>
     ${canEdit?`<div style="margin-top:20px;display:flex;gap:8px">
-      <button class="btn-save" onclick='closeFullSheet();openEditProduct(${JSON.stringify(p)})'>✏️ Edit</button>
+      <button class="btn-save" onclick="closeFullSheet();openEditProduct(window._curProd)">✏️ Edit</button>
       <button class="btn-cancel" style="color:var(--red);border-color:#ef444440" onclick="delProduct('${esc(p['Code'])}')">Del</button>
     </div>`:''}
   `);
@@ -966,13 +984,14 @@ async function loadCustomers(){
   renderCust(rows);
 }
 function renderCust(rows){
+  window._custRows = rows;
   const tbody = document.getElementById('custBody');
   if(!tbody) return;
   if(!rows.length){ tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:36px;color:var(--muted)">No customers</td></tr>`; return; }
   const tagCls = {VIP:'bpa',Loyal:'bc',New:'bp',Risk:'bx'};
-  tbody.innerHTML = rows.map(c=>{
+  tbody.innerHTML = rows.map((c,i)=>{
     const tag = c['Customer Tag']||'New';
-    return `<tr onclick='openCustDetail(${JSON.stringify(c)})' style="cursor:pointer">
+    return `<tr onclick="_openCustByIdx(${i})" style="cursor:pointer">
       <td style="font-weight:600">${esc(c['Name']||'—')}</td>
       <td><code style="font-size:12px">${esc(c['Phone Number']||'—')}</code></td>
       <td><span class="badge ${tagCls[tag]||'bp'}">${esc(tag)}</span></td>
@@ -981,7 +1000,11 @@ function renderCust(rows){
     </tr>`;
   }).join('');
 }
-function filterCust(q,rows){ renderCust(rows.filter(c=>['Name','Phone Number'].some(k=>(c[k]||'').toLowerCase().includes(q.toLowerCase())))); }
+function filterCust(q,rows){
+  const fl = rows.filter(c=>['Name','Phone Number'].some(k=>(c[k]||'').toLowerCase().includes(q.toLowerCase())));
+  renderCust(fl);
+}
+function _openCustByIdx(i){ openCustDetail(window._custRows[i]||{}); }
 
 // PDF: customer 360° → fullscreen sheet
 function openCustDetail(c){
@@ -1004,10 +1027,30 @@ function openCustDetail(c){
 // ════════════════════════════════════════
 // STOCK (PDF Phase 2)
 // ════════════════════════════════════════
+function openStockDetail(code){
+  const rows = window._stockRows||[];
+  const p = rows.find(r=>(r['Code']||r['Item Name']||'')=== code)||{};
+  const avail = parseInt(p['Available']||p['Quantity']||'0');
+  const min   = parseInt(p['Low Stock Alert']||'5');
+  openFullSheet(p['Item Name']||'Stock Detail', `
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${detailRow('Product', p['Item Name']||'—')}
+      ${detailRow('Code',    p['Code']||'—')}
+      ${detailRow('Quantity',    String(p['Quantity']||'0'))}
+      ${detailRow('Reserved',    String(p['Reserved']||'0'))}
+      ${detailRow('Available',   String(avail))}
+      ${detailRow('Min Stock Alert', String(min))}
+      ${detailRow('Last Restock',  p['Last Restock Date']||'—')}
+      ${detailRow('Restock Note',  p['Restock Note']||'—')}
+      ${detailRow('Status', avail<=min?'<span class="badge bx">⚠️ Low Stock</span>':'<span class="badge bpa">✅ OK</span>')}
+    </div>`);
+}
+
 async function loadStock(){
   const res = await api('getProductsData');
   if(res.error){ renderErr(res.error); return; }
   const rows = parseGrid(res);
+  window._stockRows = rows;
   const low  = rows.filter(p=>parseInt(p['Available']||p['Quantity']||'0') <= parseInt(p['Low Stock Alert']||'5'));
 
   document.getElementById('tabContent').innerHTML = `
@@ -1020,7 +1063,8 @@ async function loadStock(){
             const avail = parseInt(p['Available']||p['Quantity']||'0');
             const min   = parseInt(p['Low Stock Alert']||'5');
             const isLow = avail <= min;
-            return `<tr onclick='openFullSheet("${esc(p["Item Name"]||"Stock")}","${esc(detailRow("Available",String(avail)))+esc(detailRow("Min Stock",String(min)))}")' style="cursor:pointer">
+            const pid = esc(p['Code']||p['Item Name']||'');
+            return `<tr onclick="openStockDetail('${pid}')" style="cursor:pointer">
               <td style="font-weight:600">${esc(p['Item Name']||'—')}</td>
               <td>${esc(String(p['Quantity']||'—'))}</td>
               <td style="color:var(--accent)">${esc(String(p['Reserved']||'0'))}</td>
