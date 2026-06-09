@@ -13,17 +13,25 @@
 :root {
   --safe-top: env(safe-area-inset-top);
   --hdr-h: 64px;
+  /* ── Fallback theme vars (in case config.js fails to load) ── */
+  --bg:      #0f0f0f;
+  --surface: #1a1a1a;
+  --card:    #1e1e1e;
+  --border:  #2a2a2a;
+  --text:    #f0f0f0;
+  --muted:   #888;
+  --accent:  #f0a500;
+  --accent2: #e08c00;
+  --green:   #22c55e;
+  --red:     #ef4444;
+  --blue:    #3b82f6;
+  --font:    'Battambang', system-ui, sans-serif;
 }
 
 /* ── Hide scrollbars everywhere ─────────────────────────── */
 html, body { overflow-x: hidden; }
-* {
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE/Edge */
-}
-*::-webkit-scrollbar {
-  display: none;                /* Chrome/Safari/WebKit */
-}
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
 
 body{
   background:var(--bg);
@@ -529,51 +537,10 @@ function callPhone(phone){
 }
 
 // ── API ───────────────────────────────────────────────────
-// Shipper uses dedicated GET endpoints (no token required)
-function gs(fn, arg) {
-  // ── Shipper dedicated endpoints (GET) ─────────────────
-  if (fn === 'handleShipperLogin') {
-    const tgId = encodeURIComponent(String(arg || ''));
-    return fetch(`${API}?action=shipper_login&tg_id=${tgId}`)
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-  }
-  if (fn === 'handleShipperOrders') {
-    const phone = encodeURIComponent(String(arg || ''));
-    return fetch(`${API}?action=shipper_orders&phone=${phone}`)
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-  }
-  if (fn === 'handleShipperComplete') {
-    const pid   = encodeURIComponent(String((arg && arg[0]) || arg || ''));
-    const phone = encodeURIComponent(String((arg && arg[1]) || ''));
-    return fetch(`${API}?action=shipper_complete&profile_id=${pid}&phone=${phone}`)
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-  }
-  // ── verifyLogin — POST body ────────────────────────────
-  if (fn === 'verifyLogin') {
-    return fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'loginStep1', ...arg })
-    }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-  }
-  // ── userProfile — GET legacy ───────────────────────────
-  if (fn === 'userProfile') {
-    const data = encodeURIComponent(JSON.stringify(typeof arg === 'object' ? arg : { identifier: arg }));
-    return fetch(`${API}?action=gs&fn=userProfile&data=${data}`)
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-  }
-  // ── getProducts → public catalog ─────────────────────────
-  if (fn === 'getProducts' || fn === 'getPublicProducts') {
-    return fetch(`${API}?action=products`)
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
-  }
-  // ── Stock / other — POST body ──────────────────────────
-  const body = typeof arg === 'object' && arg !== null ? arg : { data: arg };
-  return fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: fn, ...body })
-  }).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+function gs(fn,arg){
+  const data=arg!==undefined?encodeURIComponent(JSON.stringify(arg)):'';
+  return fetch(`${API}?action=gs&fn=${fn}${data?'&data='+data:''}`)
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
 }
 
 // ── SESSION ───────────────────────────────────────────────
@@ -665,7 +632,7 @@ async function loginByPhone(){
   if(!wv.ok){document.getElementById('pw-inp')?.classList.add('input-error');showToast('❌ '+wv.msg,true);return;}
   if(btn){btn.disabled=true;btn.textContent='កំពុងផ្ទុក...';}
   try{
-    const r=await gs('verifyLogin',{identifier:pv.value,password:wv.value});
+    const r=await gs('verifyShipperLogin',{identifier:pv.value,password:wv.value});
     if(r.error){showToast('❌ '+sanitizeStr(r.error),true);document.getElementById('pw-inp')?.classList.add('input-error');if(btn){btn.disabled=false;btn.textContent='Login →';}return;}
     const role=String(r.role||'').toLowerCase();
     if(role!=='shipper'&&role!=='admin'){showToast('❌ គណនីនេះ មិនមែន Shipper',true);if(btn){btn.disabled=false;btn.textContent='Login →';}return;}
