@@ -538,7 +538,7 @@ select.field-input{cursor:pointer}
         <div class="pw-strength-bar" id="pwBar"></div>
         <div class="field-hint info" id="hintPw">យ៉ាងតិច 4 តួអក្សរ</div>
       </div>
-      <div class="recaptcha-wrap">
+      <div class="recaptcha-wrap" id="recaptchaWrap">
         <div class="g-recaptcha" data-sitekey="6LccVxUtAAAAADwMsRysGzfAAX3Wt_CguC5ktLrF"></div>
       </div>
       <button class="btn-primary" id="btnLogin" onclick="doLoginStep1()">ចូល</button>
@@ -990,9 +990,8 @@ async function bootApp(){
     document.getElementById('loginLogo').textContent = ini;
     if(cfg.primaryColor) document.documentElement.style.setProperty('--accent', cfg.primaryColor);
     TEST_MODE = (cfg.connectType||'').toUpperCase() === 'TEST';
+    applyTestModeUI();
   }
-
-  // Hide tabs by role
   applyRoleTabs();
   switchTab('orders');
 }
@@ -1637,7 +1636,8 @@ function toast(msg, type){
 }
 
 // ════════════════════════════════════════
-// INIT — async: load connectType ដំបូង ដើម្បី TEST_MODE ត្រូវ មុន user ចុច Login
+// ════════════════════════════════════════
+// INIT
 // ════════════════════════════════════════
 (async function(){
   document.getElementById('loginScreen').style.display='flex';
@@ -1645,9 +1645,27 @@ function toast(msg, type){
   document.body.classList.add('login-open');
   try {
     const cfg = await api('getAppConfig');
-    if(!cfg.error) TEST_MODE = (cfg.connectType||'').toUpperCase() === 'TEST';
+    if(!cfg.error){
+      TEST_MODE = (cfg.connectType||'').toUpperCase() === 'TEST';
+      // Apply branding on login screen too
+      if(cfg.storeName) document.querySelector('.login-title') && (document.querySelector('.login-title').textContent = cfg.storeName);
+      if(cfg.primaryColor) document.documentElement.style.setProperty('--accent', cfg.primaryColor);
+      if(cfg.storeInitials) document.getElementById('loginLogo').textContent = cfg.storeInitials;
+    }
   } catch(_) {}
+  // Hide reCAPTCHA widget when TEST mode — after TEST_MODE is set
+  applyTestModeUI();
 })();
+
+function applyTestModeUI(){
+  const wrap = document.getElementById('recaptchaWrap');
+  if(!wrap) return;
+  if(TEST_MODE){
+    wrap.style.display = 'none';
+  } else {
+    wrap.style.display = '';
+  }
+}
 </script>
 </body>
 </html>
