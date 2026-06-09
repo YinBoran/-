@@ -548,13 +548,18 @@ function callPhone(phone){
 
 // ── API ───────────────────────────────────────────────────
 function gs(fn,arg){
-  // Auth functions use POST body; others use GET
-  const authFns=['handleGuestLogin','handleGuestVerify','loginStep1','loginStep2'];
-  if(authFns.includes(fn)){
+  // Auth → POST with correct action name for Code.gs dispatcher
+  const authMap={
+    'handleGuestLogin':  'guestLogin',
+    'handleGuestVerify': 'guestVerify',
+    'loginStep1':        'loginStep1',
+    'loginStep2':        'loginStep2'
+  };
+  if(authMap[fn]){
     return fetch(API,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:fn,...(arg||{})})
+      body:JSON.stringify({action:authMap[fn],...(arg||{})})
     }).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
   }
   const data=arg!==undefined?encodeURIComponent(JSON.stringify(arg)):'';
