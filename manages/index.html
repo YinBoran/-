@@ -807,10 +807,16 @@ function showOtpScreen(res){
   setTimeout(()=>document.getElementById('inputOtp').focus(), 100);
 }
 
+// ════════════════════════════════════════
+// TEST MODE — set true ពេល test, false ពេល production
+// ════════════════════════════════════════
+const TEST_MODE = true; // ← ប្ដូរ false ពេល production
+
 async function doLoginStep1(){
   _loginId = document.getElementById('inputId').value.trim();
   _loginPw = document.getElementById('inputPw').value;
-  const cap = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '';
+  const cap = TEST_MODE ? 'test_bypass'
+            : (typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '');
   // Validate first
   const idEl = document.getElementById('inputId');
   const pwEl = document.getElementById('inputPw');
@@ -818,7 +824,7 @@ async function doLoginStep1(){
   if(!_loginId)   { showErr('សូម វាយ Phone ឬ Username'); idEl.focus(); return; }
   if(!_loginPw)   { showErr('សូម វាយ Password'); pwEl.focus(); return; }
   if(_loginPw.length < 4) { showErr('Password ≥ 4 តួ'); pwEl.focus(); return; }
-  if(!cap)        { showErr('សូម បញ្ជាក់ reCAPTCHA'); return; }
+  if(!TEST_MODE && !cap){ showErr('សូម បញ្ជាក់ reCAPTCHA'); return; }
 
   const btn = document.getElementById('btnLogin');
   btn.disabled = true; btn.textContent = 'Verifying...';
