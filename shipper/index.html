@@ -21,40 +21,21 @@
 }
 
 body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:var(--font);
-  min-height:100vh;
-  padding-bottom:80px;
+  background:var(--bg);color:var(--text);font-family:var(--font);
+  min-height:100vh;padding-bottom:80px;
   padding-top:calc(var(--hdr-h) + env(safe-area-inset-top));
 }
+/* HEADER — fixed, top:0, safe-area padding inside, auto-hide on scroll */
 .hdr{
-  background:#0f0f0f;
-  border-bottom:1px solid var(--border);
-  padding:12px 16px;
-  display:flex;align-items:center;gap:10px;
-  position:fixed;
-  top:0;left:0;right:0;
-  z-index:50;
-  height:var(--hdr-h);
-  transform:translateY(env(safe-area-inset-top));
-  transition:transform .28s ease;
-  will-change:transform;
-}
-
-.hdr-spacer {
-  display:none;
-}
-/* HEADER — fixed + auto-hide */
-.hdr{background:#0f0f0f;border-bottom:1px solid var(--border);
-  padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));
+  background:#0f0f0f;border-bottom:1px solid var(--border);
+  padding:env(safe-area-inset-top) 16px 0;
   display:flex;align-items:center;gap:10px;
   position:fixed;top:0;left:0;right:0;z-index:50;
   height:calc(var(--hdr-h) + env(safe-area-inset-top));
-  transition:transform .28s ease;will-change:transform}
+  transition:transform .28s ease;will-change:transform;
+}
 .hdr.hdr-hidden{transform:translateY(-100%)}
-.hdr-spacer{height:var(--hdr-h);transition:height .28s ease;flex-shrink:0}
-.hdr-spacer.hdr-hidden{height:0}
+.hdr-spacer{display:none}
 .hdr-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:10px;display:flex;align-items:center;justify-content:center;
   font-size:19px;font-weight:700;color:#000;flex-shrink:0;cursor:pointer;
@@ -151,7 +132,8 @@ body{
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:fixed;inset:0;top:var(--hdr-h);gap:14px;color:var(--muted);font-size:14px;
+  position:fixed;inset:0;
+  gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
 .loading-sm{position:relative;inset:auto;min-height:120px;background:transparent;z-index:auto}
 .spinner{width:36px;height:36px;border:3px solid var(--border);
@@ -177,7 +159,7 @@ body{
   font-size:22px;animation:hold-pulse .6s ease infinite alternate}
 @keyframes hold-pulse{from{transform:scale(1)}to{transform:scale(1.15)}}
 
-/* ── FULLSCREEN POPUP (Dynamic Island aware) ────────────── */
+/* ── FULLSCREEN POPUP ────────────────────────────────────── */
 .popup-overlay{
   position:fixed;inset:0;
   background:rgba(0,0,0,.7);
@@ -187,14 +169,15 @@ body{
 .popup-overlay.on{opacity:1;pointer-events:all}
 .popup{
   position:fixed;
-  top:env(safe-area-inset-top,59px);
-  left:0;right:0;bottom:0;
+  top:0;left:0;right:0;bottom:0;
   background:var(--surface);
-  border-radius:16px 16px 0 0;
+  border-radius:0;
   display:flex;flex-direction:column;
   transform:translateY(110%);
   transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
   overflow:hidden;
+  /* push content below notch/Dynamic Island */
+  padding-top:env(safe-area-inset-top,0px);
 }
 .popup-overlay.on .popup{transform:translateY(0)}
 .popup-handle{width:40px;height:5px;background:var(--border);border-radius:3px;
@@ -330,44 +313,69 @@ body{
   padding:8px 12px;display:flex;gap:8px;align-items:center;
   border-bottom:1px solid #ddd;z-index:1}
 @media print{
-  body>*:not(#invoice-overlay){display:none!important}
-  #invoice-overlay{display:block!important;position:static!important;overflow:visible!important}
+  body>*:not(#invoice-overlay):not(#label-overlay){display:none!important}
+  #invoice-overlay,#label-overlay{display:block!important;position:static!important;overflow:visible!important}
   .inv-toolbar{display:none!important}
-  #invoice-content{padding:0!important}
+  #invoice-content,#label-content{padding:0!important}
 }
 
-/* ── STOCK MODULE ─────────────────────────────────────── */
-.stock-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
-.stock-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
-  padding:10px;cursor:pointer;transition:transform .15s,border-color .15s}
-.stock-card:active{transform:scale(.97)}
-.stock-card.low-stock{border-color:var(--red)88;background:#ef444410}
-.stock-card-img{width:100%;height:88px;border-radius:7px;margin-bottom:7px;
-  background:var(--border);object-fit:cover;display:block}
-.stock-card-img-placeholder{width:100%;height:88px;border-radius:7px;margin-bottom:7px;
-  background:var(--border);display:flex;align-items:center;justify-content:center;font-size:30px}
-.stock-card-name{font-size:12px;font-weight:600;margin-bottom:5px;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
-.stock-card-bottom{display:flex;justify-content:space-between;align-items:center;gap:4px}
-.stock-card-qty{font-size:21px;font-weight:700;line-height:1}
-.stock-card-min{font-size:10px;color:var(--muted);margin-top:2px}
-.stock-card-price{font-size:11px;color:var(--muted);margin-top:3px}
-.stock-add-btn{width:34px;height:34px;background:var(--accent);color:#000;border:none;
-  border-radius:8px;font-size:22px;font-weight:700;cursor:pointer;flex-shrink:0;
+/* ── STOCK MODULE (per-shipper list) ────────────────────── */
+.stock-toolbar{
+  padding:10px 12px;display:flex;align-items:center;
+  justify-content:space-between;gap:8px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+}
+.stock-add-item-btn{
+  padding:8px 16px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#000;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;
+}
+.stock-dirty-badge{
+  font-size:11px;color:var(--accent);font-weight:600;
+}
+.stock-list{padding:10px;display:flex;flex-direction:column;gap:8px;
+  padding-bottom:80px; /* space for save bar */
+}
+.stock-row{
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:12px;display:flex;align-items:center;gap:10px;
+}
+.stock-row-left{flex:1;min-width:0}
+.stock-row-name{
+  font-size:13px;font-weight:600;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;
+}
+.stock-row-price{font-size:11px;color:var(--muted)}
+.stock-qty-wrap{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.stock-qty-btn{
+  width:30px;height:30px;background:var(--border);border:none;border-radius:7px;
+  color:var(--text);font-size:18px;font-weight:700;cursor:pointer;
   display:flex;align-items:center;justify-content:center;line-height:1;
-  transition:opacity .15s}
-.stock-add-btn:active{opacity:.75}
+  transition:background .15s;
+}
+.stock-qty-btn:active{background:var(--accent);color:#000}
+.stock-qty-val{
+  min-width:34px;text-align:center;font-size:16px;font-weight:700;color:var(--accent);
+}
+.stock-del-btn{
+  width:30px;height:30px;background:var(--red)22;color:var(--red);
+  border:1px solid var(--red)44;border-radius:7px;font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .15s;
+}
+.stock-del-btn:active{background:var(--red)44}
+.stock-save-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  background:var(--surface);border-top:1px solid var(--border);
+  display:flex;gap:8px;z-index:40;
+}
 .stock-form-label{font-size:12px;color:var(--muted);margin-bottom:4px;display:block;font-weight:600}
-.stock-form-input{width:100%;padding:12px;background:var(--card);
+.stock-form-input{
+  width:100%;padding:12px;background:var(--card);
   border:1px solid var(--border);border-radius:8px;color:var(--text);
-  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
+  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none;
+}
 .stock-form-input:focus{outline:none;border-color:var(--accent)}
-.stock-form-select{width:100%;padding:12px;background:var(--card);
-  border:1px solid var(--border);border-radius:8px;color:var(--text);
-  font-size:15px;margin-bottom:12px;-webkit-appearance:none;appearance:none}
-.stock-form-select:focus{outline:none;border-color:var(--accent)}
-.stock-info-box{padding:10px 12px;background:var(--card);border-radius:8px;
-  font-size:13px;color:var(--muted);margin-bottom:12px;border-left:3px solid var(--accent)}
 </style>
 </head>
 <body>
@@ -449,6 +457,17 @@ body{
   <div id="invoice-content" style="padding:10px;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
 </div>
 
+<!-- Label Overlay (in-page, replaces window.open — works in TG WebApp) -->
+<div class="invoice-overlay" id="label-overlay">
+  <div class="inv-toolbar">
+    <button onclick="closeLabelOverlay()"
+      style="padding:8px 14px;background:#333;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">← Back</button>
+    <button onclick="window.print()"
+      style="padding:8px 18px;background:#f0a500;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">🖨️ Print</button>
+  </div>
+  <div id="label-content" style="padding:6px;background:#fff"></div>
+</div>
+
 <script>
 const tg = window.Telegram.WebApp;
 try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
@@ -472,22 +491,20 @@ let _searchTimer = null;
 let _currentInvId = null;
 
 // ── STOCK STATE ───────────────────────────────────────────
-let stockProducts = [];
-let stockLoaded   = false;
+let stockItems  = [];
+let stockLoaded = false;
+let stockDirty  = false;
 
 // ── SCROLL AUTO-HIDE HEADER ──────────────────────────────
 let _lastScrollY = 0;
 window.addEventListener('scroll', () => {
   const y   = window.scrollY;
   const hdr = document.getElementById('main-hdr');
-  const sp  = document.getElementById('hdr-spacer');
   if (!hdr) return;
   if (y > _lastScrollY + 6 && y > 60) {
     hdr.classList.add('hdr-hidden');
-    if (sp) sp.classList.add('hdr-hidden');
   } else if (y < _lastScrollY - 6) {
     hdr.classList.remove('hdr-hidden');
-    if (sp) sp.classList.remove('hdr-hidden');
   }
   _lastScrollY = y;
 }, { passive: true });
@@ -629,7 +646,7 @@ async function loginByPhone(){
 function doLogout(){
   stopPoll();clearSession();
   shipperData=null;allOrders=[];orders=[];lastCount=-1;_pwVisible=false;
-  stockProducts=[];stockLoaded=false;
+  stockItems=[];stockLoaded=false;stockDirty=false;
   document.getElementById('hdr-actions').style.display='none';
   document.getElementById('pending-count').textContent='0';
   closeProfile();showPhoneLogin();
@@ -976,6 +993,10 @@ async function openDetail(profileId){
   document.getElementById('detail-foot').innerHTML=`
     <button class="btn-call" onclick="callPhone('${phoneClean}')"
       style="padding:11px 18px;font-size:14px;border:1px solid #3b82f644;border-radius:10px;cursor:pointer">📞 Call</button>
+    <button onclick="closeDetail();printLabel('${sid}')"
+      style="padding:11px 14px;background:#3b82f622;color:var(--blue);
+      border:1px solid #3b82f644;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">
+      📦 Label</button>
     ${!done
       ?`<button onclick="closeDetail();askDeliver('${sid}','${e(o.name||'')}');"
           style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -1127,57 +1148,54 @@ function closeInvoiceOverlay(){
   document.body.style.overflow='';
 }
 
-// ── PRINT LABEL ───────────────────────────────────────────
+// ── PRINT LABEL (in-page overlay — TG WebApp safe) ────────
 function printLabel(profileId){
   const o=allOrders.find(x=>x.profileId===profileId);
   if(!o){showToast('❌ Order not found',true);return;}
-  const html=`<!DOCTYPE html><html lang="km"><head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
-<title>Label</title>
-<style>
-@page{size:100mm 70mm;margin:3mm}
-@media print{.noprint{display:none!important}}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;color:#000}
-.label{border:1pt solid #000;padding:5px;height:calc(100% - 2mm)}
-.top{display:flex;justify-content:space-between;border-bottom:.5pt solid #ccc;padding-bottom:3px;margin-bottom:3px;font-size:8pt}
-.cname{font-size:15pt;font-weight:700;margin-bottom:2px}
-.cphone{font-size:12pt;font-weight:600}
-.addr{font-size:8.5pt;margin:3px 0;color:#333}
-.items{font-size:8pt;color:#555;border-top:.5pt dashed #aaa;padding-top:3px;margin-top:3px}
-.footer{display:flex;justify-content:space-between;align-items:center;border-top:.5pt solid #000;padding-top:3px;margin-top:4px}
-.price{font-size:14pt;font-weight:700}
-.pay-badge{background:#f0a500;padding:2px 7px;border-radius:3px;font-size:8pt;font-weight:700}
-</style></head><body>
-<div class="noprint" style="text-align:center;padding:6px;background:#f5f5f5;margin-bottom:6px">
-  <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>
-  <button onclick="window.close()" style="padding:7px 14px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;margin-left:6px">✕</button>
-</div>
-<div class="label">
-  <div class="top"><span style="font-weight:700">📦 YB 9999 Electronics</span><span>076 9999 380</span></div>
-  <div class="cname">${e(o.name||'—')}</div>
-  <div class="cphone">📞 ${e(o.phone||'—')}</div>
-  <div class="addr">📍 ${e(o.location||'—')}</div>
-  <div class="items">🏷️ ${e((o.ordered||'—').substring(0,80))}${(o.ordered||'').length>80?'…':''}</div>
-  <div class="footer">
-    <span class="price">${e(o.retail||o.pricing||'—')}</span>
-    <span class="pay-badge">${e(o.payment||'COD')}</span>
+
+  // Close invoice overlay if open
+  document.getElementById('invoice-overlay').classList.remove('on');
+
+  // Build label HTML (inline styles only — no external deps needed)
+  const labelHtml=`
+<div style="
+  font-family:'Battambang','Khmer OS Siemreap',Arial,sans-serif;
+  font-size:9.5pt;color:#000;
+  border:1pt solid #000;padding:6px;
+  max-width:100mm;margin:0 auto;
+  box-sizing:border-box;
+">
+  <div style="display:flex;justify-content:space-between;
+    border-bottom:.5pt solid #ccc;padding-bottom:4px;margin-bottom:4px;font-size:8pt">
+    <span style="font-weight:700">📦 YB 9999 Electronics</span>
+    <span>076 9999 380</span>
+  </div>
+  <div style="font-size:15pt;font-weight:700;margin-bottom:2px">${e(o.name||'—')}</div>
+  <div style="font-size:12pt;font-weight:600;margin-bottom:3px">📞 ${e(o.phone||'—')}</div>
+  <div style="font-size:8.5pt;color:#333;margin-bottom:3px">📍 ${e(o.location||'—')}</div>
+  <div style="font-size:8pt;color:#555;
+    border-top:.5pt dashed #aaa;padding-top:3px;margin-bottom:4px">
+    🏷️ ${e((o.ordered||'—').substring(0,100))}${(o.ordered||'').length>100?'…':''}
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;
+    border-top:.5pt solid #000;padding-top:3px">
+    <span style="font-size:14pt;font-weight:700">${e(o.retail||o.pricing||'—')}</span>
+    <span style="background:#f0a500;padding:2px 8px;border-radius:3px;
+      font-size:8pt;font-weight:700">${e(o.payment||'COD')}</span>
     <span style="font-size:8pt;color:#777">${e((o.orderDate||'').substring(0,10))}</span>
   </div>
-  <div style="font-size:7pt;color:#aaa;margin-top:2px;text-align:right">ID: ${e(o.profileId||'')}</div>
-</div>
-<script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script>
-</body></html>`;
-  try{
-    const w=window.open('','_blank');
-    if(w){w.document.write(html);w.document.close();return;}
-  }catch(_){}
-  try{
-    const blob=new Blob([html],{type:'text/html'});
-    const url=URL.createObjectURL(blob);
-    tg.openLink(url);
-  }catch(_){showToast('❌ Please allow popups',true);}
+  <div style="font-size:7pt;color:#aaa;margin-top:2px;text-align:right">
+    ID: ${e(o.profileId||'')}
+  </div>
+</div>`;
+
+  document.getElementById('label-content').innerHTML=labelHtml;
+  document.getElementById('label-overlay').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeLabelOverlay(){
+  document.getElementById('label-overlay').classList.remove('on');
+  document.body.style.overflow='';
 }
 
 // ── PROFILE PAGE ──────────────────────────────────────────
@@ -1299,17 +1317,24 @@ function showToast(msg,isErr){
 }
 
 // ============ STOCK MODULE ============
+// Per-shipper stock — stored in GAS ScriptProperties
+// API: getShipperStock(phone) / saveShipperStock({phone, items})
+// Item shape: {name, qty, price, shipper}
 
 async function loadStock(){
   if(!shipperData)return;
-  const storeId=shipperData.store_id||shipperData.storeId||'yb9999';
   document.getElementById('app-content').innerHTML=
     '<div class="loading"><div class="spinner"></div>ផ្ទុក Stock...</div>';
   try{
-    const r=await gs('getProducts',storeId);
-    stockProducts=Array.isArray(r)?r:(r.products||[]);
+    const r=await gs('getShipperStock',shipperData.phone||'');
+    stockItems=Array.isArray(r)?r.map(i=>({
+      name :String(i.name ||''),
+      qty  :parseInt(i.qty)||0,
+      price:parseFloat(i.price)||0
+    })):[];
     stockLoaded=true;
-    renderAll(); // activeTab is still 'stock' → triggers _renderStockView
+    stockDirty=false;
+    renderAll();
   }catch(err){
     stockLoaded=false;
     showError('Load stock failed: '+sanitizeStr(err.message));
@@ -1319,211 +1344,191 @@ async function loadStock(){
 function _renderStockView(){
   const pending  =allOrders.filter(o=>!isCompleted(o));
   const completed=allOrders.filter(o=>isCompleted(o));
-  const low=stockProducts.filter(p=>parseInt(p.stock_qty||0)<=parseInt(p.min_stock||0));
-
-  const cards=stockProducts.length
-    ? stockProducts.map(_renderStockCard).join('')
-    : `<div class="empty" style="grid-column:1/-1">
-        <div class="empty-icon">📭</div>
-        <h3>គ្មាន Products</h3>
-        <p>ចុច Refresh</p>
-       </div>`;
+  const totalQty =stockItems.reduce((s,i)=>s+i.qty,0);
+  const totalVal =stockItems.reduce((s,i)=>s+(i.qty*i.price),0).toFixed(2);
 
   document.getElementById('app-content').innerHTML=`
     ${renderProfileCard()}
     <div class="stats">
-      <div class="stat"><div class="stat-num">${stockProducts.length}</div><div class="stat-lbl">Products</div></div>
-      <div class="stat"><div class="stat-num" style="color:${low.length?'var(--red)':'var(--green)'}">${low.length}</div><div class="stat-lbl">⚠️ Low Stock</div></div>
-      <div class="stat"><div class="stat-num" style="color:var(--green)">${stockProducts.length-low.length}</div><div class="stat-lbl">✅ OK</div></div>
+      <div class="stat">
+        <div class="stat-num">${stockItems.length}</div>
+        <div class="stat-lbl">Items</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--accent)">${totalQty}</div>
+        <div class="stat-lbl">Qty សរុប</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" style="color:var(--green)">$${totalVal}</div>
+        <div class="stat-lbl">តម្លៃសរុប</div>
+      </div>
     </div>
     <div class="tabs">
       <div class="tab" onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
       <div class="tab" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
-      <div class="tab active">📦 Stock (${stockProducts.length})</div>
+      <div class="tab active">📦 Stock (${stockItems.length})</div>
     </div>
-    <div style="padding:8px 12px;display:flex;justify-content:flex-end">
+
+    <div class="stock-toolbar">
+      <button class="stock-add-item-btn" onclick="openAddItemForm()">＋ បន្ថែម Item</button>
+      ${stockDirty?`<span class="stock-dirty-badge">● unsaved</span>`:''}
+    </div>
+
+    <div class="stock-list" id="stock-list">
+      ${_renderStockList()}
+    </div>
+
+    <div class="stock-save-bar" id="stock-save-bar" style="display:${stockDirty?'flex':'none'}">
       <button onclick="stockLoaded=false;loadStock()"
-        style="padding:7px 14px;background:var(--surface);border:1px solid var(--border);
-        border-radius:7px;color:var(--muted);font-size:12px;cursor:pointer">🔄 Refresh</button>
-    </div>
-    <div class="stock-grid">${cards}</div>`;
+        style="padding:12px 18px;background:var(--border);color:var(--text);
+        border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">
+        ↩ Discard</button>
+      <button onclick="saveShipperStock()"
+        style="flex:1;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+        color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
+        💾 Save All</button>
+    </div>`;
 }
 
-function _renderStockCard(p){
-  const qty=parseInt(p.stock_qty||0);
-  const min=parseInt(p.min_stock||0);
-  const isLow=qty<=min;
-  const hasImg=p.image_url&&!p.image_url.includes('INSERT')&&p.image_url.startsWith('http');
-  const pid=e(p.product_id||'');
-  const pname=e(p.name||'');
-  return`
-  <div class="stock-card ${isLow?'low-stock':''}" onclick="openStockDetail('${pid}')">
-    ${hasImg
-      ?`<img class="stock-card-img" src="${e(p.image_url)}" loading="lazy"
-          onerror="this.outerHTML='<div class=\\'stock-card-img-placeholder\\'>📦</div>'">`
-      :`<div class="stock-card-img-placeholder">📦</div>`}
-    <div class="stock-card-name" title="${pname}">${pname||'—'}</div>
-    <div class="stock-card-bottom">
-      <div>
-        <div class="stock-card-qty" style="color:${isLow?'var(--red)':'var(--accent)'}">
-          ${isLow?'⚠️ ':''}${qty}
-        </div>
-        <div class="stock-card-min" style="color:${isLow?'var(--red)':'var(--muted)'}">
-          min: ${min}
-        </div>
-      </div>
-      <button class="stock-add-btn"
-        onclick="event.stopPropagation();openAddStockForm('${pid}','${pname}')"
-        title="Add Stock">+</button>
-    </div>
-    <div class="stock-card-price">$${e(p.price||'—')}</div>
-  </div>`;
-}
-
-function openStockDetail(productId){
-  const p=stockProducts.find(x=>String(x.product_id)===String(productId));
-  if(!p)return;
-  const qty=parseInt(p.stock_qty||0);
-  const min=parseInt(p.min_stock||0);
-  const isLow=qty<=min;
-  const hasImg=p.image_url&&!p.image_url.includes('INSERT')&&p.image_url.startsWith('http');
-  const pid=e(p.product_id||'');
-  const pname=e(p.name||'');
-
-  document.getElementById('detail-title').textContent=p.name||'Product Detail';
-  document.getElementById('detail-body').innerHTML=`
-    <div class="detail-section">
-      ${hasImg?`<img src="${e(p.image_url)}" style="width:100%;height:180px;object-fit:cover;
-        border-radius:10px;margin-bottom:12px"
-        onerror="this.style.display='none'">`:''}
-      <div class="detail-grid">
-        <div class="detail-item">
-          <div class="key">Stock Qty</div>
-          <div class="val" style="color:${isLow?'var(--red)':'var(--green)'}">
-            ${isLow?'⚠️ ':'✅ '}${qty}
-          </div>
-        </div>
-        <div class="detail-item">
-          <div class="key">Min Stock</div>
-          <div class="val">${min}</div>
-        </div>
-        <div class="detail-item">
-          <div class="key">តម្លៃ</div>
-          <div class="val" style="color:var(--accent)">$${e(p.price||'—')}</div>
-        </div>
-        <div class="detail-item">
-          <div class="key">Category</div>
-          <div class="val" style="font-size:13px">${e(p.category||'—')}</div>
-        </div>
-        ${p.description?`<div class="detail-item full">
-          <div class="key">Description</div>
-          <div class="val" style="font-size:13px;font-weight:400">${e(p.description)}</div>
-        </div>`:''}
-        ${p.video_url?`<div class="detail-item full">
-          <div class="key">Video</div>
-          <div class="val" style="font-size:12px">
-            <a onclick="openExternalLink('${e(p.video_url)}')"
-              style="color:var(--accent);cursor:pointer">▶ YouTube</a>
-          </div>
-        </div>`:''}
-      </div>
+function _renderStockList(){
+  if(!stockItems.length) return`
+    <div class="empty">
+      <div class="empty-icon">📦</div>
+      <h3>Stock ទទេ</h3>
+      <p>ចុច "+ បន្ថែម Item" ដើម្បីដាក់ទំនិញ</p>
     </div>`;
 
-  document.getElementById('detail-foot').innerHTML=`
-    <button onclick="openAddStockForm('${pid}','${pname}')"
-      style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-      color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
-      + បន្ថែម Stock</button>`;
-
-  document.body.style.overflow='hidden';
-  document.body.style.touchAction='none';
-  document.getElementById('detail-overlay').classList.add('on');
-  const popup=document.getElementById('detail-popup');
-  if(popup)popup.style.transform='';
+  return stockItems.map((item,i)=>`
+    <div class="stock-row" id="srow-${i}">
+      <div class="stock-row-left">
+        <div class="stock-row-name">${e(item.name||'(no name)')}</div>
+        <div class="stock-row-price">${item.price>0?`$${item.price.toFixed(2)}/unit`:''}</div>
+      </div>
+      <div class="stock-qty-wrap">
+        <button class="stock-qty-btn" onclick="adjustQty(${i},-1)">−</button>
+        <span class="stock-qty-val">${item.qty}</span>
+        <button class="stock-qty-btn" onclick="adjustQty(${i},+1)">+</button>
+      </div>
+      <button class="stock-del-btn" onclick="deleteStockItem(${i})" title="Delete">🗑</button>
+    </div>`).join('');
 }
 
-function openAddStockForm(productId,productName){
-  // close if open, then open new form
-  const wasOpen=document.getElementById('detail-overlay').classList.contains('on');
-  if(wasOpen){
-    const p=document.getElementById('detail-popup');if(p)p.style.transform='';
-    document.getElementById('detail-overlay').classList.remove('on');
-    document.body.style.overflow='';document.body.style.touchAction='';
-    setTimeout(()=>_showAddStockForm(productId,productName),360);
-  }else{
-    _showAddStockForm(productId,productName);
+function adjustQty(idx,delta){
+  if(idx<0||idx>=stockItems.length)return;
+  const newQty=Math.max(0,stockItems[idx].qty+delta);
+  stockItems[idx].qty=newQty;
+  // update just this row's qty value (no full re-render → no scroll jump)
+  const valEl=document.querySelector(`#srow-${idx} .stock-qty-val`);
+  if(valEl)valEl.textContent=newQty;
+  _markDirty();
+}
+
+function deleteStockItem(idx){
+  if(idx<0||idx>=stockItems.length)return;
+  stockItems.splice(idx,1);
+  _markDirty();
+  _rerenderStockList(); // re-render list only
+}
+
+function _markDirty(){
+  stockDirty=true;
+  // show unsaved badge + save bar
+  const badge=document.querySelector('.stock-dirty-badge');
+  if(!badge){
+    const tb=document.querySelector('.stock-toolbar');
+    if(tb&&!tb.querySelector('.stock-dirty-badge')){
+      const s=document.createElement('span');
+      s.className='stock-dirty-badge';s.textContent='● unsaved';
+      tb.appendChild(s);
+    }
   }
+  const bar=document.getElementById('stock-save-bar');
+  if(bar)bar.style.display='flex';
 }
 
-function _showAddStockForm(productId,productName){
-  const prod=stockProducts.find(x=>String(x.product_id)===String(productId));
-  const currentQty=parseInt(prod?.stock_qty||0);
-  const pid=e(productId||'');
+function _rerenderStockList(){
+  const el=document.getElementById('stock-list');
+  if(el)el.innerHTML=_renderStockList();
+  // update stats
+  const totalQty=stockItems.reduce((s,i)=>s+i.qty,0);
+  const totalVal=stockItems.reduce((s,i)=>s+(i.qty*i.price),0).toFixed(2);
+  const statNums=document.querySelectorAll('.stat .stat-num');
+  if(statNums[0])statNums[0].textContent=stockItems.length;
+  if(statNums[1])statNums[1].textContent=totalQty;
+  if(statNums[2])statNums[2].textContent='$'+totalVal;
+}
 
-  document.getElementById('detail-title').textContent='+ Stock: '+(productName||'');
+function openAddItemForm(){
+  document.getElementById('detail-title').textContent='+ Item ថ្មី';
   document.getElementById('detail-body').innerHTML=`
     <div class="detail-section">
-      <div class="stock-info-box">
-        Stock បច្ចុប្បន្ន: <b style="color:var(--accent);font-size:16px">${currentQty}</b>
-        ${parseInt(prod?.min_stock||0)>0?` &nbsp;(Min: ${prod.min_stock})`:''}
-      </div>
-      <label class="stock-form-label">ប្រភេទ Movement</label>
-      <select id="movement-type" class="stock-form-select">
-        <option value="in">📦 ចូល — Restock</option>
-        <option value="out">📤 ចេញ — Manual Deduct</option>
-        <option value="adjust">⚙️ Adjust — Set Exact Qty</option>
-      </select>
-      <label class="stock-form-label">ចំនួន</label>
-      <input id="movement-qty" class="stock-form-input" type="number"
-        min="1" max="99999" placeholder="0" inputmode="numeric">
-      <label class="stock-form-label">Note (optional)</label>
-      <input id="movement-note" class="stock-form-input" type="text"
-        placeholder="ហេតុផល / reference..." maxlength="100">
+      <label class="stock-form-label">ឈ្មោះទំនិញ *</label>
+      <input id="new-item-name" class="stock-form-input" type="text"
+        placeholder="ឈ្មោះ product..." maxlength="128"
+        onkeydown="if(event.key==='Enter')document.getElementById('new-item-qty').focus()">
+      <label class="stock-form-label">ចំនួន (qty) *</label>
+      <input id="new-item-qty" class="stock-form-input" type="number"
+        min="0" max="99999" placeholder="0" inputmode="numeric"
+        onkeydown="if(event.key==='Enter')document.getElementById('new-item-price').focus()">
+      <label class="stock-form-label">ថ្លៃ/unit ($)</label>
+      <input id="new-item-price" class="stock-form-input" type="number"
+        min="0" step="0.01" placeholder="0.00" inputmode="decimal"
+        onkeydown="if(event.key==='Enter')submitAddItem()">
     </div>`;
-
   document.getElementById('detail-foot').innerHTML=`
     <button onclick="closeDetail()"
-      style="padding:11px 18px;background:var(--border);color:var(--text);
+      style="padding:12px 18px;background:var(--border);color:var(--text);
       border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">
       Cancel</button>
-    <button onclick="submitStockMovement('${pid}')"
-      style="flex:1;padding:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    <button onclick="submitAddItem()"
+      style="flex:1;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));
       color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
-      💾 Save</button>`;
-
+      ＋ Add</button>`;
   document.body.style.overflow='hidden';
   document.body.style.touchAction='none';
   document.getElementById('detail-overlay').classList.add('on');
   const popup=document.getElementById('detail-popup');
   if(popup)popup.style.transform='';
-  setTimeout(()=>document.getElementById('movement-qty')?.focus(),400);
+  setTimeout(()=>document.getElementById('new-item-name')?.focus(),400);
 }
 
-async function submitStockMovement(productId){
-  const type  =document.getElementById('movement-type')?.value||'in';
-  const qty   =parseInt(document.getElementById('movement-qty')?.value||0);
-  const note  =sanitizeStr(document.getElementById('movement-note')?.value||'');
-  if(!qty||qty<1){showToast('❌ ចំនួនត្រូវ >= 1',true);return;}
+function submitAddItem(){
+  const name =sanitizeStr(document.getElementById('new-item-name')?.value||'').trim();
+  const qty  =Math.max(0,parseInt(document.getElementById('new-item-qty')?.value)||0);
+  const price=Math.max(0,parseFloat(document.getElementById('new-item-price')?.value)||0);
+  if(!name){showToast('❌ សូមបញ្ចូលឈ្មោះ',true);return;}
+  stockItems.push({name,qty,price});
+  _markDirty();
+  closeDetail();
+  _rerenderStockList();
+  try{tg.HapticFeedback.impactOccurred('light');}catch(_){}
+}
 
-  const storeId=shipperData?.store_id||shipperData?.storeId||'yb9999';
+async function saveShipperStock(){
+  if(!shipperData)return;
+  const phone=shipperData.phone||'';
+  // disable save bar while saving
+  const saveBtn=document.querySelector('#stock-save-bar button:last-child');
+  if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='⏳ Saving...';}
   try{
-    const r=await gs('addMovement',{
-      product_id:String(productId),
-      store_id:storeId,
-      type,qty,note,
-      created_by:shipperData?.phone||''
-    });
-    if(r.success||r.ok||r.result==='ok'){
-      showToast('✅ Stock Updated!');
+    const r=await gs('saveShipperStock',{phone,items:stockItems});
+    if(r.success){
+      stockDirty=false;
+      showToast('✅ Saved — '+r.count+' items');
       try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
-      closeDetail();
-      stockLoaded=false; // force reload
-      loadStock();
+      // hide dirty indicators
+      const badge=document.querySelector('.stock-dirty-badge');
+      if(badge)badge.remove();
+      const bar=document.getElementById('stock-save-bar');
+      if(bar)bar.style.display='none';
+      if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='💾 Save All';}
     }else{
-      showToast('❌ '+(sanitizeStr(r.error||r.message||'Failed')),true);
+      showToast('❌ '+(sanitizeStr(r.message||r.error||'Failed')),true);
+      if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='💾 Save All';}
     }
   }catch(err){
     showToast('❌ '+sanitizeStr(err.message),true);
+    if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='💾 Save All';}
   }
 }
 
