@@ -242,51 +242,23 @@ body{
 
 /* LOGIN */
 .login-box{background:var(--card);border:1px solid var(--accent)44;
-  border-radius:16px;padding:24px;text-align:center;width:100%;max-width:340px;
-  box-shadow:0 16px 48px rgba(0,0,0,.35)}
+  border-radius:16px;padding:24px;text-align:center;width:100%;max-width:340px}
 .login-box h3{font-size:17px;font-weight:700;color:var(--accent);margin-bottom:6px}
 .login-box p{font-size:13px;color:var(--muted);margin-bottom:16px}
 .login-input{width:100%;padding:13px;border-radius:10px;
-  border:1.5px solid var(--border);background:var(--surface);color:var(--text);
-  font-size:16px;margin-bottom:6px;text-align:center;
-  outline:none;transition:border-color .2s,box-shadow .2s;
-  -webkit-appearance:none;font-family:inherit}
-.login-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #f0a50018}
-.login-input.valid{border-color:#22c55e}
-.login-input.invalid{border-color:#ef4444}
+  border:1px solid var(--border);background:var(--surface);color:var(--text);
+  font-size:16px;margin-bottom:10px;text-align:center}
+.login-input:focus{outline:none;border-color:var(--accent)}
 .login-input.input-error{border-color:var(--red)!important;animation:shake .3s}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#000;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;
-  font-family:inherit;transition:opacity .15s,transform .1s;margin-top:4px}
-.login-btn:active{opacity:.85;transform:scale(.98)}
-.login-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.login-btn-sec{width:100%;padding:11px;background:transparent;
-  border:1.5px solid var(--border);border-radius:10px;
-  color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;
-  font-family:inherit;transition:all .2s;margin-top:6px}
-.login-btn-sec:not(:disabled):hover{border-color:var(--accent);color:var(--accent)}
-.login-btn-sec:disabled{opacity:.35;cursor:not-allowed}
-.input-hint{font-size:12px;margin-bottom:10px;text-align:left;padding-left:2px;
-  min-height:16px;transition:color .2s}
-.input-hint.ok{color:#22c55e}
-.input-hint.err{color:#ef4444}
-.input-hint.info{color:var(--muted)}
-/* OTP delivery status */
-.otp-status{border-radius:10px;padding:10px 12px;margin-bottom:12px;
-  font-size:13px;line-height:1.6;border:1px solid}
-.otp-status.ok{background:rgba(34,197,94,.08);color:#16a34a;border-color:rgba(34,197,94,.25)}
-.otp-status.warn{background:rgba(234,179,8,.1);color:#b45309;border-color:rgba(234,179,8,.3)}
-/* OTP countdown */
-.otp-countdown{display:flex;align-items:center;justify-content:center;
-  gap:6px;margin:8px 0 12px;font-size:13px;color:var(--muted)}
-.otp-countdown span{font-family:monospace;font-weight:700;font-size:15px;
-  color:var(--accent);min-width:36px;display:inline-block}
-.otp-countdown span.exp{color:#ef4444}
-.otp-input-big{font-size:26px!important;letter-spacing:10px!important;font-weight:700!important}
-.back-link{background:none;border:none;color:var(--muted);font-size:12px;
-  cursor:pointer;padding:8px;width:100%;margin-top:4px;font-family:inherit}
-.back-link:hover{color:var(--text)}
+  color:#000;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}
+.login-btn:disabled{opacity:.5;cursor:not-allowed}
+.pw-wrap{position:relative;margin-bottom:10px}
+.pw-wrap .login-input{margin-bottom:0;padding-right:44px}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px}
+.input-hint{font-size:12px;color:var(--muted);margin-bottom:10px;text-align:left;padding-left:4px}
 
 /* PROFILE CARD (mini) */
 .profile{margin:10px;background:var(--card);border:1px solid var(--border);
@@ -548,20 +520,6 @@ function callPhone(phone){
 
 // ── API ───────────────────────────────────────────────────
 function gs(fn,arg){
-  // Auth → POST with correct action name for Code.gs dispatcher
-  const authMap={
-    'handleGuestLogin':  'guestLogin',
-    'handleGuestVerify': 'guestVerify',
-    'loginStep1':        'loginStep1',
-    'loginStep2':        'loginStep2'
-  };
-  if(authMap[fn]){
-    return fetch(API,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:authMap[fn],...(arg||{})})
-    }).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
-  }
   const data=arg!==undefined?encodeURIComponent(JSON.stringify(arg)):'';
   return fetch(`${API}?action=gs&fn=${fn}${data?'&data='+data:''}`)
     .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
@@ -615,155 +573,57 @@ function pushNotif(title,body){
   try{if(Notification.permission==='granted')new Notification(title,{body});}catch(_){}
 }
 
-// ── LOGIN (OTP-only — no password, no captcha) ───────────
-let _loginPhone = '';
-let _otpInterval = null;
-
-function showPhoneLogin(msg) {
-  clearInterval(_otpInterval);
-  document.getElementById('app-content').innerHTML = `
-    <div style="height:100dvh;display:flex;align-items:center;justify-content:center;
-                padding:20px;overflow:hidden;padding-top:env(safe-area-inset-top)">
+// ── LOGIN ─────────────────────────────────────────────────
+let _pwVisible=false;
+function showPhoneLogin(){
+  document.getElementById('app-content').innerHTML=`
+    <div style="height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;padding-top:env(safe-area-inset-top)">
       <div class="login-box">
-        <div style="font-size:36px;margin-bottom:8px">🚚</div>
-        <h3>YB Shipper</h3>
-        <p>${msg || 'បញ្ចូលលេខទូរស័ព្ទ ដើម្បីទទួល OTP'}</p>
-        <div id="ls1">
-          <input id="phone-inp" class="login-input" type="tel"
-            placeholder="09xxxxxxxx" maxlength="${PH_MAX}" inputmode="numeric"
-            autocomplete="tel"
-            oninput="onPhoneInput(this)"
-            onkeydown="if(event.key==='Enter')sendShipperOTP()">
-          <div class="input-hint info" id="phoneHint">លេខ ${PH_MIN}-${PH_MAX} ខ្ទង់ ចាប់ដោយ 0</div>
-          <button class="login-btn" id="btnSendOTP"
-                  onclick="sendShipperOTP()" disabled>ផ្ញើ OTP →</button>
+        <h3>🚚 YB Shipper Login</h3>
+        <p>Phone + Password</p>
+        <input id="phone-inp" class="login-input" type="tel"
+          placeholder="Ex: 0769999380" maxlength="${PH_MAX}" autocomplete="tel"
+          oninput="this.classList.remove('input-error')"
+          onkeydown="if(event.key==='Enter')document.getElementById('pw-inp').focus()">
+        <div class="input-hint">លេខ ${PH_MIN}-${PH_MAX} ខ្ទង់ ចាប់ដោយ 0</div>
+        <div class="pw-wrap">
+          <input id="pw-inp" class="login-input" type="password"
+            placeholder="Password" maxlength="${PW_MAX}" autocomplete="current-password"
+            oninput="this.classList.remove('input-error')"
+            onkeydown="if(event.key==='Enter')loginByPhone()">
+          <button class="pw-eye" onclick="togglePw()" tabindex="-1" id="pw-eye">👁</button>
         </div>
-        <div id="ls2" style="display:none">
-          <div class="otp-status ok" id="otpStatus">📲 OTP បានផ្ញើទៅ Telegram</div>
-          <div class="otp-countdown">ផុតកំណត់: <span id="otpClock">5:00</span></div>
-          <input id="otp-inp" class="login-input otp-input-big" type="text"
-            placeholder="000000" maxlength="6" inputmode="numeric"
-            oninput="onOTPInput(this)"
-            onkeydown="if(event.key==='Enter')verifyShipperOTP()">
-          <div class="input-hint info" id="otpHint">បញ្ចូល 6 ខ្ទង់</div>
-          <button class="login-btn" id="btnVerifyOTP"
-                  onclick="verifyShipperOTP()" disabled>Verify</button>
-          <button class="login-btn-sec" id="btnResendOTP"
-                  onclick="resendShipperOTP()" disabled>
-            ផ្ញើម្ដងទៀត (<span id="resendSec">60</span>s)
-          </button>
-          <button class="back-link" onclick="backToPhone()">← ប្ដូរលេខ</button>
-        </div>
+        <div class="input-hint">Password ${PW_MIN}-${PW_MAX} តួ</div>
+        <button class="login-btn" id="login-btn" onclick="loginByPhone()">Login →</button>
       </div>
     </div>`;
-  setTimeout(() => document.getElementById('phone-inp')?.focus(), 200);
+  setTimeout(()=>document.getElementById('phone-inp')?.focus(),200);
 }
-
-function onPhoneInput(el) {
-  el.value = el.value.replace(/\D/g,'').slice(0,PH_MAX);
-  const hint=document.getElementById('phoneHint');
-  const btn=document.getElementById('btnSendOTP');
-  const v=el.value, ok=/^0[0-9]{8,9}$/.test(v);
-  if(!v){el.className='login-input';hint.textContent=`លេខ ${PH_MIN}-${PH_MAX} ខ្ទង់ ចាប់ដោយ 0`;hint.className='input-hint info';btn.disabled=true;}
-  else if(ok){el.className='login-input valid';hint.textContent='✓ ត្រឹមត្រូវ';hint.className='input-hint ok';btn.disabled=false;}
-  else{el.className='login-input invalid';hint.textContent=v.length<PH_MIN?`${v.length}/${PH_MIN} ខ្ទង់`:'ត្រូវចាប់ផ្ដើមដោយ 0';hint.className='input-hint err';btn.disabled=true;}
+function togglePw(){
+  _pwVisible=!_pwVisible;
+  const i=document.getElementById('pw-inp');if(i)i.type=_pwVisible?'text':'password';
+  const ey=document.getElementById('pw-eye');if(ey)ey.textContent=_pwVisible?'🙈':'👁';
 }
-
-function onOTPInput(el) {
-  el.value=el.value.replace(/\D/g,'').slice(0,6);
-  const hint=document.getElementById('otpHint');
-  const btn=document.getElementById('btnVerifyOTP');
-  const len=el.value.length;
-  if(len===0){el.className='login-input otp-input-big';hint.textContent='បញ្ចូល 6 ខ្ទង់';hint.className='input-hint info';btn.disabled=true;}
-  else if(len<6){hint.textContent=`${len} / 6`;hint.className='input-hint info';btn.disabled=true;}
-  else{el.className='login-input otp-input-big valid';hint.textContent='✓ ត្រៀមរួចហើយ';hint.className='input-hint ok';btn.disabled=false;setTimeout(()=>verifyShipperOTP(),400);}
-}
-
-function startOTPCountdown() {
-  clearInterval(_otpInterval);
-  let total=300,resend=60;
-  const clock=document.getElementById('otpClock');
-  const resendBtn=document.getElementById('btnResendOTP');
-  _otpInterval=setInterval(()=>{
-    total--;
-    if(total<=0){clearInterval(_otpInterval);if(clock){clock.textContent='0:00';clock.className='exp';}if(resendBtn){resendBtn.disabled=false;resendBtn.textContent='ផ្ញើ OTP ថ្មី';}return;}
-    const m=Math.floor(total/60),s=total%60;
-    if(clock){clock.textContent=`${m}:${String(s).padStart(2,'0')}`;if(total<=30)clock.className='exp';}
-    resend--;
-    const secEl=document.getElementById('resendSec');
-    if(resend>0&&secEl)secEl.textContent=resend;
-    else if(resend<=0&&resendBtn){resendBtn.disabled=false;resendBtn.textContent='ផ្ញើម្ដងទៀត';}
-  },1000);
-}
-
-async function sendShipperOTP() {
+async function loginByPhone(){
   const rawP=document.getElementById('phone-inp')?.value.trim()||'';
+  const rawW=document.getElementById('pw-inp')?.value||'';
+  const btn=document.getElementById('login-btn');
   const pv=validatePhone(rawP);
-  if(!pv.ok){showToast('❌ '+pv.msg,true);return;}
-  _loginPhone=pv.value;
-  const btn=document.getElementById('btnSendOTP');
-  if(btn){btn.disabled=true;btn.textContent='កំពុងផ្ញើ...';}
+  if(!pv.ok){document.getElementById('phone-inp')?.classList.add('input-error');showToast('❌ '+pv.msg,true);return;}
+  const wv=validatePassword(rawW);
+  if(!wv.ok){document.getElementById('pw-inp')?.classList.add('input-error');showToast('❌ '+wv.msg,true);return;}
+  if(btn){btn.disabled=true;btn.textContent='កំពុងផ្ទុក...';}
   try{
-    const r=await gs('handleGuestLogin',{phone:_loginPhone});
-    if(r.error){showToast('❌ '+sanitizeStr(r.error),true);if(btn){btn.disabled=false;btn.textContent='ផ្ញើ OTP →';}return;}
-    document.getElementById('ls1').style.display='none';
-    document.getElementById('ls2').style.display='block';
-    const statusEl=document.getElementById('otpStatus');
-    if(statusEl){
-      if(r.noTelegram){statusEl.className='otp-status warn';statusEl.innerHTML=`⚠️ គ្មាន Telegram linked<br><small>Admin ផ្ញើ OTP ផ្ទាល់ ឬ <b>#otp ${_loginPhone}</b></small>`;}
-      else{statusEl.className='otp-status ok';statusEl.innerHTML=`📲 OTP បានផ្ញើទៅ Telegram<br><small>***${r.phone||_loginPhone.slice(-4)}</small>`;}
-    }
-    startOTPCountdown();
-    setTimeout(()=>document.getElementById('otp-inp')?.focus(),150);
-  }catch(err){showToast('❌ '+sanitizeStr(err.message),true);if(btn){btn.disabled=false;btn.textContent='ផ្ញើ OTP →';}}
-}
-
-async function verifyShipperOTP() {
-  const code=document.getElementById('otp-inp')?.value.trim()||'';
-  if(code.length<6)return;
-  const btn=document.getElementById('btnVerifyOTP');
-  if(btn){btn.disabled=true;btn.textContent='Checking...';}
-  try{
-    const r=await gs('handleGuestVerify',{phone:_loginPhone,otpCode:code});
-    if(r.error){if(btn){btn.disabled=false;btn.textContent='Verify';}const otpEl=document.getElementById('otp-inp');const hint=document.getElementById('otpHint');if(otpEl){otpEl.value='';otpEl.className='login-input otp-input-big';}if(hint){hint.textContent=sanitizeStr(r.error);hint.className='input-hint err';}return;}
+    const r=await gs('verifyLogin',{identifier:pv.value,password:wv.value});
+    if(r.error){showToast('❌ '+sanitizeStr(r.error),true);document.getElementById('pw-inp')?.classList.add('input-error');if(btn){btn.disabled=false;btn.textContent='Login →';}return;}
     const role=String(r.role||'').toLowerCase();
-    if(role!=='shipper'&&role!=='admin'){showToast('❌ គណនីនេះ មិនមែន Shipper',true);if(btn){btn.disabled=false;btn.textContent='Verify';}return;}
-    clearInterval(_otpInterval);
-    saveSession({phone:_loginPhone,name:r.name||'Shipper',role});
-    bootWithData({phone:_loginPhone,name:r.name||'Shipper',role});
-  }catch(err){showToast('❌ '+sanitizeStr(err.message),true);if(btn){btn.disabled=false;btn.textContent='Verify';}}
+    if(role!=='shipper'&&role!=='admin'){showToast('❌ គណនីនេះ មិនមែន Shipper',true);if(btn){btn.disabled=false;btn.textContent='Login →';}return;}
+    saveSession(r);bootWithData(r);
+  }catch(err){showToast('❌ '+sanitizeStr(err.message),true);if(btn){btn.disabled=false;btn.textContent='Login →';}}
 }
-
-async function resendShipperOTP() {
-  const btn=document.getElementById('btnResendOTP');
-  if(btn){btn.disabled=true;btn.textContent='កំពុងផ្ញើ...';}
-  const otpEl=document.getElementById('otp-inp');
-  if(otpEl){otpEl.value='';otpEl.className='login-input otp-input-big';}
-  const hint=document.getElementById('otpHint');
-  if(hint){hint.textContent='បញ្ចូល 6 ខ្ទង់';hint.className='input-hint info';}
-  document.getElementById('btnVerifyOTP').disabled=true;
-  const clock=document.getElementById('otpClock');
-  if(clock){clock.textContent='5:00';clock.className='';}
-  try{
-    const r=await gs('handleGuestLogin',{phone:_loginPhone});
-    if(r.error){showToast('❌ '+sanitizeStr(r.error),true);if(btn){btn.disabled=false;btn.textContent='ផ្ញើម្ដងទៀត';}return;}
-    if(btn)btn.innerHTML=`ផ្ញើម្ដងទៀត (<span id="resendSec">60</span>s)`;
-    startOTPCountdown();
-    showToast('✅ OTP ផ្ញើម្ដងទៀតហើយ');
-  }catch(err){showToast('❌ '+sanitizeStr(err.message),true);if(btn){btn.disabled=false;btn.textContent='ផ្ញើម្ដងទៀត';}}
-}
-
-function backToPhone(){
-  clearInterval(_otpInterval);
-  document.getElementById('ls1').style.display='block';
-  document.getElementById('ls2').style.display='none';
-  const otpEl=document.getElementById('otp-inp');if(otpEl)otpEl.value='';
-  setTimeout(()=>document.getElementById('phone-inp')?.focus(),100);
-}
-
 function doLogout(){
-  clearInterval(_otpInterval);stopPoll();clearSession();
-  shipperData=null;allOrders=[];orders=[];lastCount=-1;
+  stopPoll();clearSession();
+  shipperData=null;allOrders=[];orders=[];lastCount=-1;_pwVisible=false;
   stockProducts=[];stockLoaded=false;
   document.getElementById('hdr-actions').style.display='none';
   document.getElementById('pending-count').textContent='0';
