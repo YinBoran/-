@@ -907,7 +907,7 @@ async function doLoginStep1(){
     return;
   }
 
-  _loginPhone = id.replace(/\D/g,'');
+  _loginPhone = res.fullPhone || id.replace(/\D/g,'');
   showOTPDelivery(res);
   document.getElementById('credScreen').style.display = 'none';
   document.getElementById('otpScreen').style.display  = 'block';
