@@ -17,8 +17,7 @@
   --text:#f0f0f0; --muted:#888;
   --font:'Segoe UI',system-ui,sans-serif;
   --hdr-h:64px;
-  /* Fallback safe-area top; overridden by JS when tg.requestFullscreen active */
-  --sat: env(safe-area-inset-top, 0px);
+  --sat:env(safe-area-inset-top,0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
@@ -29,7 +28,7 @@ body{
   padding-top:calc(var(--hdr-h) + var(--sat));
 }
 
-/* FIX 1: header ជាន់ status bar ផុត — extends behind Dynamic Island */
+/* FIX 1: header — extends behind Dynamic Island */
 .hdr{
   background:#0f0f0f;border-bottom:1px solid var(--border);
   padding:12px 16px;
@@ -299,6 +298,223 @@ body{
   .inv-toolbar{display:none!important}
   #invoice-content{padding:0!important}
 }
+
+/* ====================================================
+   STOCK SHEET + MOVEMENT FORM — v62
+   ==================================================== */
+
+/* ── Stock fullscreen sheet ── */
+.stock-overlay{
+  position:fixed;inset:0;z-index:130;
+  background:transparent;pointer-events:none;
+  transition:background .3s}
+.stock-overlay.on{background:rgba(0,0,0,.72);pointer-events:all}
+
+.stock-sheet{
+  position:fixed;
+  top:var(--sat);
+  left:0;right:0;bottom:0;
+  background:var(--bg);
+  border-radius:16px 16px 0 0;
+  display:flex;flex-direction:column;
+  transform:translateY(105%);
+  transition:transform .38s cubic-bezier(0.32,0.72,0,1);
+  z-index:131}
+.stock-overlay.on .stock-sheet{transform:none}
+
+.sht-handle{
+  width:36px;height:5px;background:var(--border);border-radius:3px;
+  margin:10px auto 0;flex-shrink:0;cursor:grab;touch-action:none}
+.sht-head{
+  padding:14px 16px 12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;cursor:grab;user-select:none}
+.sht-title{font-size:16px;font-weight:700;flex:1}
+.sht-body{
+  overflow-y:auto;flex:1;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain}
+
+/* ── Stats bar ── */
+.stk-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:1px;background:var(--border);
+  border-bottom:1px solid var(--border)}
+.stk-stat{background:var(--surface);padding:10px 8px;text-align:center}
+.stk-stat-n{font-size:19px;font-weight:800;color:var(--accent)}
+.stk-stat-n.danger{color:var(--red)}
+.stk-stat-n.ok{color:var(--green)}
+.stk-stat-l{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* ── Search bar in stock ── */
+.stk-search-bar{
+  padding:10px 12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px}
+.stk-search-inp{
+  flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:9px;padding:9px 12px;
+  color:var(--text);font-size:14px;outline:none;
+  transition:border-color .2s}
+.stk-search-inp:focus{border-color:var(--accent)}
+.stk-add-btn{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none;border-radius:10px;
+  font-size:20px;color:#000;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:transform .15s}
+.stk-add-btn:active{transform:scale(.9)}
+
+/* ── Product grid ── */
+.prod-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;padding:12px}
+.prod-card{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  cursor:pointer;position:relative;
+  transition:transform .15s,border-color .2s}
+.prod-card:active{transform:scale(.97)}
+.prod-card.low{border-color:rgba(239,68,68,.55)}
+.prod-card.out{border-color:rgba(239,68,68,.9)}
+.prod-img{
+  width:100%;aspect-ratio:1/1;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;position:relative;overflow:hidden}
+.prod-img img{
+  width:100%;height:100%;object-fit:cover;
+  position:absolute;inset:0}
+.prod-add{
+  position:absolute;top:8px;right:8px;
+  width:26px;height:26px;
+  background:var(--accent);color:#000;
+  border:none;border-radius:50%;
+  font-size:18px;line-height:1;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:2;
+  transition:transform .15s,background .15s}
+.prod-add:active{transform:scale(.85)}
+.prod-low-tag{
+  position:absolute;top:8px;left:8px;z-index:2;
+  background:rgba(239,68,68,.9);color:#fff;
+  font-size:9px;font-weight:700;
+  padding:2px 6px;border-radius:5px;letter-spacing:.3px}
+.prod-out-tag{
+  position:absolute;top:8px;left:8px;z-index:2;
+  background:rgba(239,68,68,1);color:#fff;
+  font-size:9px;font-weight:700;
+  padding:2px 6px;border-radius:5px}
+.prod-info{padding:9px 10px 10px}
+.prod-name{
+  font-size:13px;font-weight:700;margin-bottom:3px;
+  overflow:hidden;text-overflow:ellipsis;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  line-height:1.3}
+.prod-price{
+  font-size:13px;font-weight:700;
+  color:var(--accent);margin-bottom:6px}
+.prod-qty-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:4px}
+.prod-qty{font-size:15px;font-weight:800;color:var(--text)}
+.prod-qty.low{color:var(--red)}
+.prod-qty.ok{color:var(--green)}
+.prod-min{font-size:11px;color:var(--muted)}
+.prod-bar-wrap{
+  height:3px;background:var(--border);
+  border-radius:2px;margin-top:5px;overflow:hidden}
+.prod-bar{
+  height:100%;border-radius:2px;
+  transition:width .3s}
+
+/* ── Linked orders in stock ── */
+.stk-orders-section{
+  border-top:1px solid var(--border);
+  padding:12px}
+.stk-orders-ttl{
+  font-size:11px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:10px}
+.stk-order-row{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:10px 12px;
+  margin-bottom:8px;
+  display:flex;align-items:center;gap:10px}
+.stk-order-dot{
+  width:8px;height:8px;
+  border-radius:50%;flex-shrink:0}
+
+/* ── Movement form bottom sheet ── */
+.mv-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.72);
+  opacity:0;pointer-events:none;
+  transition:opacity .25s}
+.mv-overlay.on{opacity:1;pointer-events:all}
+.mv-sheet{
+  position:absolute;bottom:0;left:0;right:0;
+  background:var(--surface);
+  border-radius:22px 22px 0 0;
+  padding-bottom:max(env(safe-area-inset-bottom,16px),16px);
+  transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.mv-overlay.on .mv-sheet{transform:none}
+.mv-handle{
+  width:36px;height:5px;background:var(--border);
+  border-radius:3px;margin:10px auto 6px}
+.mv-head{
+  padding:10px 16px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.mv-head-left{flex:1;min-width:0}
+.mv-head-title{
+  font-size:15px;font-weight:700;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mv-head-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.mv-body{padding:16px}
+.mv-types{display:flex;gap:8px;margin-bottom:18px}
+.mv-type{
+  flex:1;padding:11px 4px;
+  border:1.5px solid var(--border);border-radius:12px;
+  background:var(--card);color:var(--muted);
+  font-size:13px;font-weight:700;
+  cursor:pointer;text-align:center;transition:all .18s}
+.mv-type.t-in  {border-color:var(--green);background:rgba(34,197,94,.13);color:var(--green)}
+.mv-type.t-out {border-color:var(--red);background:rgba(239,68,68,.13);color:var(--red)}
+.mv-type.t-adj {border-color:var(--blue);background:rgba(59,130,246,.13);color:var(--blue)}
+.mv-fld{margin-bottom:14px}
+.mv-lbl{
+  font-size:11px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:7px}
+.mv-inp{
+  width:100%;padding:13px 14px;
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:12px;color:var(--text);
+  font-size:16px;outline:none;transition:border-color .2s}
+.mv-inp:focus{border-color:var(--accent)}
+.mv-qty-wrap{position:relative}
+.mv-qty-inp{padding-right:80px}
+.mv-qty-result{
+  position:absolute;right:12px;top:50%;
+  transform:translateY(-50%);
+  font-size:12px;font-weight:700;
+  color:var(--muted);pointer-events:none}
+.mv-submit{
+  width:100%;padding:15px;
+  border:none;border-radius:14px;
+  font-size:16px;font-weight:700;
+  cursor:pointer;transition:opacity .15s,background .2s;
+  margin-top:4px}
+.mv-submit:disabled{opacity:.45;cursor:not-allowed}
+.mv-submit.s-in  {background:linear-gradient(135deg,var(--green),#16a34a);color:#fff}
+.mv-submit.s-out {background:linear-gradient(135deg,var(--red),#b91c1c);color:#fff}
+.mv-submit.s-adj {background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff}
+/* ====================================================
+   END STOCK STYLES
+   ==================================================== */
 </style>
 </head>
 <body>
@@ -376,46 +592,51 @@ body{
   <div id="invoice-content" style="padding:10px;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
 </div>
 
-<!-- ============ STOCK SHEET ============ -->
-<div class="stock-sheet-overlay" id="stock-overlay" onclick="closeStockSheetIfBg(event)">
+<!-- ====== STOCK OVERLAY ====== -->
+<div class="stock-overlay" id="stock-overlay" onclick="closeStockBg(event)">
   <div class="stock-sheet" id="stock-sheet">
-    <div class="stock-sheet-handle" id="stock-handle"></div>
-    <div class="stock-sheet-head">
-      <span style="font-size:16px;font-weight:700">📦 ស្តុកទំនិញ</span>
-      <button class="popup-close" onclick="closeStockSheet()">✕</button>
+    <div class="sht-handle" id="sht-handle"></div>
+    <div class="sht-head" id="sht-head">
+      <span class="sht-title">📦 ស្តុកទំនិញ</span>
+      <button class="popup-close" onclick="closeStockSheet()" style="touch-action:auto;pointer-events:auto">✕</button>
     </div>
-    <div class="stock-sheet-body" id="stock-body">
+    <div class="sht-body" id="sht-body">
       <div class="loading loading-sm"><div class="spinner"></div></div>
     </div>
   </div>
 </div>
 
-<!-- ============ MOVEMENT FORM ============ -->
-<div class="movement-overlay" id="movement-overlay" onclick="closeMovementIfBg(event)">
-  <div class="movement-sheet" id="movement-sheet">
+<!-- ====== MOVEMENT OVERLAY ====== -->
+<div class="mv-overlay" id="mv-overlay" onclick="closeMvBg(event)">
+  <div class="mv-sheet" id="mv-sheet">
     <div class="mv-handle"></div>
     <div class="mv-head">
-      <div style="min-width:0">
-        <div class="popup-title" id="mv-product-name" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Stock Movement</div>
-        <div id="mv-cur-info" style="font-size:12px;color:var(--muted);margin-top:2px"></div>
+      <div class="mv-head-left">
+        <div class="mv-head-title" id="mv-title">Stock Movement</div>
+        <div class="mv-head-sub" id="mv-sub"></div>
       </div>
-      <button class="popup-close" onclick="closeMovement()">✕</button>
+      <button class="popup-close" onclick="closeMv()" style="touch-action:auto;pointer-events:auto;flex-shrink:0">✕</button>
     </div>
     <div class="mv-body">
-      <div class="mv-type-tabs">
-        <button class="mv-type-btn active-in" id="mvt-in" onclick="setMvType('in')">⬆️ ចូល</button>
-        <button class="mv-type-btn" id="mvt-out" onclick="setMvType('out')">⬇️ ចេញ</button>
-        <button class="mv-type-btn" id="mvt-adjust" onclick="setMvType('adjust')">⚙️ កែ</button>
+      <div class="mv-types">
+        <button class="mv-type t-in"  id="mvt-in"  onclick="setMvType('in')">⬆️ ចូល</button>
+        <button class="mv-type"       id="mvt-out" onclick="setMvType('out')">⬇️ ចេញ</button>
+        <button class="mv-type"       id="mvt-adj" onclick="setMvType('adjust')">⚙️ កែ</button>
       </div>
-      <div class="mv-field">
-        <div class="mv-label">ចំនួន</div>
-        <input class="mv-input" id="mv-qty" type="number" min="1" placeholder="0" inputmode="numeric">
+      <div class="mv-fld">
+        <div class="mv-lbl">ចំនួន</div>
+        <div class="mv-qty-wrap">
+          <input class="mv-inp mv-qty-inp" id="mv-qty"
+            type="number" min="1" inputmode="numeric" placeholder="0"
+            oninput="updateMvResult()">
+          <span class="mv-qty-result" id="mv-result"></span>
+        </div>
       </div>
-      <div class="mv-field">
-        <div class="mv-label">ចំណាំ (optional)</div>
-        <input class="mv-input" id="mv-note" type="text" placeholder="ឧ. ទិញថ្មី batch 3">
+      <div class="mv-fld">
+        <div class="mv-lbl">ចំណាំ <span style="color:var(--muted);font-weight:400;font-size:10px">(optional)</span></div>
+        <input class="mv-inp" id="mv-note" type="text" placeholder="ឧ. ទិញថ្មី batch 3">
       </div>
-      <button class="mv-submit" id="mv-submit-btn" onclick="submitMovement()">✅ រក្សាទុក</button>
+      <button class="mv-submit s-in" id="mv-submit" onclick="submitMv()">✅ រក្សាទុក</button>
     </div>
   </div>
 </div>
@@ -426,14 +647,24 @@ try {
   tg.expand();
   tg.setHeaderColor('#0f0f0f');
   tg.setBackgroundColor('#0f0f0f');
-  // Full-screen: content extends behind Dynamic Island / status bar
+  // Extend behind Dynamic Island / status bar
   if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
-  // Sync safe-area top from Telegram's own safeAreaInset when fullscreen
-  tg.onEvent('fullscreenChanged', () => {
-    const top = (tg.isFullscreen && tg.safeAreaInset?.top) ? tg.safeAreaInset.top : null;
-    if (top !== null) document.documentElement.style.setProperty('--sat', top + 'px');
-  });
 } catch(_) {}
+
+// Sync --sat when Telegram reports its safe area (fullscreen mode)
+function _syncSat() {
+  try {
+    const top = tg.safeAreaInset?.top;
+    if (top != null && top > 0) {
+      document.documentElement.style.setProperty('--sat', top + 'px');
+    }
+  } catch(_) {}
+}
+try {
+  tg.onEvent('fullscreenChanged', _syncSat);
+  tg.onEvent('safeAreaChanged', _syncSat);
+} catch(_) {}
+setTimeout(_syncSat, 300);
 
 const user   = tg.initDataUnsafe?.user || {};
 const tgId   = String(user.id || "");
@@ -487,6 +718,23 @@ function sanitizeStr(v){return String(v||'').replace(/<[^>]*>/g,'').trim().subst
 function e(v){
   return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
                        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function fmtDate(v){
+  if(!v)return'—';
+  const s=String(v).trim();
+  if(!s||s==='—')return'—';
+  // Already dd/MM/yyyy format
+  if(/^\d{2}\/\d{2}\/\d{4}/.test(s))return s.substring(0,16);
+  // Parse JS Date string
+  const d=new Date(s);
+  if(!isNaN(d)){
+    return d.toLocaleString('en-GB',{
+      day:'2-digit',month:'2-digit',year:'numeric',
+      hour:'2-digit',minute:'2-digit',
+      timeZone:'Asia/Phnom_Penh'
+    }).replace(',',' ');
+  }
+  return s.substring(0,20);
 }
 
 function callPhone(phone){
@@ -761,7 +1009,7 @@ function renderList(list){
       <div class="card-bottom">
         <div>
           <div class="card-price">$${e(o.pricing||o.retail||'—')}</div>
-          <div class="card-date">${e(o.orderDate||'')}</div>
+          <div class="card-date">${fmtDate(o.orderDate)}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
           <button class="btn-call" onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" >📞</button>
@@ -1082,127 +1330,6 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
 .footer{display:flex;justify-content:space-between;align-items:center;border-top:.5pt solid #000;padding-top:3px;margin-top:4px}
 .price{font-size:14pt;font-weight:700}
 .pay-badge{background:#f0a500;padding:2px 7px;border-radius:3px;font-size:8pt;font-weight:700}
-
-/* ============ STOCK SHEET ============ */
-.stock-sheet-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0);z-index:120;
-  pointer-events:none;transition:background .3s}
-.stock-sheet-overlay.on{background:rgba(0,0,0,.65);pointer-events:all}
-.stock-sheet{
-  position:fixed;
-  top:var(--sat,env(safe-area-inset-top,0px));
-  left:0;right:0;bottom:0;
-  background:var(--bg);
-  border-radius:16px 16px 0 0;
-  display:flex;flex-direction:column;
-  transform:translateY(110%);
-  transition:transform .35s cubic-bezier(0.32,0.72,0,1);
-  z-index:121}
-.stock-sheet-overlay.on .stock-sheet{transform:translateY(0)}
-.stock-sheet-handle{width:40px;height:5px;background:var(--border);border-radius:3px;
-  margin:12px auto 0;flex-shrink:0;cursor:grab;touch-action:none}
-.stock-sheet-head{
-  padding:14px 18px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;cursor:grab;touch-action:pan-y;user-select:none}
-.stock-sheet-body{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-.stock-summary{
-  display:flex;gap:8px;padding:12px;
-  border-bottom:1px solid var(--border)}
-.stock-sum-card{
-  flex:1;background:var(--card);border-radius:10px;
-  padding:10px;text-align:center}
-.stock-sum-num{font-size:20px;font-weight:800;color:var(--accent)}
-.stock-sum-lbl{font-size:11px;color:var(--muted);margin-top:2px}
-.product-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:10px;padding:12px}
-.product-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:12px;padding:12px;cursor:pointer;
-  transition:transform .15s,border-color .15s;position:relative}
-.product-card:active{transform:scale(.97)}
-.product-card.low-stock{border-color:rgba(239,68,68,.5)}
-.product-card-img{
-  width:100%;aspect-ratio:1/1;border-radius:8px;
-  background:var(--surface);display:flex;align-items:center;
-  justify-content:center;font-size:28px;margin-bottom:8px;overflow:hidden}
-.product-card-img img{width:100%;height:100%;object-fit:cover;border-radius:8px}
-.product-card-name{
-  font-size:13px;font-weight:700;margin-bottom:4px;
-  overflow:hidden;text-overflow:ellipsis;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.product-card-price{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px}
-.product-card-stock{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:4px}
-.stock-qty{font-size:16px;font-weight:800;color:var(--text)}
-.stock-qty.low{color:var(--red)}
-.product-card-add{
-  position:absolute;top:8px;right:8px;
-  width:28px;height:28px;
-  background:var(--accent);color:#000;
-  border:none;border-radius:50%;
-  font-size:18px;font-weight:700;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;z-index:1;transition:transform .15s;line-height:1}
-.product-card-add:active{transform:scale(.88)}
-.low-stock-badge{
-  position:absolute;top:8px;left:8px;
-  background:rgba(239,68,68,.15);color:var(--red);
-  font-size:10px;font-weight:700;padding:2px 6px;
-  border-radius:6px;border:1px solid rgba(239,68,68,.3)}
-
-/* Movement form */
-.movement-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);
-  z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
-.movement-overlay.on{opacity:1;pointer-events:all}
-.movement-sheet{
-  position:absolute;bottom:0;left:0;right:0;
-  background:var(--surface);border-radius:20px 20px 0 0;
-  padding-bottom:max(env(safe-area-inset-bottom,16px),16px);
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
-.movement-overlay.on .movement-sheet{transform:none}
-.mv-handle{width:40px;height:5px;background:var(--border);border-radius:3px;margin:12px auto 8px}
-.mv-head{padding:12px 18px 14px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between}
-.mv-body{padding:16px}
-.mv-cur-stock{
-  background:var(--card);border-radius:10px;padding:10px 14px;
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.mv-type-tabs{display:flex;gap:8px;margin-bottom:16px}
-.mv-type-btn{
-  flex:1;padding:10px 4px;border:1.5px solid var(--border);
-  border-radius:10px;background:var(--card);color:var(--muted);
-  font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
-.mv-type-btn.active-in{border-color:var(--green);background:rgba(34,197,94,.12);color:var(--green)}
-.mv-type-btn.active-out{border-color:var(--red);background:rgba(239,68,68,.12);color:var(--red)}
-.mv-type-btn.active-adjust{border-color:var(--blue);background:rgba(59,130,246,.12);color:var(--blue)}
-.mv-field{margin-bottom:14px}
-.mv-label{font-size:11px;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.mv-input{
-  width:100%;padding:12px;background:var(--card);
-  border:1px solid var(--border);border-radius:10px;
-  color:var(--text);font-size:16px;outline:none;transition:border-color .2s}
-.mv-input:focus{border-color:var(--accent)}
-.mv-submit{
-  width:100%;padding:14px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#000;border:none;border-radius:12px;
-  font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;
-  transition:opacity .15s}
-.mv-submit:disabled{opacity:.5;cursor:not-allowed}
-
-/* Pending orders linked section */
-.linked-orders-section{border-top:1px solid var(--border);padding:12px}
-.linked-orders-title{font-size:12px;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.linked-order-row{
-  background:var(--card);border:1px solid var(--border);border-radius:10px;
-  padding:10px 12px;margin-bottom:8px;
-  display:flex;align-items:center;gap:10px}
-.linked-order-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-/* ============ END STOCK SHEET ============ */
 </style></head><body>
 <div class="noprint" style="text-align:center;padding:6px;background:#f5f5f5;margin-bottom:6px">
   <button onclick="window.print()" style="padding:7px 18px;background:#f0a500;border:none;border-radius:5px;font-weight:700;cursor:pointer;font-size:13px">🖨️ Print</button>
@@ -1342,241 +1469,312 @@ function showError(msg){
         border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px">Retry</button>
     </div>`;
 }
-
-// ============ STOCK MODULE ============
-let stockProducts = [];
-let _mvType = 'in';
-let _mvProductId = null;
-let _mvCurrentQty = 0;
-
-function openStockSheet() {
-  document.getElementById('stock-overlay').classList.add('on');
-  document.body.style.overflow = 'hidden';
-  loadStockProducts();
-}
-function closeStockSheet() {
-  document.getElementById('stock-overlay').classList.remove('on');
-  document.body.style.overflow = '';
-}
-function closeStockSheetIfBg(ev) {
-  if (ev.target === document.getElementById('stock-overlay')) closeStockSheet();
-}
-
-async function loadStockProducts() {
-  const body = document.getElementById('stock-body');
-  body.innerHTML = '<div class="loading loading-sm"><div class="spinner"></div></div>';
-  try {
-    const storeId = (typeof STORE !== 'undefined') ? STORE : 'yb9999';
-    const res = await gs('getProducts', { store_id: storeId, shipper: shipperData?.phone || '' });
-    if (res && res.error) throw new Error(res.error);
-    stockProducts = Array.isArray(res) ? res : (res.products || []);
-    renderStockBody();
-  } catch (err) {
-    body.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">⚠️</div>
-        <h3>Error</h3><p>${e(err.message)}</p>
-        <button onclick="loadStockProducts()"
-          style="margin-top:14px;padding:10px 22px;background:var(--accent);color:#000;
-          border:none;border-radius:8px;font-weight:700;cursor:pointer">Retry</button>
-      </div>`;
-  }
-}
-
-function renderStockBody() {
-  const body = document.getElementById('stock-body');
-  if (!stockProducts.length) {
-    body.innerHTML = `<div class="empty">
-      <div class="empty-icon">📦</div>
-      <h3>គ្មានទំនិញ</h3><p>Products will appear here</p></div>`;
-    return;
-  }
-  const lowCount = stockProducts.filter(p => parseInt(p.stock_qty||0) <= parseInt(p.min_stock||0) && parseInt(p.min_stock||0) > 0).length;
-  const totalQty = stockProducts.reduce((s,p) => s + parseInt(p.stock_qty||0), 0);
-
-  const summary = `<div class="stock-summary">
-    <div class="stock-sum-card">
-      <div class="stock-sum-num">${stockProducts.length}</div>
-      <div class="stock-sum-lbl">ប្រភេទ</div>
-    </div>
-    <div class="stock-sum-card">
-      <div class="stock-sum-num">${totalQty}</div>
-      <div class="stock-sum-lbl">ចំនួនសរុប</div>
-    </div>
-    <div class="stock-sum-card">
-      <div class="stock-sum-num" style="color:${lowCount>0?'var(--red)':'var(--green)'}">${lowCount}</div>
-      <div class="stock-sum-lbl">⚠️ ជិតអស់</div>
-    </div>
-  </div>`;
-
-  const cards = stockProducts.map(p => {
-    const qty = parseInt(p.stock_qty || 0);
-    const minQty = parseInt(p.min_stock || 0);
-    const isLow = minQty > 0 && qty <= minQty;
-    const pid = e(p.product_id || p.id || '');
-    const pname = e(p.name || '—');
-    return `
-    <div class="product-card ${isLow?'low-stock':''}" onclick="openMovement('${pid}','${pname}',${qty},${minQty})">
-      ${isLow ? '<span class="low-stock-badge">⚠️ ជិតអស់</span>' : ''}
-      <button class="product-card-add"
-        onclick="event.stopPropagation();openMovement('${pid}','${pname}',${qty},${minQty})">+</button>
-      <div class="product-card-img">
-        ${p.image_url
-          ? `<img src="${e(p.image_url)}" loading="lazy" onerror="this.parentElement.innerHTML='📦'">`
-          : '📦'}
-      </div>
-      <div class="product-card-name">${pname}</div>
-      <div class="product-card-price">$${e(p.price || '—')}</div>
-      <div class="product-card-stock">
-        ស្តុក:&nbsp;<span class="stock-qty ${isLow?'low':''}">${qty}</span>
-        ${minQty > 0 ? `<span style="font-size:11px;color:var(--muted)">/min ${minQty}</span>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-
-  // Pending orders list linked below products
-  const pendingOrders = allOrders.filter(o => !isCompleted(o)).slice(0, 10);
-  const linkedHtml = pendingOrders.length ? `
-    <div class="linked-orders-section">
-      <div class="linked-orders-title">📋 Orders រង់ចាំ (${pendingOrders.length})</div>
-      ${pendingOrders.map(o => {
-        const isCod = (o.payment||'').toLowerCase().includes('cod');
-        return `<div class="linked-order-row">
-          <div class="linked-order-dot" style="background:${isCod?'var(--accent)':'var(--green)'}"></div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;margin-bottom:2px">${e(o.name||'—')}</div>
-            <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              🏷️ ${e((o.ordered||'—').substring(0,38))}${(o.ordered||'').length>38?'…':''}
-            </div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:13px;font-weight:700;color:var(--accent)">$${e(o.pricing||o.retail||'—')}</div>
-            <span class="card-badge ${isCod?'badge-cod':'badge-paid'}" style="font-size:10px;display:inline-block;margin-top:2px">
-              ${e(o.payment||'COD')}</span>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>` : '';
-
-  body.innerHTML = summary
-    + `<div class="product-grid">${cards}</div>`
-    + linkedHtml;
-}
-
-// Swipe-down on stock-sheet
-(function(){
-  let sy=0,dy=0,drag=false;
-  function isStockTarget(el){
-    const h=document.getElementById('stock-handle');
-    const head=document.querySelector('.stock-sheet-head');
-    if(head&&head.contains(el))return true;
-    return h&&h.contains(el);
-  }
-  document.addEventListener('touchstart',ev=>{
-    if(isStockTarget(ev.target)){
-      sy=ev.touches[0].clientY;drag=true;dy=0;
-      const s=document.getElementById('stock-sheet');if(s)s.style.transition='none';
-    }
-  },{passive:true});
-  document.addEventListener('touchmove',ev=>{
-    if(!drag)return;
-    dy=ev.touches[0].clientY-sy;
-    if(dy>0){const s=document.getElementById('stock-sheet');if(s)s.style.transform=`translateY(${dy}px)`;}
-  },{passive:true});
-  document.addEventListener('touchend',()=>{
-    if(!drag)return; drag=false;
-    const s=document.getElementById('stock-sheet');if(s)s.style.transition='';
-    if(dy>80){closeStockSheet();}else{if(s)s.style.transform='';}
-    dy=0;
-  });
-})();
-
-function openMovement(productId, productName, currentQty, minQty) {
-  _mvProductId = productId;
-  _mvCurrentQty = parseInt(currentQty) || 0;
-  _mvType = 'in';
-  document.getElementById('mv-product-name').textContent = productName || 'Stock Movement';
-  const isLow = minQty > 0 && _mvCurrentQty <= minQty;
-  document.getElementById('mv-cur-info').innerHTML =
-    `ស្តុកបច្ចុប្បន្ន: <strong style="color:${isLow?'var(--red)':'var(--accent)'}">${_mvCurrentQty}</strong>`
-    + (minQty > 0 ? ` <span style="color:var(--muted)">/ min ${minQty}</span>` : '');
-  document.getElementById('mv-qty').value = '';
-  document.getElementById('mv-note').value = '';
-  setMvType('in');
-  document.getElementById('movement-overlay').classList.add('on');
-  setTimeout(() => document.getElementById('mv-qty').focus(), 350);
-}
-function closeMovement() {
-  document.getElementById('movement-overlay').classList.remove('on');
-  _mvProductId = null;
-}
-function closeMovementIfBg(ev) {
-  if (ev.target === document.getElementById('movement-overlay')) closeMovement();
-}
-function setMvType(type) {
-  _mvType = type;
-  ['in','out','adjust'].forEach(t => {
-    const btn = document.getElementById('mvt-' + t);
-    if (!btn) return;
-    btn.className = 'mv-type-btn' + (t === type ? ' active-' + t : '');
-  });
-  // Update submit button color
-  const sb = document.getElementById('mv-submit-btn');
-  if (!sb) return;
-  if (type === 'in')     sb.style.background = 'linear-gradient(135deg,var(--green),#16a34a)';
-  else if (type === 'out')    sb.style.background = 'linear-gradient(135deg,var(--red),#b91c1c)';
-  else                   sb.style.background = 'linear-gradient(135deg,var(--blue),#1d4ed8)';
-}
-async function submitMovement() {
-  if (!_mvProductId) return;
-  const qtyVal = document.getElementById('mv-qty').value;
-  const note   = document.getElementById('mv-note').value.trim();
-  const qty    = parseInt(qtyVal);
-  if (!qtyVal || isNaN(qty) || qty <= 0) {
-    showToast('❌ សូមបញ្ចូលចំនួន', true);
-    document.getElementById('mv-qty').focus();
-    return;
-  }
-  const storeId = (typeof STORE !== 'undefined') ? STORE : 'yb9999';
-  const btn = document.getElementById('mv-submit-btn');
-  btn.disabled = true; btn.textContent = 'កំពុងរក្សាទុក...';
-  try {
-    const res = await gs('addMovement', {
-      product_id : _mvProductId,
-      store_id   : storeId,
-      type       : _mvType,
-      qty        : qty,
-      note       : sanitizeStr(note),
-      created_by : shipperData?.phone || ''
-    });
-    if (res && res.error) throw new Error(res.error);
-    showToast('✅ រក្សាទុកហើយ!');
-    try { tg.HapticFeedback.notificationOccurred('success'); } catch(_) {}
-    // Optimistic local update
-    const p = stockProducts.find(x => (x.product_id||x.id) === _mvProductId);
-    if (p) {
-      const cur = parseInt(p.stock_qty || 0);
-      if      (_mvType === 'in')     p.stock_qty = cur + qty;
-      else if (_mvType === 'out')    p.stock_qty = Math.max(0, cur - qty);
-      else if (_mvType === 'adjust') p.stock_qty = qty;
-    }
-    closeMovement();
-    renderStockBody();
-  } catch (err) {
-    showToast('❌ ' + sanitizeStr(err.message), true);
-  } finally {
-    btn.disabled = false;
-    const labels = {in:'✅ រក្សាទុក', out:'✅ រក្សាទុក', adjust:'✅ រក្សាទុក'};
-    btn.textContent = labels[_mvType] || '✅ រក្សាទុក';
-  }
-}
-// ============ END STOCK MODULE ============
 function showToast(msg,isErr){
   const t=document.getElementById('toast');
   t.textContent=sanitizeStr(msg);
   t.className='toast show'+(isErr?' error':'');
   setTimeout(()=>{t.className='toast';},3000);
 }
+
+// ============================================================
+// STOCK MODULE v62
+// ============================================================
+let _stk=[];      // product list
+let _mvPid=null;  // current movement product_id
+let _mvType='in'; // in | out | adjust
+let _mvCurQty=0;  // current stock qty
+let _stkSearch='';
+
+// ── Open / Close stock sheet ──────────────────────────────
+function openStockSheet(){
+  document.getElementById('stock-overlay').classList.add('on');
+  document.body.style.overflow='hidden';
+  document.body.style.touchAction='none';
+  _loadStk();
+}
+function closeStockSheet(){
+  document.getElementById('stock-overlay').classList.remove('on');
+  document.body.style.overflow='';
+  document.body.style.touchAction='';
+}
+function closeStockBg(ev){
+  if(ev.target===document.getElementById('stock-overlay'))closeStockSheet();
+}
+
+// ── Swipe-down on stock sheet ─────────────────────────────
+(function(){
+  let sy=0,dy=0,drag=false;
+  function isShtTarget(el){
+    const h=document.getElementById('sht-handle');
+    const hd=document.getElementById('sht-head');
+    if(h&&h.contains(el))return true;
+    if(hd&&hd.contains(el)){
+      // exclude close button
+      const cl=hd.querySelector('.popup-close');
+      if(cl&&cl.contains(el))return false;
+      return true;
+    }
+    return false;
+  }
+  document.addEventListener('touchstart',ev=>{
+    if(isShtTarget(ev.target)){
+      sy=ev.touches[0].clientY;drag=true;dy=0;
+      const s=document.getElementById('stock-sheet');
+      if(s)s.style.transition='none';
+    }
+  },{passive:true});
+  document.addEventListener('touchmove',ev=>{
+    if(!drag)return;
+    dy=Math.max(0,ev.touches[0].clientY-sy);
+    const s=document.getElementById('stock-sheet');
+    if(s)s.style.transform=`translateY(${dy}px)`;
+  },{passive:true});
+  document.addEventListener('touchend',()=>{
+    if(!drag)return;drag=false;
+    const s=document.getElementById('stock-sheet');
+    if(s)s.style.transition='';
+    if(dy>80)closeStockSheet();
+    else if(s)s.style.transform='';
+    dy=0;
+  });
+})();
+
+// ── Load products ─────────────────────────────────────────
+async function _loadStk(){
+  const body=document.getElementById('sht-body');
+  body.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
+  try{
+    const storeId=(typeof STORE!=='undefined')?STORE:'yb9999';
+    const res=await gs('getProducts',{store_id:storeId,shipper:shipperData?.phone||''});
+    if(res&&res.error)throw new Error(res.error);
+    _stk=Array.isArray(res)?res:(res.products||[]);
+    _renderStk();
+  }catch(err){
+    document.getElementById('sht-body').innerHTML=`
+      <div class="empty">
+        <div class="empty-icon">⚠️</div>
+        <h3>Error</h3><p>${e(err.message)}</p>
+        <button onclick="_loadStk()" style="margin-top:14px;padding:10px 22px;
+          background:var(--accent);color:#000;border:none;border-radius:8px;
+          font-weight:700;cursor:pointer">Retry</button>
+      </div>`;
+  }
+}
+
+// ── Render products grid ──────────────────────────────────
+function _renderStk(){
+  const body=document.getElementById('sht-body');
+  const q=_stkSearch.toLowerCase().trim();
+  const list=q?_stk.filter(p=>(p.name||'').toLowerCase().includes(q)):_stk;
+
+  const total=_stk.length;
+  const totalQty=_stk.reduce((s,p)=>s+parseInt(p.stock_qty||0),0);
+  const lowCount=_stk.filter(p=>{
+    const qty=parseInt(p.stock_qty||0);
+    const mn=parseInt(p.min_stock||0);
+    return mn>0&&qty<=mn;
+  }).length;
+
+  // gradient pool for no-image cards
+  const grd=['linear-gradient(135deg,#f0a50028,#e05c0028)',
+             'linear-gradient(135deg,#3b82f628,#1d4ed828)',
+             'linear-gradient(135deg,#22c55e28,#16a34a28)',
+             'linear-gradient(135deg,#8b5cf628,#6d28d928)',
+             'linear-gradient(135deg,#f4372728,#dc262628)'];
+
+  const cards=list.map(p=>{
+    const qty=parseInt(p.stock_qty||0);
+    const mn=parseInt(p.min_stock||0);
+    const isLow=mn>0&&qty<=mn;
+    const isOut=qty===0;
+    const pid=e(p.product_id||p.id||'');
+    const pname=e(p.name||'—');
+    const barW=mn>0?Math.min(100,Math.round(qty/mn*100)):100;
+    const barClr=isOut?'var(--red)':isLow?'#f97316':'var(--green)';
+    const gi=(p.name||'').charCodeAt(0)%grd.length;
+    const qtyClr=isOut?'out':isLow?'low':'ok';
+    return`<div class="prod-card ${isOut?'out':isLow?'low':''}"
+      onclick="openMv('${pid}','${pname}',${qty},${mn})">
+      ${isOut?`<span class="prod-out-tag">🚫 អស់</span>`
+             :isLow?`<span class="prod-low-tag">⚠️ ជិតអស់</span>`:''}
+      <button class="prod-add" onclick="event.stopPropagation();openMv('${pid}','${pname}',${qty},${mn})">+</button>
+      <div class="prod-img" style="background:${p.image_url?'var(--surface)':grd[gi]}">
+        ${p.image_url
+          ?`<img src="${e(p.image_url)}" loading="lazy" onerror="this.style.display='none'">`
+          :`<span style="position:relative;z-index:1">📦</span>`}
+      </div>
+      <div class="prod-info">
+        <div class="prod-name">${pname}</div>
+        <div class="prod-price">$${e(p.price||'—')}</div>
+        <div class="prod-qty-row">
+          <span class="prod-qty ${qtyClr}">${qty}</span>
+          ${mn>0?`<span class="prod-min">/ min ${mn}</span>`:''}
+        </div>
+        <div class="prod-bar-wrap">
+          <div class="prod-bar" style="width:${barW}%;background:${barClr}"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Pending orders list at bottom
+  const pending=allOrders.filter(o=>!isCompleted(o)).slice(0,10);
+  const linkedHtml=pending.length?`
+    <div class="stk-orders-section">
+      <div class="stk-orders-ttl">📋 Orders រង់ចាំ (${pending.length})</div>
+      ${pending.map(o=>{
+        const isCod=(o.payment||'').toLowerCase().includes('cod');
+        return`<div class="stk-order-row">
+          <div class="stk-order-dot" style="background:${isCod?'var(--accent)':'var(--green)'}"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;margin-bottom:1px">${e(o.name||'—')}</div>
+            <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+              🏷️ ${e((o.ordered||'—').substring(0,40))}${(o.ordered||'').length>40?'…':''}
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;padding-left:8px">
+            <div style="font-size:13px;font-weight:700;color:var(--accent)">$${e(o.pricing||o.retail||'—')}</div>
+            <span class="card-badge ${isCod?'badge-cod':'badge-paid'}" style="font-size:10px;display:inline-block;margin-top:2px">
+              ${e(o.payment||'COD')}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`:''
+
+  body.innerHTML=`
+    <div class="stk-stats">
+      <div class="stk-stat">
+        <div class="stk-stat-n">${total}</div>
+        <div class="stk-stat-l">ប្រភេទ</div>
+      </div>
+      <div class="stk-stat">
+        <div class="stk-stat-n ok">${totalQty}</div>
+        <div class="stk-stat-l">ចំនួនសរុប</div>
+      </div>
+      <div class="stk-stat">
+        <div class="stk-stat-n ${lowCount>0?'danger':'ok'}">${lowCount}</div>
+        <div class="stk-stat-l">⚠️ ជិតអស់</div>
+      </div>
+    </div>
+    <div class="stk-search-bar">
+      <input class="stk-search-inp" id="stk-search" type="search"
+        placeholder="🔍 ស្វែងរកទំនិញ..." value="${e(_stkSearch)}"
+        oninput="_stkFilter(this.value)">
+      <button class="stk-add-btn" onclick="openAddProduct()" title="បន្ថែមទំនិញ">＋</button>
+    </div>
+    ${list.length
+      ?`<div class="prod-grid">${cards}</div>${linkedHtml}`
+      :`<div class="empty">
+          <div class="empty-icon">${q?'🔍':'📦'}</div>
+          <h3>${q?'គ្មានលទ្ធផល':'គ្មានទំនិញ'}</h3>
+          <p>${q?'ព្យាយាម keyword ផ្សេង':'ចុច + ខាងលើ ដើម្បីបន្ថែម'}</p>
+        </div>`}`;
+}
+
+function _stkFilter(v){
+  _stkSearch=v||'';
+  clearTimeout(_stk._ft);
+  _stk._ft=setTimeout(_renderStk,180);
+}
+
+// ── Movement form ─────────────────────────────────────────
+function openMv(productId,productName,currentQty,minQty){
+  _mvPid=productId;
+  _mvCurQty=parseInt(currentQty)||0;
+  _mvType='in';
+  document.getElementById('mv-title').textContent=productName||'Stock Movement';
+  const isLow=parseInt(minQty||0)>0&&_mvCurQty<=parseInt(minQty||0);
+  document.getElementById('mv-sub').innerHTML=
+    `ស្តុក: <strong style="color:${isLow?'var(--red)':'var(--accent)'}">${_mvCurQty}</strong>`
+    +(parseInt(minQty||0)>0?` <span style="color:var(--muted);font-size:11px">/ min ${minQty}</span>`:'');
+  document.getElementById('mv-qty').value='';
+  document.getElementById('mv-note').value='';
+  document.getElementById('mv-result').textContent='';
+  setMvType('in');
+  document.getElementById('mv-overlay').classList.add('on');
+  setTimeout(()=>document.getElementById('mv-qty').focus(),350);
+}
+function closeMv(){
+  document.getElementById('mv-overlay').classList.remove('on');
+  _mvPid=null;
+}
+function closeMvBg(ev){
+  if(ev.target===document.getElementById('mv-overlay'))closeMv();
+}
+function setMvType(t){
+  _mvType=t;
+  ['in','out','adjust'].forEach(x=>{
+    const btn=document.getElementById(`mvt-${x==='adjust'?'adj':x}`);
+    if(!btn)return;
+    btn.className='mv-type'+(t===x?` t-${x==='adjust'?'adj':x}`:'');
+  });
+  const sb=document.getElementById('mv-submit');
+  if(sb){
+    sb.className=`mv-submit s-${t==='adjust'?'adj':t}`;
+    sb.textContent=t==='in'?'⬆️ បន្ថែមស្តុក':t==='out'?'⬇️ ដកស្តុក':'⚙️ កែតម្រូវ';
+  }
+  updateMvResult();
+}
+function updateMvResult(){
+  const qty=parseInt(document.getElementById('mv-qty')?.value||0);
+  const el=document.getElementById('mv-result');
+  if(!el||!qty||isNaN(qty))return void(el&&(el.textContent=''));
+  let result;
+  if(_mvType==='in')     result=_mvCurQty+qty;
+  else if(_mvType==='out') result=Math.max(0,_mvCurQty-qty);
+  else                     result=qty;
+  const color=result<=0?'var(--red)':result<5?'#f97316':'var(--green)';
+  el.innerHTML=`→ <span style="color:${color};font-weight:700">${result}</span>`;
+}
+async function submitMv(){
+  if(!_mvPid)return;
+  const qtyVal=document.getElementById('mv-qty').value;
+  const note=document.getElementById('mv-note').value.trim();
+  const qty=parseInt(qtyVal);
+  if(!qtyVal||isNaN(qty)||qty<=0){
+    showToast('❌ សូមបញ្ចូលចំនួន',true);
+    document.getElementById('mv-qty').focus();
+    return;
+  }
+  const storeId=(typeof STORE!=='undefined')?STORE:'yb9999';
+  const btn=document.getElementById('mv-submit');
+  btn.disabled=true;
+  const origText=btn.textContent;
+  btn.textContent='⏳ កំពុងរក្សាទុក...';
+  try{
+    const res=await gs('addMovement',{
+      product_id:_mvPid,store_id:storeId,
+      type:_mvType,qty,
+      note:sanitizeStr(note),
+      created_by:shipperData?.phone||''
+    });
+    if(res&&res.error)throw new Error(res.error);
+    // Optimistic local update
+    const p=_stk.find(x=>(x.product_id||x.id)===_mvPid);
+    if(p){
+      const cur=parseInt(p.stock_qty||0);
+      if(_mvType==='in')       p.stock_qty=cur+qty;
+      else if(_mvType==='out') p.stock_qty=Math.max(0,cur-qty);
+      else                     p.stock_qty=qty;
+    }
+    try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
+    showToast('✅ រក្សាទុកហើយ!');
+    closeMv();
+    _renderStk();
+  }catch(err){
+    showToast('❌ '+sanitizeStr(err.message),true);
+  }finally{
+    btn.disabled=false;btn.textContent=origText;
+  }
+}
+
+// ── Add product (placeholder — extend later) ──────────────
+function openAddProduct(){
+  showToast('ℹ️ Coming soon: Create Product',false);
+}
+// ============================================================
+// END STOCK MODULE
+// ============================================================
 </script>
 </body>
 </html>
