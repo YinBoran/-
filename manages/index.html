@@ -655,7 +655,8 @@ const D = {
 async function GS(fn, ...args) {
   const arg  = args.length === 0 ? undefined : args.length === 1 ? args[0] : args;
   const data = arg !== undefined ? encodeURIComponent(JSON.stringify(arg)) : "";
-  const url  = `${API}?action=gs&fn=${fn}${data ? "&data=" + data : ""}`;
+  const tok  = sessionStorage.getItem('ybtoken') || '';
+  const url  = `${API}?action=gs&fn=${fn}${data?'&data='+data:''}${tok?'&token='+tok:''}`;
   const res  = await fetch(url);
   if (!res.ok) throw new Error("HTTP " + res.status);
   const json = await res.json();
@@ -726,11 +727,12 @@ async function doLogin() {
     const r = await GS('loginShipper', ph, pw);
     // loginShipper accepts role: shipper | admin | shop
     if (r && (r.success || r.token || r.role)) {
-      sessionStorage.clear();
+      sessionStorage.clear(); // clears ybauth, ybtoken, ybname, ybrole
       ss('ybauth','1');
-      if(r.name)  ss('ybname', r.name);
-      if(r.role)  ss('ybrole', r.role);
+      if(r.name)  ss('ybname',  r.name);
+      if(r.role)  ss('ybrole',  r.role);
       if(r.phone) ss('ybphone', r.phone || ph);
+      if(r.token) ss('ybtoken', r.token);
       showApp();
     } else {
       const msg = (r && r.error) ? r.error : 'Wrong phone or password';
