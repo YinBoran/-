@@ -353,6 +353,12 @@ body.modal-open{overflow:hidden}
     <p class="auth-sub">Sign in to manage your store</p>
     <div style="position:relative;margin-bottom:10px">
       <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.61 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 3.12 4.18 2 2 0 0 1 5.09 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l.46-.46a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 23 18v2.92z"/></svg>
+      </span>
+      <input class="auth-inp" type="tel" id="ph" placeholder="Phone number" autocomplete="tel" style="padding-left:38px;margin-bottom:0" onkeydown="if(event.key==='Enter')document.getElementById('pw').focus()">
+    </div>
+    <div style="position:relative;margin-bottom:10px">
+      <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       </span>
       <input class="auth-inp" type="password" id="pw" placeholder="Password" autocomplete="current-password" style="padding-left:38px;padding-right:42px;margin-bottom:0">
@@ -649,7 +655,7 @@ const D = {
 async function GS(fn, ...args) {
   const arg  = args.length === 0 ? undefined : args.length === 1 ? args[0] : args;
   const data = arg !== undefined ? encodeURIComponent(JSON.stringify(arg)) : "";
-  const url  = `${API}?action=gs&fn=${fn}${data ? "&data=" + data : ""}`;
+  const url  = `${API}?action=gs&fn=${fn}${data ? '&data=' + data : ''}`;
   const res  = await fetch(url);
   if (!res.ok) throw new Error("HTTP " + res.status);
   const json = await res.json();
@@ -669,7 +675,8 @@ function showAuth(){
   setTimeout(()=>{ const p=document.getElementById('pw'); if(p) p.focus(); },200);
 }
 function showApp(){ document.getElementById('auth').classList.add('hidden'); const a=document.getElementById('app'); a.classList.remove('hidden'); setTimeout(()=>a.classList.add('ready'),10); initApp(); }
-document.getElementById('pw').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('pw')?.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.addEventListener('DOMContentLoaded',()=>{ document.getElementById('ph')?.addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('pw')?.focus(); }); });
 
 document.addEventListener('keydown', e=>{
   if(e.key!=='Enter' || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -703,41 +710,47 @@ function togglePw(){
   document.getElementById('eye-icon').style.opacity=_pwVisible?'1':'.45';
 }
 
+// ── AUTH CONFIG ─────────────────────────────────────────────
+// Developer: change fn to swap auth method, toggle usePhone UI
+const AUTH = {
+  fn:       'verifyPassword',   // GAS function to call
+  usePhone: true,               // show phone field (display only)
+};
+// ────────────────────────────────────────────────────────────
+
 async function doLogin() {
-  const pw  = document.getElementById('pw').value.trim();
+  const pw  = (document.getElementById('pw')?.value || '').trim();
   const btn = document.getElementById('login-btn');
   const err = document.getElementById('auth-err');
+  if (err) err.textContent = '';
 
   if (!pw) {
-    err ? err.textContent = 'Enter password' : alert('Enter password');
+    if (err) err.textContent = 'Enter password';
+    document.getElementById('pw')?.focus();
     return;
   }
 
-  // ✅ Disable button while loading:
   if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
 
   try {
-    const r = await GS('verifyPassword', pw);
+    const r = await GS(AUTH.fn, pw);
     if (r === true || r === 'true' || r) {
       sessionStorage.clear();
       ss('ybauth', '1');
       showApp();
     } else {
       if (err) err.textContent = 'Wrong password';
-      else alert('Wrong password');
       document.getElementById('pw').value = '';
       document.getElementById('pw').focus();
-      // ✅ Re-enable button:
       if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
     }
   } catch(e) {
     if (err) err.textContent = 'Error: ' + e.message;
-    else alert('Error: ' + e.message);
-    // ✅ Re-enable button on error:
     if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
   }
 }
-  
+
+
 function doLogout() {
   localStorage.clear();
   window.location.href = '/';
