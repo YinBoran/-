@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>YB Admin</title>
+<meta name="theme-color" content="#0f0f0f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="YB Store Admin Dashboard">
+<title>YB Admin v7.0</title>
+<link rel="manifest" href="manifest.json">
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <style>
 /* ══════════════════════════════════════════
@@ -493,6 +497,101 @@ select.field-input{cursor:pointer}
 @media(max-width:380px){
   th:nth-child(n+5),td:nth-child(n+5){display:none}
 }
+
+/* ══════════════════════════════════════════
+   v7.0 ADDITIONS — style only, no v60 changes
+══════════════════════════════════════════ */
+
+/* Bottom nav (mobile) — hidden on desktop */
+#bottomNav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(26,26,26,.97);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);
+  padding:8px 0 calc(8px + var(--safe-bot));
+  z-index:90;
+  grid-template-columns:repeat(5,1fr);
+}
+.bnav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 4px;cursor:pointer;color:var(--muted);
+  font-size:10px;font-weight:500;border:none;background:none;
+  font-family:var(--font);transition:color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.bnav-item.active{color:var(--accent)}
+.bnav-icon{font-size:20px;line-height:1}
+@media(max-width:640px){
+  #bottomNav{display:grid}
+  .tabs{display:none!important}
+  #mainApp{padding-bottom:calc(64px + var(--safe-bot))}
+}
+
+/* FAB — floating add button */
+.fab{
+  position:fixed;right:16px;bottom:calc(80px + var(--safe-bot));
+  width:52px;height:52px;border-radius:16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none;color:#000;font-size:26px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px #f0a50040;z-index:89;
+  transition:transform .15s,opacity .15s;
+}
+.fab:active{transform:scale(.93)}
+.fab.hidden{opacity:0;pointer-events:none}
+@media(min-width:641px){.fab{display:none}}
+
+/* Stock adjust inline */
+.stock-adj{
+  display:flex;align-items:center;gap:6px;margin-top:6px;
+}
+.stock-btn{
+  width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--surface);color:var(--text);font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-weight:700;transition:background .1s;
+}
+.stock-btn:active{background:var(--border)}
+.stock-num{
+  min-width:48px;text-align:center;font-size:15px;font-weight:700;
+  color:var(--text);padding:4px 8px;background:var(--bg);
+  border-radius:8px;border:1.5px solid var(--border);
+}
+
+/* Permission chip */
+.perm-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;
+  background:var(--surface);border:1px solid var(--border);color:var(--muted);
+  margin:2px;
+}
+.perm-chip.on{background:#f0a50018;border-color:#f0a50044;color:var(--accent)}
+.perm-chip.deny{background:#ef444410;border-color:#ef444430;color:var(--red)}
+
+/* Lazy img */
+img.lazy{opacity:0;transition:opacity .3s}
+img.lazy.loaded{opacity:1}
+
+/* Virtual list placeholder */
+.vrow-ph{height:60px;background:var(--surface);border-bottom:1px solid var(--border)}
+
+/* HLS video embed */
+.video-wrap{
+  position:relative;width:100%;aspect-ratio:16/9;
+  background:#000;border-radius:10px;overflow:hidden;margin-bottom:12px;
+}
+.video-wrap video{width:100%;height:100%;object-fit:cover}
+
+/* Pull to refresh indicator */
+#pullRefresh{
+  position:fixed;top:calc(var(--safe-top) + 56px);left:50%;
+  transform:translateX(-50%) translateY(-60px);
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:8px 16px;font-size:12px;color:var(--muted);
+  z-index:99;transition:transform .25s;pointer-events:none;
+}
+#pullRefresh.show{transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -538,7 +637,7 @@ select.field-input{cursor:pointer}
         <div class="pw-strength-bar" id="pwBar"></div>
         <div class="field-hint info" id="hintPw">យ៉ាងតិច 4 តួអក្សរ</div>
       </div>
-      <div class="recaptcha-wrap" id="recaptchaWrap">
+      <div class="recaptcha-wrap">
         <div class="g-recaptcha" data-sitekey="6LccVxUtAAAAADwMsRysGzfAAX3Wt_CguC5ktLrF"></div>
       </div>
       <button class="btn-primary" id="btnLogin" onclick="doLoginStep1()">ចូល</button>
@@ -627,6 +726,31 @@ select.field-input{cursor:pointer}
 <!-- Toast -->
 <div id="toast"></div>
 
+<!-- v7.0: Bottom nav (mobile only) -->
+<nav id="bottomNav">
+  <button class="bnav-item active" data-tab="orders"    onclick="bnavSwitch('orders',this)">
+    <span class="bnav-icon">📦</span>Orders
+  </button>
+  <button class="bnav-item" data-tab="products"  onclick="bnavSwitch('products',this)" id="bnProducts">
+    <span class="bnav-icon">🛒</span>Products
+  </button>
+  <button class="bnav-item" data-tab="customers" onclick="bnavSwitch('customers',this)" id="bnCustomers">
+    <span class="bnav-icon">👥</span>Customers
+  </button>
+  <button class="bnav-item" data-tab="stock"     onclick="bnavSwitch('stock',this)" id="bnStock">
+    <span class="bnav-icon">📊</span>Stock
+  </button>
+  <button class="bnav-item" data-tab="settings"  onclick="bnavSwitch('settings',this)" id="bnSettings">
+    <span class="bnav-icon">⚙️</span>More
+  </button>
+</nav>
+
+<!-- v7.0: FAB -->
+<button class="fab hidden" id="fabBtn" onclick="onFabClick()">＋</button>
+
+<!-- v7.0: Pull to refresh -->
+<div id="pullRefresh">↓ Pull to refresh</div>
+
 <!-- ══════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════ -->
@@ -636,10 +760,8 @@ select.field-input{cursor:pointer}
 // ════════════════════════════════════════
 const API_URL = (typeof window.API !== 'undefined' ? window.API : 'https://mr.yinboran.workers.dev/');
 
-// ── TEST_MODE: driven by Settings.Connect Type (TEST/PROD) ──
-// ប្ដូរ: Settings sheet → Connect Type → TEST ឬ PROD
-// មិនចាំបាច់ប្ដូរ code ទៀតទេ
-let TEST_MODE = false; // updated on init from getAppConfig
+// ── Dev bypass: set true to skip reCAPTCHA on frontend (must match TEST_MODE_AUTH in auth.gs) ──
+const TEST_MODE = false; // ← true = skip reCAPTCHA check (dev only)
 
 // ── Session IN MEMORY ONLY — never localStorage ──
 let S = null; // { token, expires, name, role, tenantId, permissions }
@@ -907,23 +1029,15 @@ async function doLoginStep1(){
     return;
   }
 
-  _loginPhone = res.fullPhone || id.replace(/\D/g,'');
+  _loginPhone = id.replace(/\D/g,'');
   showOTPDelivery(res);
   document.getElementById('credScreen').style.display = 'none';
   document.getElementById('otpScreen').style.display  = 'block';
+  document.getElementById('inputOtp').value = '';
   document.getElementById('btnOtp').disabled = true;
   document.getElementById('otpCountdown').className = 'otp-timer-count';
   startOTPCountdown();
-
-  // TEST_MODE: auto-fill 000000 + auto-submit
-  if (TEST_MODE) {
-    const otpEl = document.getElementById('inputOtp');
-    otpEl.value = '000000';
-    validateOtp(otpEl); // triggers auto-submit after 400ms via validateOtp
-  } else {
-    document.getElementById('inputOtp').value = '';
-    setTimeout(() => document.getElementById('inputOtp').focus(), 150);
-  }
+  setTimeout(() => document.getElementById('inputOtp').focus(), 150);
 }
 
 // ── Step 2 ─────────────────────────────────────────────────
@@ -989,7 +1103,7 @@ async function bootApp(){
   badge.textContent = S.role; badge.className = 'role-badge '+S.role;
   document.getElementById('appSub').textContent = S.name+' · '+(S.tenantId||'all');
 
-  // Store branding + sync TEST_MODE from Connect Type
+  // Store branding
   const cfg = await api('getAppConfig');
   if(!cfg.error){
     document.getElementById('appName').textContent = cfg.storeName||'YB Admin';
@@ -997,9 +1111,9 @@ async function bootApp(){
     document.getElementById('appLogo').textContent  = ini;
     document.getElementById('loginLogo').textContent = ini;
     if(cfg.primaryColor) document.documentElement.style.setProperty('--accent', cfg.primaryColor);
-    TEST_MODE = (cfg.connectType||'').toUpperCase() === 'TEST';
-    applyTestModeUI();
   }
+
+  // Hide tabs by role
   applyRoleTabs();
   switchTab('orders');
 }
@@ -1304,7 +1418,36 @@ async function loadStock(){
   if(res.error){ renderErr(res.error); return; }
   const rows = parseGrid(res);
   window._stockRows = rows;
-  const low  = rows.filter(p=>parseInt(p['Available']||p['Quantity']||'0') <= parseInt(p['Low Stock Alert']||'5'));
+  const low = rows.filter(p=>parseInt(p['Available']||p['Quantity']||'0') <= parseInt(p['Low Stock Alert']||'5'));
+
+  document.getElementById('tabContent').innerHTML = `
+    <div class="content">
+      ${low.length?`<div class="stock-alert">⚠️ <strong>${low.length} product(s)</strong> below low stock threshold</div>`:''}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Qty</th><th>Reserved</th><th>Available</th><th>Adjust</th></tr></thead>
+          <tbody>${rows.map(p=>{
+            const avail = parseInt(p['Available']||p['Quantity']||'0');
+            const min   = parseInt(p['Low Stock Alert']||'5');
+            const isLow = avail <= min;
+            const code  = esc(p['Code']||'');
+            return `<tr>
+              <td style="font-weight:600">${esc(p['Item Name']||'—')}<br>
+                <span style="font-size:11px;color:var(--muted)">${code}</span>
+              </td>
+              <td>${esc(String(p['Quantity']||'—'))}</td>
+              <td style="color:var(--accent)">${esc(String(p['Reserved']||'0'))}</td>
+              <td style="color:${isLow?'var(--red)':'var(--green)'};font-weight:700">${avail}
+                ${isLow?'<span class="badge bx" style="margin-left:4px">Low</span>':''}
+              </td>
+              <td>${stockAdjHTML(p['Code']||'', avail)}</td>
+            </tr>`;
+          }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
 
   document.getElementById('tabContent').innerHTML = `
     <div class="content">
@@ -1644,36 +1787,230 @@ function toast(msg, type){
 }
 
 // ════════════════════════════════════════
+// v7.0 ADDITIONS
 // ════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════
-(async function(){
+
+// ── TEST_MODE driven by Settings.Connect Type ─
+let TEST_MODE = false;
+
+// ── Bottom nav ───────────────────────────────
+function bnavSwitch(tab, el){
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  switchTab(tab);
+}
+function syncBnav(tab){
+  document.querySelectorAll('.bnav-item').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tab===tab);
+  });
+}
+// Override switchTab to also sync bottom nav
+const _switchTabOrig = switchTab;
+function switchTab(tab){
+  _tab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab===tab));
+  syncBnav(tab);
+  showFab(tab);
+  loadTab(tab);
+}
+
+// ── FAB ──────────────────────────────────────
+function showFab(tab){
+  const fab = document.getElementById('fabBtn');
+  if(!fab) return;
+  const showOn = ['orders','products','customers'];
+  fab.classList.toggle('hidden', !showOn.includes(tab));
+}
+function onFabClick(){
+  switch(_tab){
+    case 'orders':    openAddOrder();   break;
+    case 'products':  openAddProduct(); break;
+    case 'customers': openAddOrder();   break;
+  }
+}
+
+// ── Hide bottom nav items by role ─────────────
+function applyBnavRole(){
+  const p = S && S.permissions || {};
+  if(!p.stock)     { const e=document.getElementById('bnStock');     if(e) e.style.display='none'; }
+  if(!p.customers) { const e=document.getElementById('bnCustomers'); if(e) e.style.display='none'; }
+  if(!p.settings)  { const e=document.getElementById('bnSettings');  if(e) e.style.display='none'; }
+  if(!p.stock && !p.users && !p.settings){ const e=document.getElementById('bnSettings'); if(e) e.style.display='none'; }
+}
+
+// ── Lazy image loading ────────────────────────
+function initLazyImages(){
+  if(!('IntersectionObserver' in window)) return;
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if(!en.isIntersecting) return;
+      const img = en.target;
+      const src = img.dataset.src;
+      if(src){ img.src=src; img.classList.add('loaded'); obs.unobserve(img); }
+    });
+  },{rootMargin:'200px'});
+  document.querySelectorAll('img.lazy').forEach(img=>obs.observe(img));
+}
+
+// ── Virtual scroll helper (simple windowed list) ──
+// Returns HTML for visible window + sentinel divs
+function virtualList(items, renderFn, itemH=64){
+  if(!items || !items.length) return '';
+  // For now render all with lazy images; true virtual scroll needs ResizeObserver
+  return items.map((item,i)=> renderFn(item, i)).join('');
+}
+
+// ── Stock adjust (inline +/-) ────────────────
+function stockAdjust(code, delta){
+  const numEl = document.getElementById('sadj_'+code);
+  if(!numEl) return;
+  let v = parseInt(numEl.textContent)||0;
+  v = Math.max(0, v + delta);
+  numEl.textContent = v;
+}
+async function saveStockAdjust(code){
+  const numEl = document.getElementById('sadj_'+code);
+  if(!numEl) return;
+  const qty = parseInt(numEl.textContent)||0;
+  const r = await api('updateProduct', { data:{ code, qty: String(qty) } });
+  toast(r.error ? r.error : 'Stock updated ✅', r.error ? 'error' : 'success');
+  if(!r.error) loadTab(_tab);
+}
+function stockAdjHTML(code, qty){
+  return `<div class="stock-adj">
+    <button class="stock-btn" onclick="stockAdjust('${esc(code)}',-1)">−</button>
+    <span class="stock-num" id="sadj_${esc(code)}">${qty}</span>
+    <button class="stock-btn" onclick="stockAdjust('${esc(code)}',1)">＋</button>
+    <button class="btn-sm be" style="padding:5px 10px" onclick="saveStockAdjust('${esc(code)}')">Save</button>
+  </div>`;
+}
+
+// ── Permissions view (for users tab) ─────────
+function renderPermChips(role){
+  const map = {
+    admin:   {orders:'all',edit:'all',customers:'all',reports:'all',users:'all',stock:'all',settings:'all'},
+    manager: {orders:'own',edit:'own',customers:'own',reports:'own',users:'deny',stock:'own',settings:'deny'},
+    shop:    {orders:'page',edit:'page',customers:'page',reports:'deny',users:'deny',stock:'deny',settings:'deny'},
+    stock:   {orders:'view',edit:'deny',customers:'deny',reports:'deny',users:'deny',stock:'own',settings:'deny'},
+    shipper: {orders:'view',edit:'view',customers:'deny',reports:'deny',users:'deny',stock:'deny',settings:'deny'},
+    guest:   {orders:'view',edit:'deny',customers:'view',reports:'deny',users:'deny',stock:'deny',settings:'deny'},
+  };
+  const perms = map[role] || map.guest;
+  return Object.entries(perms).map(([k,v])=>{
+    const cls = v==='deny'?'deny':(v&&v!=='deny'?'on':'');
+    const lbl = v==='deny'?'✕':v==='all'?'✓ all':v==='own'?'✓ own':v==='page'?'✓ page':v==='view'?'👁':'✕';
+    return `<span class="perm-chip ${cls}">${k} ${lbl}</span>`;
+  }).join('');
+}
+
+// ── HLS video embed ───────────────────────────
+function renderVideoEmbed(src, poster){
+  if(!src) return '';
+  return `<div class="video-wrap">
+    <video id="vid_${Date.now()}" controls playsinline preload="none"
+           poster="${esc(poster||'')}"
+           data-src="${esc(src)}"
+           style="width:100%;height:100%">
+    </video>
+  </div>`;
+}
+function initHLS(videoEl, src){
+  if(!videoEl || !src) return;
+  // HLS.js for browsers without native HLS support
+  if(videoEl.canPlayType('application/vnd.apple.mpegurl')){
+    videoEl.src = src; // Safari native HLS
+  } else if(window.Hls && Hls.isSupported()){
+    const hls = new Hls({ maxBufferLength:30, enableWorker:true });
+    hls.loadSource(src); hls.attachMedia(videoEl);
+  } else {
+    videoEl.src = src; // fallback
+  }
+}
+
+// ── Pull to refresh ───────────────────────────
+(function initPullRefresh(){
+  let startY=0, pulling=false;
+  const pr = document.getElementById('pullRefresh');
+  document.addEventListener('touchstart',e=>{
+    if(window.scrollY===0) { startY=e.touches[0].clientY; pulling=true; }
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!pulling) return;
+    const dy = e.touches[0].clientY - startY;
+    if(dy > 60 && pr) pr.classList.add('show');
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!pulling) return; pulling=false;
+    const dy = e.changedTouches[0].clientY - startY;
+    if(pr) pr.classList.remove('show');
+    if(dy > 80) refreshTab();
+  },{passive:true});
+})();
+
+// ── Override bootApp to add v7.0 boot ─────────
+const _bootAppOrig = bootApp;
+async function bootApp(){
+  await _bootAppOrig();
+  applyBnavRole();
+  showFab(_tab);
+  // Lazy images after first tab renders
+  setTimeout(initLazyImages, 500);
+}
+
+// ── loginStep1 fullPhone fix ──────────────────
+const _doLoginStep1Orig = doLoginStep1;
+async function doLoginStep1(){
+  // patch: store fullPhone from response
+  const _origShowOTPDelivery = showOTPDelivery;
+  window._pendingFullPhone = null;
+  const origApi = window.api;
+  // intercept loginStep1 response to capture fullPhone
+  window.api = async function(action, data){
+    const res = await origApi(action, data);
+    if(action==='loginStep1' && res && res.fullPhone){
+      window._pendingFullPhone = res.fullPhone;
+    }
+    return res;
+  };
+  await _doLoginStep1Orig();
+  window.api = origApi; // restore
+  if(window._pendingFullPhone) _loginPhone = window._pendingFullPhone;
+}
+
+// ── INIT v7.0 ────────────────────────────────
+(async function initV70(){
   document.getElementById('loginScreen').style.display='flex';
   document.getElementById('mainApp').style.display='none';
   document.body.classList.add('login-open');
-  try {
-    const cfg = await api('getAppConfig');
+  // Load connectType → set TEST_MODE before user hits Login
+  try{
+    const cfg = await (async()=>{
+      const r = await fetch(API_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'getAppConfig'})
+      });
+      return r.json();
+    })();
     if(!cfg.error){
-      TEST_MODE = (cfg.connectType||'').toUpperCase() === 'TEST';
-      // Apply branding on login screen too
-      if(cfg.storeName) document.querySelector('.login-title') && (document.querySelector('.login-title').textContent = cfg.storeName);
-      if(cfg.primaryColor) document.documentElement.style.setProperty('--accent', cfg.primaryColor);
-      if(cfg.storeInitials) document.getElementById('loginLogo').textContent = cfg.storeInitials;
+      TEST_MODE = (cfg.connectType||'').toUpperCase()==='TEST';
+      if(cfg.primaryColor) document.documentElement.style.setProperty('--accent',cfg.primaryColor);
+      if(cfg.storeInitials) document.getElementById('loginLogo').textContent=cfg.storeInitials;
+      if(cfg.storeName){
+        document.querySelector('.login-title') &&
+          (document.querySelector('.login-title').textContent=cfg.storeName);
+      }
     }
-  } catch(_) {}
-  // Hide reCAPTCHA widget when TEST mode — after TEST_MODE is set
-  applyTestModeUI();
-})();
+  }catch(_){}
+  // Hide/show reCAPTCHA based on TEST_MODE
+  const rcWrap = document.querySelector('.recaptcha-wrap');
+  if(rcWrap) rcWrap.style.display = TEST_MODE ? 'none' : 'flex';
 
-function applyTestModeUI(){
-  const wrap = document.getElementById('recaptchaWrap');
-  if(!wrap) return;
-  if(TEST_MODE){
-    wrap.style.display = 'none';
-  } else {
-    wrap.style.display = '';
+  // Service Worker (PWA)
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
   }
-}
+})();
 </script>
 </body>
 </html>
