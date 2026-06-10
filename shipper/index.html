@@ -2618,7 +2618,7 @@ async function openKHQRPopup(bankId){
   const localQR=KHQR_IMGS[bankId]||'';
   if(localQR&&qa){
     qa.innerHTML='<img src="'+localQR+'" style="width:100%;height:100%;object-fit:contain;border-radius:9px" '
-      +'onerror="this.parentElement.innerHTML='<span style=font-size:56px>🔳</span>'">';
+      +'onerror="this.parentElement.innerHTML='<span style=font-size:56px>🔳</span>'">'
   }
 
   // ── Notify backend (PayWay group) in background ─────────────
