@@ -655,8 +655,7 @@ const D = {
 async function GS(fn, ...args) {
   const arg  = args.length === 0 ? undefined : args.length === 1 ? args[0] : args;
   const data = arg !== undefined ? encodeURIComponent(JSON.stringify(arg)) : "";
-  const tok  = sessionStorage.getItem('ybtoken') || '';
-  const url  = `${API}?action=gs&fn=${fn}${data?'&data='+data:''}${tok?'&token='+tok:''}`;
+  const url  = `${API}?action=gs&fn=${fn}${data ? '&data=' + data : ''}`;
   const res  = await fetch(url);
   if (!res.ok) throw new Error("HTTP " + res.status);
   const json = await res.json();
@@ -711,42 +710,47 @@ function togglePw(){
   document.getElementById('eye-icon').style.opacity=_pwVisible?'1':'.45';
 }
 
+// ── AUTH CONFIG ─────────────────────────────────────────────
+// Developer: change fn to swap auth method, toggle usePhone UI
+const AUTH = {
+  fn:       'verifyPassword',   // GAS function to call
+  usePhone: true,               // show phone field (display only)
+};
+// ────────────────────────────────────────────────────────────
+
 async function doLogin() {
-  const ph  = (document.getElementById('ph')?.value || '').trim().replace(/\D/g,'');
   const pw  = (document.getElementById('pw')?.value || '').trim();
   const btn = document.getElementById('login-btn');
   const err = document.getElementById('auth-err');
-  if(err) err.textContent = '';
+  if (err) err.textContent = '';
 
-  if (!ph) { if(err) err.textContent = 'Enter phone number'; document.getElementById('ph')?.focus(); return; }
-  if (!pw) { if(err) err.textContent = 'Enter password';     document.getElementById('pw')?.focus(); return; }
+  if (!pw) {
+    if (err) err.textContent = 'Enter password';
+    document.getElementById('pw')?.focus();
+    return;
+  }
 
-  if(btn){ btn.disabled=true; btn.querySelector('#login-txt') ? (btn.querySelector('#login-txt').textContent='Signing in…') : (btn.textContent='Signing in…'); }
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
 
   try {
-    const r = await GS('loginShipper', ph, pw);
-    // loginShipper accepts role: shipper | admin | shop
-    if (r && (r.success || r.token || r.role)) {
-      sessionStorage.clear(); // clears ybauth, ybtoken, ybname, ybrole
-      ss('ybauth','1');
-      if(r.name)  ss('ybname',  r.name);
-      if(r.role)  ss('ybrole',  r.role);
-      if(r.phone) ss('ybphone', r.phone || ph);
-      if(r.token) ss('ybtoken', r.token);
+    const r = await GS(AUTH.fn, pw);
+    if (r === true || r === 'true' || r) {
+      sessionStorage.clear();
+      ss('ybauth', '1');
       showApp();
     } else {
-      const msg = (r && r.error) ? r.error : 'Wrong phone or password';
-      if(err) err.textContent = msg;
+      if (err) err.textContent = 'Wrong password';
       document.getElementById('pw').value = '';
       document.getElementById('pw').focus();
-      if(btn){ btn.disabled=false; btn.querySelector('#login-txt') ? (btn.querySelector('#login-txt').textContent='Sign in') : (btn.textContent='Sign in'); }
+      if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
     }
   } catch(e) {
-    if(err) err.textContent = 'Error: ' + e.message;
-    if(btn){ btn.disabled=false; btn.querySelector('#login-txt') ? (btn.querySelector('#login-txt').textContent='Sign in') : (btn.textContent='Sign in'); }
+    if (err) err.textContent = 'Error: ' + e.message;
+    if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
   }
 }
-  
+
+
 function doLogout() {
   localStorage.clear();
   window.location.href = '/';
