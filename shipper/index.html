@@ -297,60 +297,45 @@ body{
   .inv-toolbar{display:none!important}
   #invoice-content{padding:0!important}
 }
-/* =========================================================
-   🖥️ DESKTOP & TABLET LAYOUT (ស្តង់ដារច្បាស់លាស់ មិនព្រិល)
-   ========================================================= */
+/* ប្រើ @media សម្រាប់ Desktop តែប៉ុណ្ណោះ មិនប៉ះពាល់ Mobile */
 @media (min-width: 768px) {
-  /* ១. ពណ៌ Background ខាងក្រៅ */
-  body, html {
-    background-color: #121212 !important; 
+  body {
+    display: flex !important;
+    justify-content: center !important;
+    background: #121212 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
   }
 
-  /* ២. ទាញ Header, របារខាងក្រោម និង Alert មកកណ្តាលដោយមិនប្រើ Transform */
-  .hdr, .bottom-nav, .nav, #new-alert {
-    max-width: 600px !important;
-    left: 0 !important;
-    right: 0 !important;
-    margin: 0 auto !important;
+  /* ធានាថាគ្រប់ Component ទាំងអស់រត់ចូលក្នុង Container កណ្តាល */
+  .hdr, .nav, .bottom-nav, #app-content, .profile-page, .search-page {
+    width: 600px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    border-left: 1px solid #333;
+    border-right: 1px solid #333;
   }
 
-  /* ៣. ទាញ Content, Profile និងផ្ទាំង Invoice មកកណ្តាល និងដាក់ស៊ុម */
-  #app-content, .profile-page, .search-page, .invoice-overlay {
-    max-width: 600px !important;
-    margin: 0 auto !important;
-    left: 0 !important;
-    right: 0 !important;
-    background-color: var(--bg) !important;
-    border-left: 1px solid var(--border) !important;
-    border-right: 1px solid var(--border) !important;
-    box-shadow: 0 0 25px rgba(0,0,0,0.5) !important;
+  /* ការពារបញ្ហាព្រិលដោយសារ transform: ប្រើការកំណត់ static position ជំនួស */
+  .hdr, .nav, .bottom-nav {
+    position: fixed !important;
+    margin: 0 !important;
   }
 
-  /* ៤. Popup (Order Detail) លោតមកចំកណ្តាលអេក្រង់ស្អាត */
+  /* កែសម្រួល Popup ឱ្យនៅចំកណ្តាលដោយមិនប្រើ transform */
   .popup-overlay {
     display: flex !important;
-    align-items: center !important;
     justify-content: center !important;
+    align-items: center !important;
+    backdrop-filter: blur(5px);
   }
   .popup {
-    max-width: 500px !important;
     position: relative !important;
-    bottom: auto !important; /* លុបចោលការរុញពីបាតក្រោម */
-    margin: 0 auto !important;
-    border-radius: 16px !important;
-    height: auto !important;
-    max-height: 85vh !important;
-  }
-  .popup-handle { 
-    display: none !important; 
-  }
-
-  /* ៥. កែផ្ទាំង Invoice មិនឱ្យលាតពណ៌សពេញអេក្រង់កុំព្យូទ័រ */
-  #invoice-content {
-    max-width: 500px !important;
-    margin: 60px auto !important;
-    border-radius: 12px !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    width: 500px !important;
+    transform: none !important;
+    margin: auto !important;
+    bottom: auto !important;
   }
 }
 </style>
