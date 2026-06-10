@@ -297,59 +297,60 @@ body{
   .inv-toolbar{display:none!important}
   #invoice-content{padding:0!important}
 }
-/* 👇 យកកូដថ្មីរបស់ខ្ញុំ មក Paste នៅត្រង់ចន្លោះនេះ 👇 */
 /* =========================================================
-   🖥️ DESKTOP & TABLET (Responsive Web Layout ដូច Facebook)
-   ========================================================= */
-/* =========================================================
-   🖥️ DESKTOP & TABLET FIX (សុវត្ថិភាព ១០០% មិនប៉ះពាល់ទូរស័ព្ទ)
+   🖥️ DESKTOP & TABLET LAYOUT (ស្តង់ដារច្បាស់លាស់ មិនព្រិល)
    ========================================================= */
 @media (min-width: 768px) {
-  body {
-    background-color: #18191a !important; 
+  /* ១. ពណ៌ Background ខាងក្រៅ */
+  body, html {
+    background-color: #121212 !important; 
   }
 
-  /* ១. រុញធាតុដែល Fixed ទាំងអស់មកកណ្តាលដោយសុវត្ថិភាពមិនប្រើ Transform */
-  .hdr, .bottom-nav, .nav, #app-content, #new-alert {
-    max-width: 680px !important;
+  /* ២. ទាញ Header, របារខាងក្រោម និង Alert មកកណ្តាលដោយមិនប្រើ Transform */
+  .hdr, .bottom-nav, .nav, #new-alert {
+    max-width: 600px !important;
     left: 0 !important;
     right: 0 !important;
     margin: 0 auto !important;
   }
 
-  /* ២. បន្ថែមស៊ុមសងខាង ដើម្បីឱ្យមើលទៅដាច់ដោយឡែកពី Background ងងឹត */
-  .hdr, .bottom-nav, .nav, #app-content {
+  /* ៣. ទាញ Content, Profile និងផ្ទាំង Invoice មកកណ្តាល និងដាក់ស៊ុម */
+  #app-content, .profile-page, .search-page, .invoice-overlay {
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    background-color: var(--bg) !important;
     border-left: 1px solid var(--border) !important;
     border-right: 1px solid var(--border) !important;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5) !important;
   }
 
-  #app-content {
-    box-shadow: 0 0 20px rgba(0,0,0,0.5) !important;
-  }
-
-  /* ៣. Popup (Order Detail) លោតចំកណ្តាលអេក្រង់ */
+  /* ៤. Popup (Order Detail) លោតមកចំកណ្តាលអេក្រង់ស្អាត */
   .popup-overlay {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
   }
   .popup {
-    max-width: 550px !important;
+    max-width: 500px !important;
+    position: relative !important;
+    bottom: auto !important; /* លុបចោលការរុញពីបាតក្រោម */
+    margin: 0 auto !important;
+    border-radius: 16px !important;
     height: auto !important;
     max-height: 85vh !important;
-    position: relative !important;
-    border-radius: 16px !important;
-    bottom: auto !important;
-    margin: 0 auto !important;
-    transform: none !important; /* ការពារកុំឱ្យ Error ពេល Zoom */
   }
   .popup-handle { 
     display: none !important; 
   }
-  
-  /* ៤. Profile & Search Page រក្សា Animation ដើម គ្រាន់តែកំណត់ទំហំអតិបរមា */
-  .profile-page, .search-page {
-    max-width: 680px !important;
+
+  /* ៥. កែផ្ទាំង Invoice មិនឱ្យលាតពណ៌សពេញអេក្រង់កុំព្យូទ័រ */
+  #invoice-content {
+    max-width: 500px !important;
+    margin: 60px auto !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
   }
 }
 </style>
