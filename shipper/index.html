@@ -5,6 +5,7 @@
 <script src="../config.js?v=2"></script>
 <meta charset="UTF-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
@@ -837,29 +838,37 @@ body{
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
-try {
-  tg.expand();
-  tg.setHeaderColor('#0f0f0f');
-  tg.setBackgroundColor('#0f0f0f');
-  // Extend behind Dynamic Island / status bar
-  if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
-} catch(_) {}
+// ── Safe Telegram init (works in TG WebApp + iPhone Safari) ──
+const tg = window.Telegram?.WebApp ?? {
+  expand:()=>{}, setHeaderColor:()=>{}, setBackgroundColor:()=>{},
+  requestFullscreen:()=>{}, exitFullscreen:()=>{},
+  isFullscreen:false, isExpanded:false,
+  safeAreaInset:{top:0,bottom:0,left:0,right:0},
+  initDataUnsafe:{}, initData:'',
+  HapticFeedback:{notificationOccurred:()=>{},impactOccurred:()=>{},selectionChanged:()=>{}},
+  onEvent:()=>{}, offEvent:()=>{},
+  openLink:(u)=>{ try{window.open(u,'_blank');}catch(_){} },
+  openTelegramLink:(u)=>{ try{window.open(u,'_blank');}catch(_){} },
+  close:()=>{}, ready:()=>{}, showAlert:(m,cb)=>{ alert(m); if(cb)cb(); },
+};
+try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
+try { if(typeof tg.requestFullscreen==='function') tg.requestFullscreen(); } catch(_) {}
 
-// Sync --sat when Telegram reports its safe area (fullscreen mode)
+// ── Safe area sync ────────────────────────────────────────────
 function _syncSat() {
   try {
-    const top = tg.safeAreaInset?.top;
-    if (top != null && top > 0) {
-      document.documentElement.style.setProperty('--sat', top + 'px');
+    // 1. Telegram fullscreen safe area
+    const tgTop = tg.safeAreaInset?.top;
+    if (tgTop > 0) {
+      document.documentElement.style.setProperty('--sat', tgTop + 'px');
+      return;
     }
   } catch(_) {}
+  // 2. iPhone Safari — env(safe-area-inset-top) via CSS (already default)
+  // --sat is set in :root as env(safe-area-inset-top,0px) — no JS needed
 }
-try {
-  tg.onEvent('fullscreenChanged', _syncSat);
-  tg.onEvent('safeAreaChanged', _syncSat);
-} catch(_) {}
-setTimeout(_syncSat, 300);
+try { tg.onEvent('fullscreenChanged', _syncSat); tg.onEvent('safeAreaChanged', _syncSat); } catch(_) {}
+setTimeout(_syncSat, 400);
 
 const user   = tg.initDataUnsafe?.user || {};
 const tgId   = String(user.id || "");
@@ -2182,25 +2191,24 @@ function _calcTotal(){
 }
 function _buildCalcNew(){
   const o=_so;if(!o)return'';
-  const retail  = parseFloat(String(o.retail  ||o.pricing||'0').replace(/[^0-9.]/g,''))||0;
-  const pricing = parseFloat(String(o.pricing ||'0').replace(/[^0-9.]/g,''))||0;
-  const fee     = parseFloat(String(_s2.deliveryFee||o.deliveryFee||'0').replace(/[^0-9.]/g,''))||0;
-  const shopDisc= _s2.shopDiscount?(parseFloat(_s2.shopDiscountAmt||1.5)||1.5):0;
-  // Discount = (Retail - Price) + shop delivery discount
-  const custDisc= (retail>0&&pricing>0&&pricing<retail)?(retail-pricing):0;
-  const totalDisc= custDisc + shopDisc;
-  // Total = Price + Delivery - shopDisc
-  const total   = pricing + fee - shopDisc;
-  _s2._total    = total;
-  return\`
-    <div class="cn-row"><span class="cn-label">Retail Price</span><span class="cn-val">$\${retail.toFixed(2)}</span></div>
-    <div class="cn-row"><span class="cn-label">Price ព្រមលក់</span><span class="cn-val acc" style="font-size:14px">$\${pricing.toFixed(2)}</span></div>
-    <div class="cn-row"><span class="cn-label">Ordered</span><span class="cn-val" style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">\${e((o.ordered||'—').substring(0,40))}</span></div>
-    <div class="cn-row"><span class="cn-label">Delivery Fee</span><span class="cn-val">+$\${fee.toFixed(2)}</span></div>
-    \${totalDisc>0?\`<div class="cn-row"><span class="cn-label">Discount</span><span class="cn-val grn">-$\${totalDisc.toFixed(2)}</span></div>\`:''}
-    <div class="cn-row total-row"><span class="cn-label" style="font-weight:700;color:var(--text)">Total Paid</span><span class="cn-val acc">$\${total.toFixed(2)}</span></div>\`;
+  const retail  =parseFloat(String(o.retail  ||o.pricing||'0').replace(/[^0-9.]/g,''))||0;
+  const pricing =parseFloat(String(o.pricing ||'0').replace(/[^0-9.]/g,''))||0;
+  const fee     =parseFloat(String(_s2.deliveryFee||o.deliveryFee||'0').replace(/[^0-9.]/g,''))||0;
+  const shopDisc=_s2.shopDiscount?(parseFloat(_s2.shopDiscountAmt||1.5)||1.5):0;
+  const custDisc=(retail>0&&pricing>0&&pricing<retail)?(retail-pricing):0;
+  const totalDisc=custDisc+shopDisc;
+  const total   =pricing+fee-shopDisc;
+  _s2._total=total;
+  let html='';
+  html+='<div class="cn-row"><span class="cn-label">Retail Price</span><span class="cn-val">$'+retail.toFixed(2)+'</span></div>';
+  html+='<div class="cn-row"><span class="cn-label">Price ព្រមលក់</span><span class="cn-val acc" style="font-size:14px">$'+pricing.toFixed(2)+'</span></div>';
+  html+='<div class="cn-row"><span class="cn-label">Ordered</span><span class="cn-val" style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e((o.ordered||'—').substring(0,40))+'</span></div>';
+  html+='<div class="cn-row"><span class="cn-label">Delivery Fee</span><span class="cn-val">+$'+fee.toFixed(2)+'</span></div>';
+  if(totalDisc>0) html+='<div class="cn-row"><span class="cn-label">Discount</span><span class="cn-val grn">-$'+totalDisc.toFixed(2)+'</span></div>';
+  html+='<div class="cn-row total-row"><span class="cn-label" style="font-weight:700;color:var(--text)">Total Paid</span><span class="cn-val acc">$'+total.toFixed(2)+'</span></div>';
+  return html;
 }
-function _buildCalc(){return _buildCalcNew();} // keep compat
+function _buildCalc(){return _buildCalcNew();}
 function _canS2Next(){return parseFloat(_s2.deliveryFee||'0')>0||_s2.botFilled;}
 
 async function _saveStep2AndNext(){
@@ -2564,11 +2572,18 @@ async function openKHQRPopup(bankId){
     const r=await gs('requestKHQR',{
       profile_id:_so?.profileId||'',bank:bankId,
       amount:total.toFixed(2),name:_so?.name||'',phone:_so?.phone||''});
+    // Fallback QR per bank if settings not configured
+    const _fallbackQR={ABA:'https://drive.google.com/uc?export=view&id=1yGv2KtmzICnmcyhL-n64o7CzJYOIfqxJ',AC:''};
     if(r&&r.khqrUrl){
       const qa=document.getElementById('khqr-qr-area');
-      if(qa)qa.innerHTML=`<img src="${e(r.khqrUrl)}" style="width:100%;height:100%;object-fit:contain">`;
+      if(qa)qa.innerHTML='<img src="'+e(r.khqrUrl)+'" style="width:100%;height:100%;object-fit:contain">';
     }
   }catch(_){}
+  // Fallback: show bank QR from hardcoded/settings
+  if(!document.getElementById('khqr-qr-area')?.querySelector('img')){
+    const fb=_fallbackQR&&_fallbackQR[bankId];
+    if(fb){const qa=document.getElementById('khqr-qr-area');if(qa)qa.innerHTML='<img src="'+fb+'" style="width:100%;height:100%;object-fit:contain">'; }
+  }
   // Show APV
   const apv=_genAPV(_so?.orderDate,_so?.phone);
   const ac=document.getElementById('khqr-apv-code');if(ac)ac.textContent=apv;
