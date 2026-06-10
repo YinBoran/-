@@ -513,6 +513,126 @@ body{
 .mv-submit.s-out {background:linear-gradient(135deg,var(--red),#b91c1c);color:#fff}
 .mv-submit.s-adj {background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff}
 /* ====================================================
+   STEP POPUP — 3-step order flow v63
+   ==================================================== */
+.step-overlay{position:fixed;inset:0;z-index:160;background:transparent;pointer-events:none;transition:background .3s}
+.step-overlay.on{background:rgba(0,0,0,.82);pointer-events:all}
+.step-sht{position:fixed;top:var(--sat);left:0;right:0;bottom:0;background:var(--bg);border-radius:16px 16px 0 0;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .38s cubic-bezier(0.32,0.72,0,1);z-index:161}
+.step-overlay.on .step-sht{transform:none}
+.step-handle{width:36px;height:5px;background:var(--border);border-radius:3px;margin:10px auto 0;flex-shrink:0;touch-action:none;cursor:grab}
+/* indicator */
+.step-ind{display:flex;align-items:center;justify-content:center;padding:11px 20px 2px}
+.si-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .25s;flex-shrink:0}
+.si-dot.active{width:24px;border-radius:4px;background:var(--accent)}
+.si-dot.done{background:var(--green)}
+.si-line{flex:1;max-width:28px;height:2px;background:var(--border);transition:background .25s}
+.si-line.done{background:var(--green)}
+.step-num-lbl{font-size:10px;color:var(--muted);text-align:center;padding:3px 0 6px;letter-spacing:.3px}
+/* head */
+.step-hd{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.step-hd-l{min-width:0;flex:1}
+.step-hd-ttl{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.step-hd-sub{font-size:11px;color:var(--muted);margin-top:1px}
+/* body + footer */
+.step-body{overflow-y:auto;flex:1;padding:14px 16px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.step-ft{padding:10px 14px max(env(safe-area-inset-bottom,12px),12px);border-top:1px solid var(--border);display:flex;gap:7px;flex-shrink:0}
+/* foot buttons */
+.ft-back{padding:12px 14px;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:11px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap;transition:background .15s}
+.ft-back:active{background:var(--card)}
+.ft-next{flex:1;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.ft-next:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;opacity:.6}
+.ft-skip{padding:12px 10px;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:11px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.ft-confirm{flex:1;padding:12px;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s}
+.ft-confirm:disabled{opacity:.4;cursor:not-allowed}
+/* Section labels */
+.s-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:0 0 8px}
+/* Detail cells (step1) */
+.d2-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+.d2-cell{background:var(--card);border-radius:9px;padding:10px 11px;border:1px solid var(--border)}
+.d2-cell.full{grid-column:1/-1}
+.d2-k{font-size:10px;color:var(--muted);margin-bottom:3px}
+.d2-v{font-size:13px;font-weight:600;color:var(--text)}
+.d2-v.acc{color:var(--accent)}
+.d2-v.grn{color:var(--green)}
+.d2-v.tg-link{color:var(--blue);cursor:pointer;border-bottom:1px dotted var(--blue)55;display:inline-block}
+.lock-banner{background:var(--accent)0c;border:1px dashed rgba(240,165,0,.3);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--muted);text-align:center}
+/* Step 2 */
+.bot-row{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:9px;margin-bottom:12px;font-size:12px;font-weight:600}
+.bot-ok {background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green)}
+.bot-wait{background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.25);color:var(--accent)}
+.bot-none{background:var(--card);border:1px solid var(--border);color:var(--muted)}
+.s2-inp{width:100%;padding:12px 13px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;outline:none;transition:border-color .2s}
+.s2-inp:focus{border-color:var(--accent)}
+.s2-inp.bot-locked{border-color:rgba(34,197,94,.45);color:var(--green);background:rgba(34,197,94,.06)}
+.s2-inp.s2-err{border-color:rgba(239,68,68,.55)!important}
+.s2-half{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.s2-lbl{font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600}
+.calc-tbl{background:var(--card);border-radius:10px;overflow:hidden;border:1px solid var(--border);margin-top:10px}
+.calc-r{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px}
+.calc-r:last-child{border-bottom:none;background:var(--surface)}
+.calc-lbl2{color:var(--muted)}
+.calc-val2{font-weight:600;color:var(--text)}
+.calc-val2.acc{color:var(--accent);font-size:15px;font-weight:800}
+/* Step 3 payment types */
+.pay-type-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.pay-radio-lbl{cursor:pointer}
+.pay-radio-lbl input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.pay-radio-lbl input:checked~.pay-card-body{border-color:var(--accent);background:rgba(240,165,0,.07)}
+.pay-card-body{background:var(--card);border:2px solid var(--border);border-radius:13px;padding:14px 10px;text-align:center;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:5px}
+.pay-card-body:active{transform:scale(.97)}
+.pay-card-ico{font-size:26px}
+.pay-card-lbl{font-size:13px;font-weight:700;color:var(--text)}
+.pay-card-sub{font-size:10px;color:var(--muted)}
+/* Bank chips */
+.bank-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-bottom:12px}
+.bank-scroll::-webkit-scrollbar{display:none}
+.bank-row2{display:flex;gap:8px;width:max-content;padding:2px 0}
+.bank-chip2{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 11px;border-radius:11px;background:var(--card);border:1.5px solid var(--border);cursor:pointer;transition:all .18s;flex-shrink:0;min-width:58px}
+.bank-chip2.sel{border-color:var(--accent);background:rgba(240,165,0,.08)}
+.bank-logo-circle{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:-.3px}
+.bank-chip2-name{font-size:10px;font-weight:700;color:var(--muted)}
+.bank-chip2.sel .bank-chip2-name{color:var(--accent)}
+/* KHQR box */
+.khqr-box{background:var(--card);border-radius:12px;padding:16px;text-align:center;border:1px solid var(--border);margin-bottom:10px}
+.khqr-qr{width:130px;height:130px;margin:0 auto 10px;background:var(--surface);border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:52px}
+.khqr-amt{font-size:22px;font-weight:800;color:var(--accent)}
+.khqr-sub2{font-size:12px;color:var(--muted);margin-top:2px}
+.khqr-badge{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700}
+.kb-wait{background:rgba(240,165,0,.12);color:var(--accent);border:1px solid rgba(240,165,0,.28)}
+.kb-done{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.28)}
+/* Manual payment */
+.amt-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.amt-prefix{font-size:22px;font-weight:800;color:var(--accent)}
+.amt-inp{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:20px;font-weight:700;outline:none;transition:border-color .2s}
+.amt-inp:focus{border-color:var(--accent)}
+.amt-inp:disabled{opacity:.6;cursor:not-allowed;border-color:var(--green)44}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:active{background:var(--card)}
+.upload-zone.has-img{border:1.5px solid rgba(34,197,94,.4);border-style:solid;padding:8px;background:rgba(34,197,94,.04)}
+.upload-zone.locked{pointer-events:none;opacity:.7}
+.upload-ico{font-size:28px;margin-bottom:7px}
+.upload-lbl{font-size:13px;font-weight:600;color:var(--muted)}
+.upload-sub2{font-size:11px;color:var(--muted);margin-top:3px}
+.upload-preview{width:100%;border-radius:8px;object-fit:cover;max-height:160px;display:block}
+.upload-change-lbl{font-size:11px;color:var(--accent);margin-top:6px;text-align:center}
+/* APV + Timeline */
+.apv-bar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:9px;padding:9px 12px;margin-top:8px;border:1px solid var(--border)}
+.apv-l{font-size:10px;color:var(--muted)}
+.apv-c{font-size:14px;font-weight:800;color:var(--accent);font-family:monospace}
+.apv-cp{font-size:10px;color:var(--blue);background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:5px;padding:3px 8px;cursor:pointer}
+.tl-wrap{position:relative;padding-left:18px}
+.tl-wrap::before{content:'';position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:var(--border)}
+.tl-item2{position:relative;padding:0 0 13px 13px}
+.tl-item2:last-child{padding-bottom:0}
+.tl-d{position:absolute;left:-14px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--border);border:2.5px solid var(--bg)}
+.tl-d.done{background:var(--green)}
+.tl-d.cur{background:var(--accent)}
+.tl-strong{display:block;font-size:12px;font-weight:700;color:var(--text);margin-bottom:1px}
+.tl-txt2{font-size:12px;color:var(--muted)}
+.paid-lock-banner{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:11px 14px;text-align:center;font-size:14px;font-weight:700;color:var(--green);margin-bottom:14px}
+/* ====================================================
+   END STEP POPUP STYLES
+   ==================================================== */
    END STOCK STYLES
    ==================================================== */
 </style>
@@ -638,6 +758,24 @@ body{
       </div>
       <button class="mv-submit s-in" id="mv-submit" onclick="submitMv()">✅ រក្សាទុក</button>
     </div>
+  </div>
+</div>
+
+<!-- ====== STEP OVERLAY (3-step order flow) ====== -->
+<div class="step-overlay" id="step-overlay" onclick="closeStepBg(event)">
+  <div class="step-sht" id="step-sht">
+    <div class="step-handle" id="step-handle"></div>
+    <div class="step-ind" id="step-ind"></div>
+    <div class="step-num-lbl" id="step-num-lbl"></div>
+    <div class="step-hd">
+      <div class="step-hd-l">
+        <div class="step-hd-ttl" id="step-hd-ttl">Order Detail</div>
+        <div class="step-hd-sub" id="step-hd-sub"></div>
+      </div>
+      <button class="popup-close" onclick="closeStepSheet()" style="touch-action:auto;pointer-events:auto;flex-shrink:0">✕</button>
+    </div>
+    <div class="step-body" id="step-body"></div>
+    <div class="step-ft" id="step-ft"></div>
   </div>
 </div>
 
@@ -1081,7 +1219,7 @@ function cancelHold(){
 }
 function cardClick(ev,sid){
   if(_holdFired){_holdFired=false;ev.stopPropagation();return;}
-  openDetail(sid);
+  openOrderSteps(sid);
 }
 
 (function(){
@@ -1774,6 +1912,516 @@ function openAddProduct(){
 }
 // ============================================================
 // END STOCK MODULE
+// ============================================================
+
+// ============================================================
+// STEP MODULE v63 — 3-step order flow
+// ============================================================
+let _so=null, _step=1;
+let _s2={deliveryFee:'',trackingNumber:'',shipperPhone:'',botFilled:false,botPartial:false};
+let _s3={payType:'',bank:'',amount:'',receiptImg:'',confirmed:false};
+
+const BANKS=[
+  {id:'ABA',    name:'ABA',    color:'#000',bg:'#f0a500'},
+  {id:'ACLEDA', name:'ACLEDA', color:'#fff',bg:'#1e3a8a'},
+  {id:'WING',   name:'Wing',   color:'#fff',bg:'#7c3aed'},
+  {id:'TRUE',   name:'True$',  color:'#fff',bg:'#dc2626'},
+  {id:'CHIPMONG',name:'Chip',  color:'#fff',bg:'#0d4c8c'},
+  {id:'CANADIA',name:'Cana',   color:'#fff',bg:'#b45309'},
+  {id:'PPCBank',name:'PPC',    color:'#fff',bg:'#166534'},
+];
+
+function openOrderSteps(profileId){
+  const o=allOrders.find(x=>x.profileId===profileId);
+  if(!o)return;
+  _so=o;
+  // Restore step2 draft
+  try{const sv=JSON.parse(sessionStorage.getItem('s2_'+profileId)||'{}');if(sv.ts)_s2={..._s2,...sv};}catch(_){}
+  // Seed s2 from order fields if bot already filled
+  if(o.deliveryFee&&!_s2.deliveryFee) _s2.deliveryFee=o.deliveryFee;
+  if(o.trackingNumber&&!_s2.trackingNumber) _s2.trackingNumber=o.trackingNumber;
+  _s2.botFilled=!!(o.deliveryFee&&o.trackingNumber);
+  _s2.botPartial=!!(o.deliveryFee||o.trackingNumber)&&!_s2.botFilled;
+  if(!_s2.shipperPhone)_s2.shipperPhone=shipperData?.phone||'';
+  // Routing
+  const done=isCompleted(o);
+  if(done)_step=3;
+  else if(_s2.botFilled)_step=3;
+  else _step=1;
+  _s3={payType:'',bank:'',amount:'',receiptImg:'',confirmed:done};
+  document.getElementById('step-overlay').classList.add('on');
+  document.body.style.overflow='hidden';
+  document.body.style.touchAction='none';
+  _renderStep();
+}
+function closeStepSheet(){
+  document.getElementById('step-overlay').classList.remove('on');
+  document.body.style.overflow='';
+  document.body.style.touchAction='';
+}
+function closeStepBg(ev){if(ev.target===document.getElementById('step-overlay'))closeStepSheet();}
+
+// Swipe-down on step sheet
+(function(){
+  let sy=0,dy=0,drag=false;
+  function isTgt(el){
+    const h=document.getElementById('step-handle');
+    return h&&h.contains(el);
+  }
+  document.addEventListener('touchstart',ev=>{
+    if(isTgt(ev.target)){sy=ev.touches[0].clientY;drag=true;dy=0;
+      const s=document.getElementById('step-sht');if(s)s.style.transition='none';}
+  },{passive:true});
+  document.addEventListener('touchmove',ev=>{
+    if(!drag)return;
+    dy=Math.max(0,ev.touches[0].clientY-sy);
+    const s=document.getElementById('step-sht');if(s)s.style.transform=`translateY(${dy}px)`;
+  },{passive:true});
+  document.addEventListener('touchend',()=>{
+    if(!drag)return;drag=false;
+    const s=document.getElementById('step-sht');if(s)s.style.transition='';
+    if(dy>90)closeStepSheet();else if(s)s.style.transform='';
+    dy=0;
+  });
+})();
+
+function goToStep(n){
+  if(n<1){closeStepSheet();return;}
+  if(n>3)return;
+  _step=n;
+  _renderStep();
+  document.getElementById('step-body').scrollTop=0;
+}
+
+function _renderStep(){
+  const o=_so;if(!o)return;
+  const done=isCompleted(o);
+  const isCod=(o.payment||'').toLowerCase().includes('cod');
+  const labels=['','ការបញ្ជាទិញ','ការដឹកជញ្ជូន','ការទូទាត់'];
+  // Indicator
+  document.getElementById('step-ind').innerHTML=[1,2,3].map((n,i)=>{
+    const cls=n<_step?'done':n===_step?'active':'';
+    const line=i<2?`<div class="si-line ${n<_step?'done':''}"></div>`:'';
+    return`<div class="si-dot ${cls}"></div>${line}`;
+  }).join('');
+  document.getElementById('step-num-lbl').innerHTML=
+    `<span style="color:${done?'var(--green)':'var(--accent)'}">Step ${_step} / 3</span> — ${labels[_step]}`;
+  // Header
+  document.getElementById('step-hd-ttl').textContent=o.name||'Order Detail';
+  document.getElementById('step-hd-sub').textContent=
+    `$${e(o.pricing||o.retail||'—')} · ${e(o.payment||'COD')} · ${fmtDate(o.orderDate)}`;
+  // Body
+  document.getElementById('step-body').innerHTML=
+    _step===1?_buildS1():_step===2?_buildS2():_buildS3();
+  // Footer
+  document.getElementById('step-ft').innerHTML=_buildFoot();
+}
+
+// ── Step 1 ──────────────────────────────────────────────
+function _buildS1(){
+  const o=_so;
+  const hasTG=!!(o.tgUsername&&!String(o.tgUsername).includes('INSERT')&&String(o.tgUsername).trim().length>1);
+  const isCod=(o.payment||'').toLowerCase().includes('cod');
+  const phoneHtml=hasTG
+    ?`<div class="d2-v tg-link" onclick="openCustomerTG('${e(o.tgUsername)}')">📞 ${e(o.phone||'—')}<span style="font-size:9px;margin-left:4px;color:var(--blue)">→ TG</span></div>`
+    :`<div class="d2-v">${e(o.phone||'—')}</div>`;
+  return`
+    <div class="s-lbl">អ្នកទទួល</div>
+    <div class="d2-grid">
+      <div class="d2-cell"><div class="d2-k">ឈ្មោះ</div><div class="d2-v">${e(o.name||'—')}</div></div>
+      <div class="d2-cell"><div class="d2-k">ទូរស័ព្ទ</div>${phoneHtml}</div>
+      <div class="d2-cell full"><div class="d2-k">ទីតាំង</div><div class="d2-v">${e(o.location||'—')}</div></div>
+    </div>
+    <div class="s-lbl">ការបញ្ជា</div>
+    <div class="d2-grid">
+      <div class="d2-cell full"><div class="d2-k">ទំនិញ</div><div class="d2-v">${e(o.ordered||'—')}</div></div>
+      <div class="d2-cell"><div class="d2-k">Retail</div><div class="d2-v">$${e(o.retail||'—')}</div></div>
+      <div class="d2-cell"><div class="d2-k">Pricing</div><div class="d2-v acc">$${e(o.pricing||'—')}</div></div>
+      <div class="d2-cell"><div class="d2-k">ការទូទាត់</div><div class="d2-v" style="color:${isCod?'var(--accent)':'var(--green)'}">${e(o.payment||'COD')}</div></div>
+      <div class="d2-cell"><div class="d2-k">ថ្ងៃបញ្ជា</div><div class="d2-v">${fmtDate(o.orderDate)}</div></div>
+      ${o.apvCodes?`<div class="d2-cell full"><div class="d2-k">APV</div><div class="d2-v" style="font-family:monospace;font-size:12px">${e(o.apvCodes)}</div></div>`:''}
+    </div>
+    <div class="lock-banner">🔒 ព័ត៌មាននេះ អត់អាចកែបានទេ</div>`;
+}
+
+// ── Step 2 ──────────────────────────────────────────────
+function _buildS2(){
+  const locked=_s2.botFilled;
+  const bst=locked?'ok':_s2.botPartial?'wait':'none';
+  const feeErr=!_s2.deliveryFee&&!locked;
+  return`
+    <div class="bot-row bot-${bst}">
+      <span>${bst==='ok'?'✅ Bot scan ✓':bst==='wait'?'⏳ Bot scanned (partial)':'ℹ️ Bot មិនទាន់ scan — កែដៃបាន'}</span>
+      ${locked?'<span style="font-size:10px;margin-left:auto">🔒</span>':''}
+    </div>
+    <div class="s-lbl">ព័ត៌មានដឹកជញ្ជូន</div>
+    <div class="s2-half">
+      <div>
+        <div class="s2-lbl">Delivery Fee ($)${!locked?' <span style="color:var(--red)">*</span>':''}</div>
+        <input class="s2-inp ${locked?'bot-locked':''} ${feeErr?'s2-err':''}"
+          id="s2-fee" type="number" step="0.01" min="0"
+          placeholder="0.00" value="${e(_s2.deliveryFee||'')}"
+          inputmode="decimal"
+          ${locked?'readonly':''}
+          oninput="_s2sync(this,'fee')">
+      </div>
+      <div>
+        <div class="s2-lbl">Tracking No.</div>
+        <input class="s2-inp ${locked?'bot-locked':''}"
+          id="s2-track" type="text"
+          placeholder="VET..."
+          value="${e(_s2.trackingNumber||'')}"
+          ${locked?'readonly':''}
+          oninput="_s2sync(this,'track')">
+      </div>
+    </div>
+    <div class="s2-lbl">Shipper Phone</div>
+    <input class="s2-inp" id="s2-ship" type="tel"
+      placeholder="0xx xxx xxx"
+      value="${e(_s2.shipperPhone||'')}"
+      oninput="_s2sync(this,'ship')">
+    <div class="s-lbl" style="margin-top:14px">ការគណនា</div>
+    <div class="calc-tbl" id="s2-calc">${_buildCalc()}</div>
+    ${!locked?`<div style="margin-top:10px;font-size:11px;color:var(--muted);text-align:center">
+      💡 Delivery Fee ត្រូវ → <strong style="color:var(--text)">Next</strong> &nbsp;|&nbsp; គ្មាន invoice → <strong style="color:var(--text)">រំលង →</strong></div>`:''}`;
+}
+
+function _s2sync(inp,field){
+  if(field==='fee')_s2.deliveryFee=inp.value;
+  if(field==='track')_s2.trackingNumber=inp.value;
+  if(field==='ship')_s2.shipperPhone=inp.value;
+  // Save draft
+  try{sessionStorage.setItem('s2_'+(_so?.profileId||''),JSON.stringify({..._s2,ts:Date.now()}));}catch(_){}
+  // Update calc
+  const calc=document.getElementById('s2-calc');if(calc)calc.innerHTML=_buildCalc();
+  // Toggle Next button
+  const nb=document.getElementById('s2-next');
+  if(nb)nb.disabled=!_canS2Next();
+  // Remove error border when user fills fee
+  if(field==='fee'&&inp.value){inp.classList.remove('s2-err');}
+}
+
+function _calcTotal(){
+  const o=_so;if(!o)return{retail:0,fee:0,discount:0,total:0};
+  const retail=parseFloat(String(o.retail||o.pricing||'0').replace(/[^0-9.]/g,''))||0;
+  const pricing=parseFloat(String(o.pricing||'0').replace(/[^0-9.]/g,''))||0;
+  const fee=parseFloat(String(_s2.deliveryFee||o.deliveryFee||'0').replace(/[^0-9.]/g,''))||0;
+  const discount=(retail>0&&pricing>0&&pricing<retail)?(retail-pricing):0;
+  return{retail,fee,discount,total:retail+fee-discount};
+}
+function _buildCalc(){
+  const {retail,fee,discount,total}=_calcTotal();
+  return`
+    <div class="calc-r"><span class="calc-lbl2">Retail Price</span><span class="calc-val2">$${retail.toFixed(2)}</span></div>
+    <div class="calc-r"><span class="calc-lbl2">+ Delivery</span><span class="calc-val2">$${fee.toFixed(2)}</span></div>
+    ${discount>0?`<div class="calc-r"><span class="calc-lbl2">- Discount</span><span class="calc-val2" style="color:var(--green)">-$${discount.toFixed(2)}</span></div>`:''}
+    <div class="calc-r"><span class="calc-lbl2" style="font-weight:700">Total Paid</span><span class="calc-val2 acc">$${total.toFixed(2)}</span></div>`;
+}
+function _canS2Next(){return parseFloat(_s2.deliveryFee||'0')>0||_s2.botFilled;}
+
+async function _saveStep2AndNext(){
+  if(!_so)return;
+  const btn=document.getElementById('s2-next');
+  if(btn){btn.disabled=true;btn.textContent='⏳...';}
+  try{
+    await gs('updateOrder',{
+      profile_id   :_so.profileId,
+      tenant_id    :typeof STORE!=='undefined'?STORE:'yb9999',
+      delivery_fee :_s2.deliveryFee||'',
+      tracking_number:_s2.trackingNumber||'',
+      shipper_phone:_s2.shipperPhone||'',
+      total_paid   :_calcTotal().total.toFixed(2)
+    });
+    // Update local order object
+    const idx=allOrders.findIndex(x=>x.profileId===_so.profileId);
+    if(idx>=0){
+      allOrders[idx]={...allOrders[idx],
+        deliveryFee:_s2.deliveryFee,
+        trackingNumber:_s2.trackingNumber};
+    }
+    goToStep(3);
+  }catch(err){
+    showToast('❌ '+sanitizeStr(err.message),true);
+    if(btn){btn.disabled=false;btn.textContent='Step 3 →';}
+  }
+}
+
+// ── Step 3 ──────────────────────────────────────────────
+function _buildS3(){
+  const o=_so;
+  const done=isCompleted(o)||_s3.confirmed;
+  const {total}=_calcTotal();
+  const apv=_genAPV(o.orderDate,o.phone);
+  const pt=_s3.payType;
+  const bankChips=BANKS.map(b=>`
+    <div class="bank-chip2 ${_s3.bank===b.id&&!done?'sel':''}"
+      id="bc-${b.id}"
+      onclick="${done?'':'selectBank(\"'+b.id+'\")'}"
+      style="${done?'pointer-events:none;opacity:.6':''}">
+      <div class="bank-logo-circle" style="background:${b.bg};color:${b.color}">${b.id.substring(0,3)}</div>
+      <div class="bank-chip2-name">${b.name}</div>
+    </div>`).join('');
+  let paySection='';
+  if(pt==='bank'){
+    paySection=`
+      <div class="s-lbl">ជ្រើស Bank</div>
+      <div class="bank-scroll"><div class="bank-row2">${bankChips}</div></div>
+      ${_s3.bank?`
+        <div class="khqr-box">
+          <div class="khqr-qr">🔳</div>
+          <div class="khqr-amt">$${total.toFixed(2)}</div>
+          <div class="khqr-sub2">${_s3.bank} KHQR · ${e(o.name||'')}</div>
+          <div class="khqr-badge ${done?'kb-done':'kb-wait'}">${done?'✅ ទូទាត់ហើយ':'⏳ រង់ចាំ scan...'}</div>
+        </div>`
+      :`<div style="text-align:center;padding:16px;font-size:13px;color:var(--muted)">← ជ្រើស Bank ខាងលើ</div>`}
+      ${!done?`<div class="apv-bar">
+        <div><div class="apv-l">APV Reference</div><div class="apv-c">${e(apv)}</div></div>
+        <button class="apv-cp" onclick="cpAPV('${e(apv)}')">copy</button>
+      </div>`:''}`;
+  } else if(pt==='manual'){
+    const locked=done;
+    paySection=`
+      <div class="s-lbl">ចំនួនទឹកប្រាក់</div>
+      <div class="amt-row">
+        <span class="amt-prefix">$</span>
+        <input class="amt-inp" id="s3-amt" type="number" step="0.01"
+          placeholder="${total.toFixed(2)}"
+          value="${e(_s3.amount||'')}"
+          inputmode="decimal"
+          ${locked?'disabled':''}
+          oninput="_s3amtSync()">
+      </div>
+      <div class="s-lbl" style="margin-top:2px">Upload វិក្កយបត្រ / Screenshot</div>
+      <div class="upload-zone ${_s3.receiptImg?'has-img':''} ${locked?'locked':''}"
+        onclick="${locked?'':'triggerRcptUpload()'}">
+        <input type="file" id="rcpt-inp" accept="image/*" style="display:none"
+          onchange="handleRcpt(event)" ${locked?'disabled':''}>
+        ${_s3.receiptImg
+          ?`<img src="${_s3.receiptImg}" class="upload-preview"><div class="upload-change-lbl">${locked?'':'ចុចដើម្បីផ្លាស់ប្តូរ'}</div>`
+          :`<div class="upload-ico">📤</div>
+            <div class="upload-lbl">Upload ភស្តុតាង</div>
+            <div class="upload-sub2">JPG / PNG · max 5MB</div>`}
+      </div>
+      ${!locked?`<div class="apv-bar" style="margin-top:8px">
+        <div><div class="apv-l">APV Code</div><div class="apv-c">${e(apv)}</div></div>
+        <button class="apv-cp" onclick="cpAPV('${e(apv)}')">copy</button>
+      </div>`:''}`;
+  }
+  return`
+    ${done?`<div class="paid-lock-banner">✅ ទូទាត់ & ដឹកដល់ — Completed ${fmtDate(o.receiveDate)}</div>`:''}
+    <div class="s-lbl">ជ្រើសវិធីទូទាត់</div>
+    <div class="pay-type-row">
+      <label class="pay-radio-lbl">
+        <input type="radio" name="pt" value="bank" ${pt==='bank'?'checked':''} ${done?'disabled':''} onchange="setPayType('bank')">
+        <div class="pay-card-body">
+          <div class="pay-card-ico">🏦</div>
+          <div class="pay-card-lbl">KHQR / Bank</div>
+          <div class="pay-card-sub">Scan QR</div>
+        </div>
+      </label>
+      <label class="pay-radio-lbl">
+        <input type="radio" name="pt" value="manual" ${pt==='manual'?'checked':''} ${done?'disabled':''} onchange="setPayType('manual')">
+        <div class="pay-card-body">
+          <div class="pay-card-ico">✋</div>
+          <div class="pay-card-lbl">ទូទាត់ដោយដៃ</div>
+          <div class="pay-card-sub">Cash / Upload</div>
+        </div>
+      </label>
+    </div>
+    <div id="pay-section">${paySection}</div>
+    <div style="margin-top:18px">
+      <div class="s-lbl">Timeline</div>
+      <div class="tl-wrap">
+        <div class="tl-item2"><div class="tl-d done"></div>
+          <span class="tl-strong">ថ្ងៃបញ្ជា</span>
+          <span class="tl-txt2">${fmtDate(o.orderDate)}</span></div>
+        ${(_s2.deliveryFee||o.deliveryFee)?`
+        <div class="tl-item2"><div class="tl-d done"></div>
+          <span class="tl-strong">VET Invoice Scanned</span>
+          <span class="tl-txt2">Tracking: ${e(_s2.trackingNumber||o.trackingNumber||'—')}</span></div>`:''}
+        <div class="tl-item2"><div class="tl-d ${done?'done':'cur'}"></div>
+          <span class="tl-strong">${done?'ទូទាត់ & ដឹកដល់':'រង់ចាំទូទាត់'}</span>
+          <span class="tl-txt2">${done?fmtDate(o.receiveDate||new Date()):`COD · $${total.toFixed(2)}`}</span></div>
+      </div>
+    </div>`;
+}
+
+function setPayType(pt){
+  _s3.payType=pt;
+  const ps=document.getElementById('pay-section');
+  if(ps){
+    // Rebuild only pay section
+    const {total}=_calcTotal();
+    const o=_so;const apv=_genAPV(o.orderDate,o.phone);
+    const done=isCompleted(o)||_s3.confirmed;
+    const bankChips=BANKS.map(b=>`
+      <div class="bank-chip2 ${_s3.bank===b.id&&!done?'sel':''}"
+        id="bc-${b.id}" onclick="${done?'':'selectBank(\"'+b.id+'\")'}"
+        style="${done?'pointer-events:none;opacity:.6':''}">
+        <div class="bank-logo-circle" style="background:${b.bg};color:${b.color}">${b.id.substring(0,3)}</div>
+        <div class="bank-chip2-name">${b.name}</div>
+      </div>`).join('');
+    if(pt==='bank'){
+      ps.innerHTML=`
+        <div class="s-lbl">ជ្រើស Bank</div>
+        <div class="bank-scroll"><div class="bank-row2">${bankChips}</div></div>
+        <div id="khqr-area">${_s3.bank?`<div class="khqr-box"><div class="khqr-qr">🔳</div><div class="khqr-amt">$${total.toFixed(2)}</div><div class="khqr-sub2">${_s3.bank} KHQR</div><div class="khqr-badge kb-wait">⏳ រង់ចាំ...</div></div>`:'<div style="text-align:center;padding:16px;font-size:13px;color:var(--muted)">← ជ្រើស Bank ខាងលើ</div>'}</div>
+        <div class="apv-bar"><div><div class="apv-l">APV</div><div class="apv-c">${e(apv)}</div></div><button class="apv-cp" onclick="cpAPV('${e(apv)}')">copy</button></div>`;
+    } else if(pt==='manual'){
+      ps.innerHTML=`
+        <div class="s-lbl">ចំនួនទឹកប្រាក់</div>
+        <div class="amt-row"><span class="amt-prefix">$</span>
+          <input class="amt-inp" id="s3-amt" type="number" step="0.01" placeholder="${total.toFixed(2)}" inputmode="decimal" oninput="_s3amtSync()"></div>
+        <div class="s-lbl" style="margin-top:2px">Upload ភស្តុតាង</div>
+        <div class="upload-zone" onclick="triggerRcptUpload()">
+          <input type="file" id="rcpt-inp" accept="image/*" style="display:none" onchange="handleRcpt(event)">
+          <div class="upload-ico">📤</div>
+          <div class="upload-lbl">Upload ភស្តុតាង</div>
+          <div class="upload-sub2">JPG / PNG · max 5MB</div>
+        </div>
+        <div class="apv-bar" style="margin-top:8px"><div><div class="apv-l">APV Code</div><div class="apv-c">${e(apv)}</div></div><button class="apv-cp" onclick="cpAPV('${e(apv)}')">copy</button></div>`;
+    }
+  }
+  _updateConfirmBtn();
+}
+
+function selectBank(bankId){
+  _s3.bank=bankId;
+  document.querySelectorAll('.bank-chip2').forEach(el=>el.classList.remove('sel'));
+  const el=document.getElementById('bc-'+bankId);if(el)el.classList.add('sel');
+  const ka=document.getElementById('khqr-area');
+  if(ka){const {total}=_calcTotal();
+    ka.innerHTML=`<div class="khqr-box"><div class="khqr-qr">🔳</div><div class="khqr-amt">$${total.toFixed(2)}</div><div class="khqr-sub2">${e(bankId)} KHQR · ${e(_so?.name||'')}</div><div class="khqr-badge kb-wait">⏳ រង់ចាំ scan...</div></div>`;}
+  _updateConfirmBtn();
+}
+
+function _s3amtSync(){
+  const el=document.getElementById('s3-amt');
+  if(el)_s3.amount=el.value;
+  _updateConfirmBtn();
+}
+function _updateConfirmBtn(){
+  const btn=document.getElementById('s3-confirm');if(!btn)return;
+  btn.disabled=!_canS3Confirm();
+}
+function _canS3Confirm(){
+  if(!_s3.payType)return false;
+  if(_s3.payType==='bank')return!!_s3.bank;
+  if(_s3.payType==='manual'){
+    const a=parseFloat(_s3.amount||'0');
+    return a>0;
+  }
+  return false;
+}
+
+async function confirmPayment(){
+  if(!_so||!_canS3Confirm())return;
+  const btn=document.getElementById('s3-confirm');
+  if(btn){btn.disabled=true;btn.textContent='⏳...';}
+  const storeId=typeof STORE!=='undefined'?STORE:'yb9999';
+  const {total}=_calcTotal();
+  const apv=_genAPV(_so.orderDate,_so.phone);
+  const amtPaid=_s3.amount?parseFloat(_s3.amount).toFixed(2):total.toFixed(2);
+  const isPartial=parseFloat(amtPaid)<total;
+  try{
+    await gs('updateOrder',{
+      profile_id    :_so.profileId,
+      tenant_id     :storeId,
+      status        :isPartial?'Processing':'Completed',
+      payment_status:'Paid',
+      apv_codes     :apv,
+      total_paid    :amtPaid,
+      receive_date  :isPartial?'':new Date().toLocaleString('en-GB',{timeZone:'Asia/Phnom_Penh'})
+    });
+    try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
+    _s3.confirmed=!isPartial;
+    // Smart lock: only lock if fully paid
+    if(!isPartial){
+      // Lock pay type radios + amount
+      document.querySelectorAll('[name="pt"]').forEach(r=>r.disabled=true);
+      const ai=document.getElementById('s3-amt');if(ai)ai.disabled=true;
+      const uz=document.querySelector('.upload-zone');if(uz)uz.classList.add('locked');
+      showToast('✅ ទូទាត់ & ដឹកដល់!');
+      // Update local
+      const idx=allOrders.findIndex(x=>x.profileId===_so.profileId);
+      if(idx>=0)allOrders[idx]={...allOrders[idx],status:'Completed',receiveDate:new Date().toLocaleString()};
+      // Rebuild confirm banner
+      const rb=document.createElement('div');rb.className='paid-lock-banner';
+      rb.textContent='✅ ទូទាត់ & ដឹកដល់ — Completed';
+      document.getElementById('step-body').prepend(rb);
+      if(btn){btn.textContent='✅ Done';btn.style.background='var(--green)';}
+      setTimeout(()=>{closeStepSheet();refreshOrders(true);},1800);
+    } else {
+      showToast(`⚠️ ទូទាត់ $${amtPaid} — នៅខ $${(total-parseFloat(amtPaid)).toFixed(2)}`);
+      // Partial: disable ONLY amount field, leave radio + upload active
+      const ai=document.getElementById('s3-amt');if(ai)ai.disabled=true;
+      if(btn){btn.textContent='✅ Saved';setTimeout(()=>{if(btn){btn.disabled=false;btn.textContent='✅ បញ្ជាក់ (balance)';}},2000);}
+    }
+    applyFilter();
+  }catch(err){
+    showToast('❌ '+sanitizeStr(err.message),true);
+    if(btn){btn.disabled=false;btn.textContent='✅ បញ្ជាក់ទូទាត់';}
+  }
+}
+
+// ── Footer builder ───────────────────────────────────────
+function _buildFoot(){
+  const done=isCompleted(_so)||_s3.confirmed;
+  if(_step===1){
+    return`<button class="ft-back" onclick="closeStepSheet()">✕ បិទ</button>
+      <button class="ft-next" onclick="goToStep(2)">Step 2 → ដឹកជញ្ជូន</button>`;
+  }
+  if(_step===2){
+    const can=_canS2Next();
+    return`<button class="ft-back" onclick="goToStep(1)">← Back</button>
+      <button class="ft-skip" onclick="goToStep(3)">រំលង →</button>
+      <button class="ft-next" id="s2-next" ${can?'':'disabled'} onclick="_saveStep2AndNext()">Step 3 →</button>`;
+  }
+  if(_step===3){
+    if(done)return`<button class="ft-back" style="flex:1" onclick="closeStepSheet()">✓ បិទ</button>`;
+    return`<button class="ft-back" onclick="goToStep(2)">← Back</button>
+      <button class="ft-confirm" id="s3-confirm" disabled onclick="confirmPayment()">✅ បញ្ជាក់ទូទាត់</button>`;
+  }
+  return'';
+}
+
+// ── Helpers ───────────────────────────────────────────────
+function openCustomerTG(username){
+  if(!username)return;
+  try{tg.openTelegramLink('https://t.me/'+String(username).replace('@',''));}catch(_){}
+}
+function _genAPV(orderDate,phone){
+  try{
+    const s=String(orderDate||'');let d;
+    if(/^\d{2}\/\d{2}\/\d{4}/.test(s)){const[dd,mm,yy]=s.split('/');d=new Date(+yy,+mm-1,+dd);}
+    else d=new Date(s);
+    if(isNaN(d))d=new Date();
+    const ph=String(phone||'').replace(/\D/g,'').slice(-3);
+    return`OPay${d.getDate()}${d.getMonth()+1}${String(d.getFullYear()).slice(-1)}${ph}`;
+  }catch(_){return'OPay000';}
+}
+function cpAPV(code){
+  try{navigator.clipboard.writeText(code).then(()=>showToast('✅ Copied: '+code));}catch(_){showToast(code);}
+}
+function triggerRcptUpload(){document.getElementById('rcpt-inp')?.click();}
+function handleRcpt(ev){
+  const file=ev.target.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){showToast('❌ Images only',true);return;}
+  if(file.size>5*1024*1024){showToast('❌ Max 5MB',true);return;}
+  const r=new FileReader();
+  r.onload=re=>{
+    _s3.receiptImg=re.target.result;
+    const uz=document.querySelector('.upload-zone');
+    if(uz){uz.classList.add('has-img');uz.innerHTML=
+      `<input type="file" id="rcpt-inp" accept="image/*" style="display:none" onchange="handleRcpt(event)">
+       <img src="${_s3.receiptImg}" class="upload-preview">
+       <div class="upload-change-lbl">ចុចដើម្បីផ្លាស់ប្តូរ</div>`;}
+    _updateConfirmBtn();
+  };
+  r.readAsDataURL(file);
+}
+// ============================================================
+// END STEP MODULE
 // ============================================================
 </script>
 </body>
