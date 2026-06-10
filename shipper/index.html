@@ -297,6 +297,139 @@ body{
   .inv-toolbar{display:none!important}
   #invoice-content{padding:0!important}
 }
+/* 👇 យកកូដថ្មីរបស់ខ្ញុំ មក Paste នៅត្រង់ចន្លោះនេះ 👇 */
+/* =========================================================
+   🖥️ DESKTOP & TABLET (Responsive Web Layout ដូច Facebook)
+   ========================================================= */
+@media (min-width: 768px) {
+  /* ១. ពណ៌ Background ងងឹតស្រាលនៅខាងក្រៅ ដូច Facebook Dark Mode */
+  body {
+    background-color: #18191a !important; 
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ២. Header រុញមកកណ្តាល និងមានទំហំកំណត់ជាក់លាក់ */
+  .hdr {
+    max-width: 680px;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  /* ៣. Content គោល (កន្លែងផ្ទុក Order) ចំកណ្តាលអេក្រង់ */
+  #app-content {
+    max-width: 680px;
+    width: 100%;
+    margin: 0 auto;
+    background: var(--bg);
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    padding-bottom: 80px; /* ទុកចន្លោះខាងក្រោម */
+  }
+
+  /* ៤. Menu ខាងក្រោម (Bottom Nav) ក៏ត្រូវរុញមកកណ្តាលដែរ */
+  .bottom-nav, .nav {
+    max-width: 680px;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%);
+    border-radius: 12px 12px 0 0;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  /* ៥. Popup & Modals (Order Detail) លោតចំកណ្តាលអេក្រង់ (Center Modal) */
+  .popup-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px); /* ធ្វើឱ្យព្រិលផ្ទៃខាងក្រោយ */
+  }
+
+  .popup {
+    width: 100%;
+    max-width: 550px;
+    height: auto !important;
+    max-height: 85vh;
+    border-radius: 16px !important;
+    position: relative;
+    bottom: auto;
+    /* ប្តូរពីការរុញពីក្រោម មកជាការលោតពង្រីក (Scale Effect) */
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .popup-overlay.on .popup {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .popup-handle {
+    display: none !important; /* លាក់បន្ទាត់អូសចុះក្រោម ព្រោះមិនចាំបាច់លើ Desktop */
+  }
+
+  /* ៦. ទំព័រ Profile និង Alert ផ្សេងៗ */
+  .profile-page, .search-page {
+    max-width: 680px;
+    left: 50% !important;
+    right: auto !important;
+    /* ត្រូវប្រើ translateX(-50%) ដើម្បីទាញវាមកកណ្តាលវិញ */
+    transform: translateX(-50%) translateY(100%);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+
+  .profile-page.on, .search-page.on {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  #new-alert {
+    max-width: 680px;
+    left: 50% !important;
+    transform: translateX(-50%);
+    border-radius: 0 0 12px 12px;
+  }
+  
+  .confirm-box {
+    max-width: 400px;
+    border-radius: 12px;
+  }
+
+  /* ធ្វើឱ្យ Scrollbar មើលទៅស្អាតនៅលើ Desktop */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #777;
+  }
+}
+
+/* =========================================================
+   🖥️ LARGE DESKTOP (អេក្រង់ធំជាង 1200px)
+   ========================================================= */
+@media (min-width: 1200px) {
+  /* ពង្រីកទំហំ Content បន្តិចទៀតនៅពេលអេក្រង់ធំទូលាយ */
+  .hdr, #app-content, .bottom-nav, .nav, .profile-page, .search-page, #new-alert {
+    max-width: 800px;
+  }
+}
 </style>
 </head>
 <body>
