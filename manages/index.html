@@ -911,11 +911,19 @@ async function doLoginStep1(){
   showOTPDelivery(res);
   document.getElementById('credScreen').style.display = 'none';
   document.getElementById('otpScreen').style.display  = 'block';
-  document.getElementById('inputOtp').value = '';
   document.getElementById('btnOtp').disabled = true;
   document.getElementById('otpCountdown').className = 'otp-timer-count';
   startOTPCountdown();
-  setTimeout(() => document.getElementById('inputOtp').focus(), 150);
+
+  // TEST_MODE: auto-fill 000000 + auto-submit
+  if (TEST_MODE) {
+    const otpEl = document.getElementById('inputOtp');
+    otpEl.value = '000000';
+    validateOtp(otpEl); // triggers auto-submit after 400ms via validateOtp
+  } else {
+    document.getElementById('inputOtp').value = '';
+    setTimeout(() => document.getElementById('inputOtp').focus(), 150);
+  }
 }
 
 // ── Step 2 ─────────────────────────────────────────────────
