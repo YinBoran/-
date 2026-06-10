@@ -5,7 +5,6 @@
 <script src="../config.js?v=2"></script>
 <meta charset="UTF-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
@@ -134,7 +133,7 @@ body{
   position:fixed;inset:0;top:calc(var(--hdr-h) + var(--sat));
   gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
-.loading-sm{position:relative;inset:auto;min-height:180px;background:transparent;z-index:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}
+.loading-sm{position:relative;inset:auto;min-height:120px;background:transparent;z-index:auto}
 .spinner{width:36px;height:36px;border:3px solid var(--border);
   border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -588,11 +587,11 @@ body{
 .bank-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-bottom:12px}
 .bank-scroll::-webkit-scrollbar{display:none}
 .bank-row2{display:flex;gap:8px;width:max-content;padding:2px 0}
-.bank-chip2{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 11px;border-radius:11px;background:var(--card);border:1.5px solid var(--border);cursor:pointer;transition:all .18s;flex-shrink:0;min-width:90px}
-.bank-chip2.sel{border-color:var(--accent);background:rgba(240,165,0,.12);box-shadow:0 0 0 3px rgba(240,165,0,.2)}
-.bank-logo-circle{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;letter-spacing:-.3px}
-.bank-chip2-name{font-size:12px;font-weight:700;color:var(--muted)}
-.bank-chip2.sel .bank-chip2-name{color:var(--accent);font-weight:800}
+.bank-chip2{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 11px;border-radius:11px;background:var(--card);border:1.5px solid var(--border);cursor:pointer;transition:all .18s;flex-shrink:0;min-width:58px}
+.bank-chip2.sel{border-color:var(--accent);background:rgba(240,165,0,.08)}
+.bank-logo-circle{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:-.3px}
+.bank-chip2-name{font-size:10px;font-weight:700;color:var(--muted)}
+.bank-chip2.sel .bank-chip2-name{color:var(--accent)}
 /* KHQR box */
 .khqr-box{background:var(--card);border-radius:12px;padding:16px;text-align:center;border:1px solid var(--border);margin-bottom:10px}
 .khqr-qr{width:130px;height:130px;margin:0 auto 10px;background:var(--surface);border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:52px}
@@ -636,34 +635,6 @@ body{
    ==================================================== */
    END STOCK STYLES
    ==================================================== */
-/* ── v64 additions ── */
-.s2-discount-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:12px 13px;margin-bottom:8px;cursor:pointer;transition:border-color .2s}
-.s2-discount-row.checked{border-color:var(--green);background:rgba(34,197,94,.07)}
-.disc-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface);transition:all .18s}
-.disc-check.on{background:var(--green);border-color:var(--green);color:#fff;font-size:13px}
-.vet-upload{border:2px dashed var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px}
-.vet-upload.has-img{border:1.5px solid rgba(34,197,94,.4);background:rgba(34,197,94,.05);padding:8px}
-.vet-preview{width:100%;border-radius:8px;object-fit:cover;max-height:140px;display:block}
-.calc-new{background:var(--card);border-radius:11px;overflow:hidden;border:1px solid var(--border);margin-top:10px}
-.cn-row{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;border-bottom:1px solid var(--border);font-size:13px}
-.cn-row.total-row{border-bottom:none;background:var(--surface);padding:10px 13px}
-.cn-label{color:var(--muted)}.cn-val{font-weight:600;color:var(--text)}.cn-val.acc{color:var(--accent);font-size:16px;font-weight:800}.cn-val.grn{color:var(--green)}
-.khqr-ov{position:fixed;inset:0;z-index:280;background:rgba(0,0,0,.9);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
-.khqr-ov.on{opacity:1;pointer-events:all}
-.khqr-popup{width:100%;max-width:400px;background:var(--surface);border-radius:22px 22px 0 0;padding-bottom:max(env(safe-area-inset-bottom,16px),16px);transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
-.khqr-ov.on .khqr-popup{transform:none}
-.khqr-ph{width:36px;height:5px;background:var(--border);border-radius:3px;margin:10px auto 0}
-.khqr-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)}
-.khqr-bd{padding:16px;text-align:center}
-.khqr-qr-box{width:220px;height:220px;margin:0 auto 14px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;border:3px solid #f0a500}
-.khqr-qr-box img{width:100%;height:100%;object-fit:contain}
-.khqr-paid-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;margin-top:10px}
-.alert-ov{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
-.alert-ov.on{opacity:1;pointer-events:all}
-.alert-box2{background:var(--surface);border-radius:18px;padding:28px 24px;text-align:center;min-width:240px;max-width:80vw;transform:scale(.92);transition:transform .2s}
-.alert-ov.on .alert-box2{transform:scale(1)}
-.alert-msg{font-size:17px;font-weight:700;color:var(--text);line-height:1.4;margin:10px 0 18px}
-.alert-ok{padding:12px 36px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
@@ -790,35 +761,6 @@ body{
   </div>
 </div>
 
-
-<!-- KHQR POPUP -->
-<div class="khqr-ov" id="khqr-ov">
-  <div class="khqr-popup" id="khqr-popup">
-    <div class="khqr-ph"></div>
-    <div class="khqr-hd">
-      <span style="font-size:14px;font-weight:700" id="khqr-bank-title">🏦 KHQR</span>
-      <button class="popup-close" onclick="closeKHQR()" style="touch-action:auto">✕</button>
-    </div>
-    <div class="khqr-bd">
-      <div class="khqr-qr-box" id="khqr-qr-area"><span style="font-size:56px">🔳</span></div>
-      <div style="font-size:24px;font-weight:800;color:var(--accent)" id="khqr-amt-txt"></div>
-      <div style="font-size:12px;color:var(--muted);margin-top:3px" id="khqr-sub-txt"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:9px;padding:9px 13px;margin:12px 0 4px;border:1px solid var(--border)" id="khqr-apv-row" style="display:none">
-        <div><div style="font-size:10px;color:var(--muted)">APV Code</div><div id="khqr-apv-code" style="font-size:14px;font-weight:800;color:var(--accent);font-family:monospace"></div></div>
-        <button class="apv-cp" id="khqr-copy-btn" onclick="cpAPV(document.getElementById('khqr-apv-code').textContent)">copy</button>
-      </div>
-      <button class="khqr-paid-btn" id="khqr-confirm-btn" onclick="confirmKHQR()">✅ ទូទាត់រួច</button>
-    </div>
-  </div>
-</div>
-<!-- ALERT MODAL -->
-<div class="alert-ov" id="alert-ov">
-  <div class="alert-box2">
-    <span class="alert-msg" id="alert-ico" style="font-size:52px;display:block;margin-bottom:8px"></span>
-    <div class="alert-msg" id="alert-msg"></div>
-    <button class="alert-ok" onclick="closeAlertModal()">OK</button>
-  </div>
-</div>
 <!-- ====== STEP OVERLAY (3-step order flow) ====== -->
 <div class="step-overlay" id="step-overlay" onclick="closeStepBg(event)">
   <div class="step-sht" id="step-sht">
@@ -838,37 +780,29 @@ body{
 </div>
 
 <script>
-// ── Safe Telegram init (works in TG WebApp + iPhone Safari) ──
-const tg = window.Telegram?.WebApp ?? {
-  expand:()=>{}, setHeaderColor:()=>{}, setBackgroundColor:()=>{},
-  requestFullscreen:()=>{}, exitFullscreen:()=>{},
-  isFullscreen:false, isExpanded:false,
-  safeAreaInset:{top:0,bottom:0,left:0,right:0},
-  initDataUnsafe:{}, initData:'',
-  HapticFeedback:{notificationOccurred:()=>{},impactOccurred:()=>{},selectionChanged:()=>{}},
-  onEvent:()=>{}, offEvent:()=>{},
-  openLink:(u)=>{ try{window.open(u,'_blank');}catch(_){} },
-  openTelegramLink:(u)=>{ try{window.open(u,'_blank');}catch(_){} },
-  close:()=>{}, ready:()=>{}, showAlert:(m,cb)=>{ alert(m); if(cb)cb(); },
-};
-try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'); } catch(_) {}
-try { if(typeof tg.requestFullscreen==='function') tg.requestFullscreen(); } catch(_) {}
+const tg = window.Telegram.WebApp;
+try {
+  tg.expand();
+  tg.setHeaderColor('#0f0f0f');
+  tg.setBackgroundColor('#0f0f0f');
+  // Extend behind Dynamic Island / status bar
+  if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen();
+} catch(_) {}
 
-// ── Safe area sync ────────────────────────────────────────────
+// Sync --sat when Telegram reports its safe area (fullscreen mode)
 function _syncSat() {
   try {
-    // 1. Telegram fullscreen safe area
-    const tgTop = tg.safeAreaInset?.top;
-    if (tgTop > 0) {
-      document.documentElement.style.setProperty('--sat', tgTop + 'px');
-      return;
+    const top = tg.safeAreaInset?.top;
+    if (top != null && top > 0) {
+      document.documentElement.style.setProperty('--sat', top + 'px');
     }
   } catch(_) {}
-  // 2. iPhone Safari — env(safe-area-inset-top) via CSS (already default)
-  // --sat is set in :root as env(safe-area-inset-top,0px) — no JS needed
 }
-try { tg.onEvent('fullscreenChanged', _syncSat); tg.onEvent('safeAreaChanged', _syncSat); } catch(_) {}
-setTimeout(_syncSat, 400);
+try {
+  tg.onEvent('fullscreenChanged', _syncSat);
+  tg.onEvent('safeAreaChanged', _syncSat);
+} catch(_) {}
+setTimeout(_syncSat, 300);
 
 const user   = tg.initDataUnsafe?.user || {};
 const tgId   = String(user.id || "");
@@ -1135,7 +1069,6 @@ function toggleCOD(){
 }
 
 function renderAll(){
-  setTimeout(_restoreStepState, 600);
   const pending   = orders.filter(o=>!isCompleted(o));
   const completed = orders.filter(o=>isCompleted(o));
   lastCount=allOrders.filter(o=>!isCompleted(o)).length;
@@ -1685,8 +1618,6 @@ function showToast(msg,isErr){
 // STOCK MODULE v62
 // ============================================================
 let _stk=[];      // product list
-let _stkCache=null, _stkCacheTs=0;
-const STK_TTL=5*60*1000; // 5 min cache
 let _mvPid=null;  // current movement product_id
 let _mvType='in'; // in | out | adjust
 let _mvCurQty=0;  // current stock qty
@@ -1747,17 +1678,14 @@ function closeStockBg(ev){
 })();
 
 // ── Load products ─────────────────────────────────────────
-async function _loadStk(forceRefresh=false){
-  if(!forceRefresh&&_stkCache&&(Date.now()-_stkCacheTs)<STK_TTL){
-    _stk=_stkCache;_renderStk();return;
-  }
+async function _loadStk(){
   const body=document.getElementById('sht-body');
   body.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
   try{
-    const res=await gs('getShipperProducts', shipperData?.phone||'');
+    const storeId=(typeof STORE!=='undefined')?STORE:'yb9999';
+    const res = await gs('getShipperProducts', shipperData?.phone || '');
     if(res&&res.error)throw new Error(res.error);
     _stk=Array.isArray(res)?res:(res.products||[]);
-    _stkCache=_stk;_stkCacheTs=Date.now();
     _renderStk();
   }catch(err){
     document.getElementById('sht-body').innerHTML=`
@@ -1870,7 +1798,7 @@ function _renderStk(){
       <input class="stk-search-inp" id="stk-search" type="search"
         placeholder="🔍 ស្វែងរកទំនិញ..." value="${e(_stkSearch)}"
         oninput="_stkFilter(this.value)">
-      <button class="stk-add-btn" onclick="openAddProduct()" title="បន្ថែមទំនិញ" style="margin-right:6px">＋</button><button onclick="_loadStk(true)" title="Refresh" style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:16px;cursor:pointer">⟳</button>
+      <button class="stk-add-btn" onclick="openAddProduct()" title="បន្ថែមទំនិញ">＋</button>
     </div>
     ${list.length
       ?`<div class="prod-grid">${cards}</div>${linkedHtml}`
@@ -1970,7 +1898,6 @@ async function submitMv(){
     try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
     showToast('✅ រក្សាទុកហើយ!');
     closeMv();
-    _stkCacheTs=0; // invalidate cache
     _renderStk();
   }catch(err){
     showToast('❌ '+sanitizeStr(err.message),true);
@@ -1991,13 +1918,17 @@ function openAddProduct(){
 // STEP MODULE v63 — 3-step order flow
 // ============================================================
 let _so=null, _step=1;
-let _s3PaidSoFar=0; // track partial payments
 let _s2={deliveryFee:'',trackingNumber:'',shipperPhone:'',botFilled:false,botPartial:false};
 let _s3={payType:'',bank:'',amount:'',receiptImg:'',confirmed:false};
 
 const BANKS=[
-  {id:'ABA',    name:'ABA Bank',   color:'#000',bg:'#f0a500',logo:'🟡'},
-  {id:'AC',     name:'ACLEDA',     color:'#fff',bg:'#1e3a8a',logo:'🔵'},
+  {id:'ABA',    name:'ABA',    color:'#000',bg:'#f0a500'},
+  {id:'ACLEDA', name:'ACLEDA', color:'#fff',bg:'#1e3a8a'},
+  {id:'WING',   name:'Wing',   color:'#fff',bg:'#7c3aed'},
+  {id:'TRUE',   name:'True$',  color:'#fff',bg:'#dc2626'},
+  {id:'CHIPMONG',name:'Chip',  color:'#fff',bg:'#0d4c8c'},
+  {id:'CANADIA',name:'Cana',   color:'#fff',bg:'#b45309'},
+  {id:'PPCBank',name:'PPC',    color:'#fff',bg:'#166534'},
 ];
 
 function openOrderSteps(profileId){
@@ -2018,18 +1949,15 @@ function openOrderSteps(profileId){
   else if(_s2.botFilled)_step=3;
   else _step=1;
   _s3={payType:'',bank:'',amount:'',receiptImg:'',confirmed:done};
-  _s3PaidSoFar=0;
   document.getElementById('step-overlay').classList.add('on');
   document.body.style.overflow='hidden';
   document.body.style.touchAction='none';
   _renderStep();
-  _saveStepState();
 }
 function closeStepSheet(){
   document.getElementById('step-overlay').classList.remove('on');
   document.body.style.overflow='';
   document.body.style.touchAction='';
-  _clearStepState();
 }
 function closeStepBg(ev){if(ev.target===document.getElementById('step-overlay'))closeStepSheet();}
 
@@ -2058,12 +1986,11 @@ function closeStepBg(ev){if(ev.target===document.getElementById('step-overlay'))
 })();
 
 function goToStep(n){
-  if(n<1){closeStepSheet();_clearStepState();return;}
+  if(n<1){closeStepSheet();return;}
   if(n>3)return;
   _step=n;
   _renderStep();
   document.getElementById('step-body').scrollTop=0;
-  _saveStepState();
 }
 
 function _renderStep(){
@@ -2122,58 +2049,41 @@ function _buildS2(){
   const locked=_s2.botFilled;
   const bst=locked?'ok':_s2.botPartial?'wait':'none';
   const feeErr=!_s2.deliveryFee&&!locked;
-  const discChecked=!!_s2.shopDiscount;
-  const discAmt=parseFloat(_s2.shopDiscountAmt||1.5).toFixed(2);
-  const hasVET=!!_s2.vetImgData;
   return`
-    ${_s2.saved?`<div class="bot-row bot-ok">✅ ព័ត៌មានបានរក្សាទុក — ចុច Next ទៅ Step 3<span style="font-size:10px;margin-left:auto">🔒</span></div>`:`<div class="bot-row bot-${bst}">
+    <div class="bot-row bot-${bst}">
       <span>${bst==='ok'?'✅ Bot scan ✓':bst==='wait'?'⏳ Bot scanned (partial)':'ℹ️ Bot មិនទាន់ scan — កែដៃបាន'}</span>
       ${locked?'<span style="font-size:10px;margin-left:auto">🔒</span>':''}
-    </div>`}
+    </div>
     <div class="s-lbl">ព័ត៌មានដឹកជញ្ជូន</div>
-
-    <div class="s2-lbl">Delivery Fee ($) <span style="color:var(--red)">*</span></div>
-    <input class="s2-inp ${locked?'bot-locked':''} ${feeErr?'s2-err':''}" id="s2-fee"
-      type="number" step="0.01" min="0" inputmode="decimal"
-      placeholder="0.00" value="${e(_s2.deliveryFee||'')}"
-      ${locked?'readonly':''}
-      oninput="_s2sync(this,'fee')"
-      style="margin-bottom:8px">
-
-    <div class="s2-discount-row ${discChecked?'checked':''}" onclick="toggleDiscount()" id="s2-disc-row">
-      <div class="disc-check ${discChecked?'on':''}" id="disc-check">${discChecked?'✓':''}</div>
-      <div class="s2-lbl" style="margin:0;flex:1">Discount</div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:12px;color:var(--muted)">ហាង</span>
-        <input id="s2-disc-amt" type="number" step="0.5" min="0"
-          value="${discAmt}" inputmode="decimal"
-          onclick="event.stopPropagation()"
-          oninput="_s2sync(this,'discAmt')"
-          style="width:64px;background:var(--surface);border:1px solid var(--border);
-          border-radius:7px;padding:5px 8px;color:var(--text);font-size:13px;font-weight:700;outline:none">
-        <span style="font-size:12px;color:var(--muted)">$ off</span>
+    <div class="s2-half">
+      <div>
+        <div class="s2-lbl">Delivery Fee ($)${!locked?' <span style="color:var(--red)">*</span>':''}</div>
+        <input class="s2-inp ${locked?'bot-locked':''} ${feeErr?'s2-err':''}"
+          id="s2-fee" type="number" step="0.01" min="0"
+          placeholder="0.00" value="${e(_s2.deliveryFee||'')}"
+          inputmode="decimal"
+          ${locked?'readonly':''}
+          oninput="_s2sync(this,'fee')">
+      </div>
+      <div>
+        <div class="s2-lbl">Tracking No.</div>
+        <input class="s2-inp ${locked?'bot-locked':''}"
+          id="s2-track" type="text"
+          placeholder="VET..."
+          value="${e(_s2.trackingNumber||'')}"
+          ${locked?'readonly':''}
+          oninput="_s2sync(this,'track')">
       </div>
     </div>
-
-    <div class="s2-lbl" style="margin-top:8px">Shipper Phone</div>
+    <div class="s2-lbl">Shipper Phone</div>
     <input class="s2-inp" id="s2-ship" type="tel"
-      placeholder="0xx xxx xxx" value="${e(_s2.shipperPhone||'')}"
-      oninput="_s2sync(this,'ship')" style="margin-bottom:10px">
-
-    <div class="s-lbl">Upload វិក្កយបត្រដឹកជញ្ជូន</div>
-    <div class="vet-upload ${hasVET?'has-img':''}" onclick="triggerVETUpload()" id="vet-upload-zone">
-      <input type="file" id="vet-inp" accept="image/*" style="display:none" onchange="handleVETUpload(event)">
-      ${hasVET
-        ?`<img src="${_s2.vetImgData}" class="vet-preview"><div style="font-size:11px;color:var(--accent);margin-top:5px" id="vet-status">${_s2.vetSent?'✅ ផ្ញើទៅ bot ហើយ':'⏳ ចុច Update ផ្ញើ...'}</div>`
-        :`<div style="font-size:26px;margin-bottom:6px">📄</div>
-          <div style="font-size:13px;font-weight:600;color:var(--muted)">Upload វិក្កយបត្រ VET</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:3px">Bot auto-extract · Optional</div>`}
-    </div>
-
-    <div class="s-lbl">ការគណនា</div>
-    <div class="calc-new" id="s2-calc">${_buildCalcNew()}</div>
+      placeholder="0xx xxx xxx"
+      value="${e(_s2.shipperPhone||'')}"
+      oninput="_s2sync(this,'ship')">
+    <div class="s-lbl" style="margin-top:14px">ការគណនា</div>
+    <div class="calc-tbl" id="s2-calc">${_buildCalc()}</div>
     ${!locked?`<div style="margin-top:10px;font-size:11px;color:var(--muted);text-align:center">
-      💡 Delivery Fee ត្រូវ → <strong>Update</strong> &nbsp;|&nbsp; គ្មាន invoice → ចុច <strong>រំលង →</strong></div>`:''}`;
+      💡 Delivery Fee ត្រូវ → <strong style="color:var(--text)">Next</strong> &nbsp;|&nbsp; គ្មាន invoice → <strong style="color:var(--text)">រំលង →</strong></div>`:''}`;
 }
 
 function _s2sync(inp,field){
@@ -2192,35 +2102,21 @@ function _s2sync(inp,field){
 }
 
 function _calcTotal(){
-  const o=_so;if(!o)return{retail:0,pricing:0,fee:0,discount:0,shopDisc:0,total:0};
+  const o=_so;if(!o)return{retail:0,fee:0,discount:0,total:0};
   const retail=parseFloat(String(o.retail||o.pricing||'0').replace(/[^0-9.]/g,''))||0;
   const pricing=parseFloat(String(o.pricing||'0').replace(/[^0-9.]/g,''))||0;
   const fee=parseFloat(String(_s2.deliveryFee||o.deliveryFee||'0').replace(/[^0-9.]/g,''))||0;
   const discount=(retail>0&&pricing>0&&pricing<retail)?(retail-pricing):0;
-  const shopDisc=_s2.shopDiscount?(parseFloat(_s2.shopDiscountAmt||1.5)||1.5):0;
-  const total=pricing+fee-shopDisc;
-  return{retail,pricing,fee,discount,shopDisc,total};
+  return{retail,fee,discount,total:retail+fee-discount};
 }
-function _buildCalcNew(){
-  const o=_so;if(!o)return'';
-  const retail  =parseFloat(String(o.retail  ||o.pricing||'0').replace(/[^0-9.]/g,''))||0;
-  const pricing =parseFloat(String(o.pricing ||'0').replace(/[^0-9.]/g,''))||0;
-  const fee     =parseFloat(String(_s2.deliveryFee||o.deliveryFee||'0').replace(/[^0-9.]/g,''))||0;
-  const shopDisc=_s2.shopDiscount?(parseFloat(_s2.shopDiscountAmt||1.5)||1.5):0;
-  const custDisc=(retail>0&&pricing>0&&pricing<retail)?(retail-pricing):0;
-  const totalDisc=custDisc+shopDisc;
-  const total   =pricing+fee-shopDisc;
-  _s2._total=total;
-  let html='';
-  html+='<div class="cn-row"><span class="cn-label">Retail Price</span><span class="cn-val">$'+retail.toFixed(2)+'</span></div>';
-  html+='<div class="cn-row"><span class="cn-label">Price ព្រមលក់</span><span class="cn-val acc" style="font-size:14px">$'+pricing.toFixed(2)+'</span></div>';
-  html+='<div class="cn-row"><span class="cn-label">Ordered</span><span class="cn-val" style="font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e((o.ordered||'—').substring(0,40))+'</span></div>';
-  html+='<div class="cn-row"><span class="cn-label">Delivery Fee</span><span class="cn-val">+$'+fee.toFixed(2)+'</span></div>';
-  if(totalDisc>0) html+='<div class="cn-row"><span class="cn-label">Discount</span><span class="cn-val grn">-$'+totalDisc.toFixed(2)+'</span></div>';
-  html+='<div class="cn-row total-row"><span class="cn-label" style="font-weight:700;color:var(--text)">Total Paid</span><span class="cn-val acc">$'+total.toFixed(2)+'</span></div>';
-  return html;
+function _buildCalc(){
+  const {retail,fee,discount,total}=_calcTotal();
+  return`
+    <div class="calc-r"><span class="calc-lbl2">Retail Price</span><span class="calc-val2">$${retail.toFixed(2)}</span></div>
+    <div class="calc-r"><span class="calc-lbl2">+ Delivery</span><span class="calc-val2">$${fee.toFixed(2)}</span></div>
+    ${discount>0?`<div class="calc-r"><span class="calc-lbl2">- Discount</span><span class="calc-val2" style="color:var(--green)">-$${discount.toFixed(2)}</span></div>`:''}
+    <div class="calc-r"><span class="calc-lbl2" style="font-weight:700">Total Paid</span><span class="calc-val2 acc">$${total.toFixed(2)}</span></div>`;
 }
-function _buildCalc(){return _buildCalcNew();}
 function _canS2Next(){return parseFloat(_s2.deliveryFee||'0')>0||_s2.botFilled;}
 
 async function _saveStep2AndNext(){
@@ -2234,8 +2130,7 @@ async function _saveStep2AndNext(){
       delivery_fee :_s2.deliveryFee||'',
       tracking_number:_s2.trackingNumber||'',
       shipper_phone:_s2.shipperPhone||'',
-      total_paid    :_calcTotal().total.toFixed(2),
-      shop_discount :_s2.shopDiscount?(_s2.shopDiscountAmt||'1.5'):'',
+      total_paid   :_calcTotal().total.toFixed(2)
     });
     // Update local order object
     const idx=allOrders.findIndex(x=>x.profileId===_so.profileId);
@@ -2244,15 +2139,10 @@ async function _saveStep2AndNext(){
         deliveryFee:_s2.deliveryFee,
         trackingNumber:_s2.trackingNumber};
     }
-    _s2.saved=true;
-    try{sessionStorage.setItem('s2_'+_so.profileId,JSON.stringify({..._s2,ts:Date.now()}));}catch(_){}
-    // Update local order cache so next open detects saved state
-    const idx2=allOrders.findIndex(x=>x.profileId===_so.profileId);
-    if(idx2>=0){allOrders[idx2]={...allOrders[idx2],deliveryFee:_s2.deliveryFee,shipperPhone:_s2.shipperPhone};}
     goToStep(3);
   }catch(err){
     showToast('❌ '+sanitizeStr(err.message),true);
-    if(btn){btn.disabled=false;btn.textContent='✓ Update';}
+    if(btn){btn.disabled=false;btn.textContent='Step 3 →';}
   }
 }
 
@@ -2266,7 +2156,8 @@ function _buildS3(){
   const bankChips=BANKS.map(b=>`
     <div class="bank-chip2 ${_s3.bank===b.id&&!done?'sel':''}"
       id="bc-${b.id}"
-      onclick="selectBank('${b.id}')" ${done?'style="pointer-events:none;opacity:.6"':''}>
+      onclick="${done?'':'selectBank(\"'+b.id+'\")'}"
+      style="${done?'pointer-events:none;opacity:.6':''}">
       <div class="bank-logo-circle" style="background:${b.bg};color:${b.color}">${b.id.substring(0,3)}</div>
       <div class="bank-chip2-name">${b.name}</div>
     </div>`).join('');
@@ -2294,12 +2185,11 @@ function _buildS3(){
       <div class="amt-row">
         <span class="amt-prefix">$</span>
         <input class="amt-inp" id="s3-amt" type="number" step="0.01"
-          placeholder="${(total-_s3PaidSoFar).toFixed(2)}"
-          value="${e(_s3.amount||((total-_s3PaidSoFar)>0?(total-_s3PaidSoFar).toFixed(2):''))}"
+          placeholder="${total.toFixed(2)}"
+          value="${e(_s3.amount||'')}"
           inputmode="decimal"
           ${locked?'disabled':''}
           oninput="_s3amtSync()">
-        ${_s3PaidSoFar>0?`<div style="font-size:12px;color:var(--green);margin-top:4px">✅ បានទូទាត់ $${_s3PaidSoFar.toFixed(2)} · នៅខ $${(total-_s3PaidSoFar).toFixed(2)}</div>`:''}
       </div>
       <div class="s-lbl" style="margin-top:2px">Upload វិក្កយបត្រ / Screenshot</div>
       <div class="upload-zone ${_s3.receiptImg?'has-img':''} ${locked?'locked':''}"
@@ -2347,8 +2237,8 @@ function _buildS3(){
           <span class="tl-txt2">${fmtDate(o.orderDate)}</span></div>
         ${(_s2.deliveryFee||o.deliveryFee)?`
         <div class="tl-item2"><div class="tl-d done"></div>
-          <span class="tl-strong">VET Invoice</span>
-          <span class="tl-txt2">Delivery: $${parseFloat(_s2.deliveryFee||o.deliveryFee||0).toFixed(2)}${o.invoiceImageUrl?` · <a href="${e(o.invoiceImageUrl)}" target="_blank" style="color:var(--blue);font-size:11px">🔗 ពិនិត្យ</a>`:''}</span></div>`:''}
+          <span class="tl-strong">VET Invoice Scanned</span>
+          <span class="tl-txt2">Tracking: ${e(_s2.trackingNumber||o.trackingNumber||'—')}</span></div>`:''}
         <div class="tl-item2"><div class="tl-d ${done?'done':'cur'}"></div>
           <span class="tl-strong">${done?'ទូទាត់ & ដឹកដល់':'រង់ចាំទូទាត់'}</span>
           <span class="tl-txt2">${done?fmtDate(o.receiveDate||new Date()):`COD · $${total.toFixed(2)}`}</span></div>
@@ -2366,7 +2256,8 @@ function setPayType(pt){
     const done=isCompleted(o)||_s3.confirmed;
     const bankChips=BANKS.map(b=>`
       <div class="bank-chip2 ${_s3.bank===b.id&&!done?'sel':''}"
-        id="bc-${b.id}" onclick="selectBank('${b.id}')" ${done?'style="pointer-events:none;opacity:.6"':''}>
+        id="bc-${b.id}" onclick="${done?'':'selectBank(\"'+b.id+'\")'}"
+        style="${done?'pointer-events:none;opacity:.6':''}">
         <div class="bank-logo-circle" style="background:${b.bg};color:${b.color}">${b.id.substring(0,3)}</div>
         <div class="bank-chip2-name">${b.name}</div>
       </div>`).join('');
@@ -2380,7 +2271,7 @@ function setPayType(pt){
       ps.innerHTML=`
         <div class="s-lbl">ចំនួនទឹកប្រាក់</div>
         <div class="amt-row"><span class="amt-prefix">$</span>
-          <input class="amt-inp" id="s3-amt" type="number" step="0.01" placeholder="${(total-_s3PaidSoFar).toFixed(2)}" value="${(total-_s3PaidSoFar)>0?(total-_s3PaidSoFar).toFixed(2):''}" inputmode="decimal" oninput="_s3amtSync()"></div>
+          <input class="amt-inp" id="s3-amt" type="number" step="0.01" placeholder="${total.toFixed(2)}" inputmode="decimal" oninput="_s3amtSync()"></div>
         <div class="s-lbl" style="margin-top:2px">Upload ភស្តុតាង</div>
         <div class="upload-zone" onclick="triggerRcptUpload()">
           <input type="file" id="rcpt-inp" accept="image/*" style="display:none" onchange="handleRcpt(event)">
@@ -2482,14 +2373,9 @@ function _buildFoot(){
   }
   if(_step===2){
     const can=_canS2Next();
-    // If bot-filled or already saved → just navigate, no API call
-    if(_s2.botFilled||_s2.saved){
-      return`<button class="ft-back" onclick="goToStep(1)">← Back</button>
-        <button class="ft-next" onclick="goToStep(3)">Next →</button>`;
-    }
     return`<button class="ft-back" onclick="goToStep(1)">← Back</button>
       <button class="ft-skip" onclick="goToStep(3)">រំលង →</button>
-      <button class="ft-next" id="s2-next" ${can?'':'disabled'} onclick="_saveStep2AndNext()">✓ Update</button>`;
+      <button class="ft-next" id="s2-next" ${can?'':'disabled'} onclick="_saveStep2AndNext()">Step 3 →</button>`;
   }
   if(_step===3){
     if(done)return`<button class="ft-back" style="flex:1" onclick="closeStepSheet()">✓ បិទ</button>`;
@@ -2522,9 +2408,8 @@ function handleRcpt(ev){
   const file=ev.target.files[0];if(!file)return;
   if(!file.type.startsWith('image/')){showToast('❌ Images only',true);return;}
   if(file.size>5*1024*1024){showToast('❌ Max 5MB',true);return;}
-  _compressImg(f).then(re=>{
-    re={target:{result:re||''}};
-    {
+  const r=new FileReader();
+  r.onload=re=>{
     _s3.receiptImg=re.target.result;
     const uz=document.querySelector('.upload-zone');
     if(uz){uz.classList.add('has-img');uz.innerHTML=
@@ -2532,226 +2417,11 @@ function handleRcpt(ev){
        <img src="${_s3.receiptImg}" class="upload-preview">
        <div class="upload-change-lbl">ចុចដើម្បីផ្លាស់ប្តូរ</div>`;}
     _updateConfirmBtn();
-  }});
-}
-
-
-// ── Compress image before upload (prevent fetch failure) ─────
-async function _compressImg(file, maxDim=900, quality=0.72){
-  return new Promise(resolve=>{
-    const img=new Image();
-    const url=URL.createObjectURL(file);
-    img.onload=()=>{
-      let w=img.width, h=img.height;
-      if(w>maxDim||h>maxDim){
-        if(w>h){h=Math.round(h*maxDim/w);w=maxDim;}
-        else{w=Math.round(w*maxDim/h);h=maxDim;}
-      }
-      const cv=document.createElement('canvas');
-      cv.width=w;cv.height=h;
-      cv.getContext('2d').drawImage(img,0,0,w,h);
-      URL.revokeObjectURL(url);
-      resolve(cv.toDataURL('image/jpeg',quality));
-    };
-    img.onerror=()=>{URL.revokeObjectURL(url);resolve(null);};
-    img.src=url;
-  });
-}
-// ── v64 helpers ──────────────────────────────────────────────
-function toggleDiscount(){
-  _s2.shopDiscount=!_s2.shopDiscount;
-  const row=document.getElementById('s2-disc-row');
-  const chk=document.getElementById('disc-check');
-  if(row)row.className='s2-discount-row'+(_s2.shopDiscount?' checked':'');
-  if(chk){chk.className='disc-check'+(_s2.shopDiscount?' on':'');chk.textContent=_s2.shopDiscount?'✓':'';}
-  const ca=document.getElementById('s2-calc');if(ca)ca.innerHTML=_buildCalcNew();
-  _updateConfirmBtn&&_updateConfirmBtn();
-}
-// extend _s2sync for new fields
-const _s2syncOrig=_s2sync;
-function _s2sync(inp,field){
-  if(field==='fee'){_s2.deliveryFee=inp.value;inp.className=inp.className.replace(' s2-err','');}
-  if(field==='track')_s2.trackingNumber=inp.value;
-  if(field==='ship')_s2.shipperPhone=inp.value;
-  if(field==='discAmt'){_s2.shopDiscountAmt=inp.value;}
-  try{sessionStorage.setItem('s2_'+(_so?.profileId||''),JSON.stringify({..._s2,ts:Date.now()}));}catch(_){}
-  const ca=document.getElementById('s2-calc');if(ca)ca.innerHTML=_buildCalcNew();
-  const nb=document.getElementById('s2-next');if(nb)nb.disabled=!_canS2Next();
-}
-function triggerVETUpload(){document.getElementById('vet-inp')?.click();}
-function handleVETUpload(ev){
-  const f=ev.target.files[0];if(!f)return;
-  if(!f.type.startsWith('image/')){showToast('❌ Images only',true);return;}
-  if(f.size>8*1024*1024){showToast('❌ Max 8MB',true);return;}
-  _compressImg(f).then(dataUrl=>{
-    const re={target:{result:dataUrl}};
-    {
-    _s2.vetImgData=re.target.result;_s2.vetSent=false;
-    const z=document.getElementById('vet-upload-zone');
-    if(z){z.className='vet-upload has-img';
-      z.innerHTML=`<input type="file" id="vet-inp" accept="image/*" style="display:none" onchange="handleVETUpload(event)">
-        <img src="${_s2.vetImgData}" class="vet-preview">
-        <div style="font-size:11px;color:var(--accent);margin-top:5px" id="vet-status">📎 Ready — ចុច Update ផ្ញើ</div>`;}
-  }});
-}
-// KHQR popup
-let _khqrBank='';
-// QR images per bank — add more in Settings sheet column "khqrABA" / "khqrAC"
-const KHQR_IMGS = {
-  ABA: 'https://drive.google.com/uc?id=1yGv2KtmzICnmcyhL-n64o7CzJYOIfqxJ',
-  AC:  '', // add ACLEDA KHQR URL here
-};
-
-async function openKHQRPopup(bankId){
-  _khqrBank=bankId;
-  const {total,pricing,fee,shopDisc}=_calcTotal();
-  const remaining=Math.max(0,total-_s3PaidSoFar);
-  const ov=document.getElementById('khqr-ov');
-  ov.classList.add('on');
-  document.getElementById('khqr-bank-title').textContent='🏦 '+bankId+' KHQR';
-  document.getElementById('khqr-amt-txt').textContent='$'+remaining.toFixed(2);
-  document.getElementById('khqr-sub-txt').textContent=bankId+' · '+e(_so?.name||'');
-  document.getElementById('khqr-apv-row').style.display='none';
-
-  // ── Show QR image IMMEDIATELY (don't wait for API) ──────────
-  const qa=document.getElementById('khqr-qr-area');
-  const localQR=KHQR_IMGS[bankId]||'';
-  if(localQR&&qa){
-    qa.innerHTML='<img src="'+localQR+'" style="width:100%;height:100%;object-fit:contain;border-radius:9px" '
-      +'onerror="this.parentElement.innerHTML='<span style=font-size:56px>🔳</span>'">';
-  }
-
-  // ── Notify backend (PayWay group) in background ─────────────
-  try{
-    const r=await gs('requestKHQR',{
-      profile_id:_so?.profileId||'',bank:bankId,
-      amount:remaining.toFixed(2),name:_so?.name||'',phone:_so?.phone||''});
-    // If backend returns a better QR URL, update it
-    if(r&&r.khqrUrl&&qa){
-      qa.innerHTML='<img src="'+e(r.khqrUrl)+'" style="width:100%;height:100%;object-fit:contain;border-radius:9px">';
-    }
-  }catch(_){}
-
-  // ── Show APV ────────────────────────────────────────────────
-  const apv=_genAPV(_so?.orderDate,_so?.phone);
-  const ac=document.getElementById('khqr-apv-code');if(ac)ac.textContent=apv;
-  document.getElementById('khqr-apv-row').style.display='flex';
-  // Update confirm button text with remaining amount
-  const cb=document.getElementById('khqr-confirm-btn');
-  if(cb)cb.textContent='✅ ទូទាត់ $'+remaining.toFixed(2)+' រួច';
-}
-function closeKHQR(){document.getElementById('khqr-ov').classList.remove('on');}
-function closeKHQRIfBg(ev){/* disabled - use X button only */}
-async function confirmKHQR(){
-  const btn=document.getElementById('khqr-confirm-btn');
-  if(btn){btn.disabled=true;btn.textContent='⏳...';}
-  const {total}=_calcTotal();
-  const apv=_genAPV(_so?.orderDate,_so?.phone);
-  try{
-    await gs('updateOrder',{
-      profile_id   :_so.profileId,
-      tenant_id    :typeof STORE!=='undefined'?STORE:'yb9999',
-      status       :'Completed',
-      payment_status:'Paid',
-      apv_codes    :apv,
-      total_paid   :total.toFixed(2),
-      receive_date :new Date().toLocaleString('en-GB',{timeZone:'Asia/Phnom_Penh'}).replace(',',''),
-    });
-    _s3PaidSoFar+=total;
-    closeKHQR();
-    const idx=allOrders.findIndex(x=>x.profileId===_so?.profileId);
-    if(idx>=0)allOrders[idx]={...allOrders[idx],status:'Completed'};
-    showAlertModal('ទូទាត់ជោគជ័យ\nព័ត៌មានទូទាត់ត្រូវបានផ្ញើទៅ Telegram ✅','✅',()=>{closeStepSheet();applyFilter&&applyFilter();});
-    try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
-  }catch(e){
-    showToast('❌ '+sanitizeStr(e.message),true);
-    if(btn){btn.disabled=false;btn.textContent='✅ ទូទាត់រួច';}
-  }
-}
-// Manual receipt → send to bot
-async function sendReceiptToBot(){
-  if(!_s3.receiptImg){showToast('❌ Upload receipt first',true);return;}
-  const btn=document.getElementById('s3-confirm');
-  if(btn){btn.disabled=true;btn.textContent='⏳ ផ្ញើ...';}
-  const {total}=_calcTotal();
-  const amtPaid=_s3.amount?parseFloat(_s3.amount).toFixed(2):total.toFixed(2);
-  try{
-    await gs('sendManualReceipt',{
-      profile_id:_so.profileId,
-      image_base64:_s3.receiptImg,
-      amount:amtPaid,
-      name:_so?.name||'',
-      phone:_so?.phone||'',
-      ordered:_so?.ordered||''
-    });
-    const isFullPay=parseFloat(amtPaid)>=_calcTotal().total;
-    await gs('updateOrder',{
-      profile_id   :_so.profileId,
-      tenant_id    :typeof STORE!=='undefined'?STORE:'yb9999',
-      status       :isFullPay?'Completed':'Processing',
-      payment_status:'Paid',
-      total_paid   :amtPaid,
-      apv_codes    :_genAPV(_so?.orderDate,_so?.phone),
-      receive_date :isFullPay?new Date().toLocaleString('en-GB',{timeZone:'Asia/Phnom_Penh'}).replace(',',''):'',
-    });
-    showAlertModal('រង់ចាំការទូទាត់\nរូបភាពបានផ្ញើទៅ bot ✅','⏳',()=>{closeStepSheet();applyFilter&&applyFilter();});
-    try{tg.HapticFeedback.notificationOccurred('warning');}catch(_){}
-  }catch(e){
-    showToast('❌ '+sanitizeStr(e.message),true);
-    if(btn){btn.disabled=false;btn.textContent='✅ បញ្ជាក់ទូទាត់';}
-  }
-}
-// Override confirmPayment for v64 manual flow
-const _confirmPaymentOrig=confirmPayment;
-async function confirmPayment(){
-  if(_s3.payType==='manual'){await sendReceiptToBot();return;}
-  if(_s3.payType==='bank')  {await openKHQRPopup(_s3.bank||'ABA');return;}
-  await _confirmPaymentOrig();
-}
-// Override selectBank to open KHQR popup
-function selectBank(bankId){
-  _s3.bank=bankId;
-  document.querySelectorAll('.bank-chip2').forEach(el=>el.classList.remove('sel'));
-  const el=document.getElementById('bc-'+bankId);if(el)el.classList.add('sel');
-  openKHQRPopup(bankId);
-}
-// Alert modal
-function showAlertModal(msg,ico,onClose){
-  const ov=document.getElementById('alert-ov');
-  document.getElementById('alert-ico').textContent=ico||'✅';
-  document.getElementById('alert-msg').textContent=msg;
-  ov._cb=onClose;
-  ov.classList.add('on');
-}
-function closeAlertModal(){
-  const ov=document.getElementById('alert-ov');
-  ov.classList.remove('on');
-  if(typeof ov._cb==='function'){ov._cb();ov._cb=null;}
+  };
+  r.readAsDataURL(file);
 }
 // ============================================================
 // END STEP MODULE
-
-// ── Step state persistence (survive page reload) ─────────────
-function _saveStepState(){
-  if(!_so)return;
-  try{sessionStorage.setItem('ybs_state',JSON.stringify({
-    profileId:_so.profileId, step:_step, ts:Date.now()
-  }));}catch(_){}
-}
-function _clearStepState(){
-  try{sessionStorage.removeItem('ybs_state');}catch(_){}
-}
-function _restoreStepState(){
-  try{
-    const sv=JSON.parse(sessionStorage.getItem('ybs_state')||'{}');
-    if(!sv.profileId||!sv.ts) return;
-    if(Date.now()-sv.ts > 30*60*1000){_clearStepState();return;} // 30min expiry
-    const o=allOrders.find(x=>x.profileId===sv.profileId);
-    if(!o) return;
-    openOrderSteps(sv.profileId);
-    if(sv.step>1){_step=sv.step;_renderStep();}
-  }catch(_){}
-}
 // ============================================================
 </script>
 </body>
