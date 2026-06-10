@@ -1683,7 +1683,7 @@ async function _loadStk(){
   body.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
   try{
     const storeId=(typeof STORE!=='undefined')?STORE:'yb9999';
-    const res=await gs('getProducts',{store_id:storeId,shipper:shipperData?.phone||''});
+    const res = await gs('getShipperProducts', shipperData?.phone || '');
     if(res&&res.error)throw new Error(res.error);
     _stk=Array.isArray(res)?res:(res.products||[]);
     _renderStk();
