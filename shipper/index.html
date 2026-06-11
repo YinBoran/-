@@ -1962,7 +1962,7 @@ function renderView() {
     case 'catalog':      renderCatalog();break;
   }
   // Auto-hide header on main + catalog
-  if(_view==='main' || _view==='stock') bindMainScroll();
+  if(_view==='main' || _view==='stock') this.bindMainScroll();
 }
 
 // ── MAIN VIEW ─────────────────────────────────────────────
