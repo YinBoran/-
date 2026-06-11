@@ -17,7 +17,7 @@
   --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
   --text:#f0f0f0; --muted:#888;
   --font:'Segoe UI',system-ui,sans-serif;
-
+  --hdr-h:56px;
   /* --sat: resolved at runtime — DO NOT hard-code here.
      Use env(safe-area-inset-top) directly in every calc() below. */
 }
@@ -37,11 +37,9 @@ body{
   height:calc(var(--hdr-h) + env(safe-area-inset-top,0px));
   padding-top:calc(12px + env(safe-area-inset-top,0px));
   transition:transform .28s ease;will-change:transform;
-  
 }
 .hdr.hdr-hidden{transform:translateY(-100%)}
 .hdr-spacer{display:none}
-.hdr-h:56px;
 
 .hdr-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:10px;display:flex;align-items:center;justify-content:center;
