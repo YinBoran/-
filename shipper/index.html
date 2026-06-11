@@ -1230,7 +1230,8 @@ async function loginByPhone(){
 function bootWithData(data){
   shipperData={phone:sanitizeStr(data.phone),name:sanitizeStr(data.name||'Shipper'),role:sanitizeStr(data.role||'shipper')};
   const role=(shipperData.role||'').toLowerCase();
-  if(role&&role!=='shipper'&&role!=='admin'){clearSession();showPhoneLogin();return;}
+  const _VALID=['shipper','admin','owner','manager','cashier','stock',''];
+  if(role&&!_VALID.includes(role)){clearSession();showPhoneLogin();return;}
   loadOrders();
 }
 
@@ -1269,11 +1270,14 @@ async function loadOrders(){
   try{
     const r=await Promise.race([
       gs('handleShipperOrders',shipperData?.phone||''),
-      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout — សូម retry')),12000))
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout 12s — សូម retry')),12000))
     ]);
     if(!Array.isArray(r)){if(r&&r.error)throw new Error(r.error);throw new Error('Invalid response');}
     allOrders=r;visibleCount=CHUNK;applyFilter();startPoll();
-  }catch(err){showError('Load failed: '+sanitizeStr(err.message));}
+  }catch(err){
+    console.error('loadOrders error:',err);
+    showError('Load failed: '+sanitizeStr(err.message)+' — ចុច Retry');
+  }
 }
 async function refreshOrders(silent=false){
   if(!shipperData)return;
@@ -1926,8 +1930,13 @@ function dismissAlert(){
 }
 
 function showError(msg){
-  if(msg){
-  el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><p></p></div>`;
+  document.getElementById('root').innerHTML=`
+    <div class="empty">
+      <div class="empty-icon">⚠️</div><h3>Error</h3><p>${e(msg)}</p>
+      <button onclick="loadOrders()"
+        style="margin-top:16px;padding:11px 22px;background:var(--accent);color:#000;
+        border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px">Retry</button>
+    </div>`;
 }
 function showToast(msg,isErr){
   const t=document.getElementById('toast');
