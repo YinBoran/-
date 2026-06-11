@@ -2,6 +2,7 @@
 <html lang="km">
 <head>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 <script>
 // Inline config fallback — if config.js loads first, its values win
 if(typeof API==='undefined')   window.API   = 'https://mr.yinboran.workers.dev/';
@@ -12,7 +13,7 @@ if(typeof STORE==='undefined') window.STORE = 'yb9999';
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<link rel="manifest" href="manifest.json">
+<!-- manifest: create shop/manifest.json separately -->
 <title>YB Shop</title>
 <style>
 :root {
@@ -60,7 +61,7 @@ body{
   padding:4px 10px;border-radius:20px;min-width:28px;text-align:center}
 
 .hdr-search{flex:1;background:var(--card);border:1px solid var(--border);
-  border-radius:9px;padding:8px 12px;color:var(--text);font-size:13px;
+  border-radius:10px;padding:8px 12px;color:var(--text);font-size:13px;
   min-width:0;outline:none;transition:border-color .2s}
 .hdr-search:focus{border-color:var(--accent)}
 .hdr-search::placeholder{color:var(--muted);font-size:12px}
@@ -108,7 +109,7 @@ body{
   border:1px solid var(--accent)44;
   display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .card-body{flex:1;min-width:0}
-.card-name{font-size:14px;font-weight:700;margin-bottom:3px;color:var(--text);display:block}
+.card-name{font-size:16px;font-weight:700;margin-bottom:3px;color:var(--text);display:block}
 .card-phone{font-size:13px;color:var(--accent);font-family:monospace;font-weight:600}
 .card-loc{font-size:12px;color:var(--muted);margin-top:3px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -127,7 +128,7 @@ body{
 .btn-deliver:disabled{opacity:.4;cursor:not-allowed}
 .btn-done{background:#22c55e22;color:var(--green);border:1px solid var(--green)44;
   font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px;cursor:default}
-.btn-call{background:#3b82f622;color:var(--blue);border:1px solid #3b82f644;
+.btn-call{background:#3b82f622;color:var(--blue);border:1px solid #3b82f644;transition:opacity .15s;
   font-size:12px;font-weight:600;padding:8px 13px;border-radius:7px;
   text-decoration:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;border:none}
 
@@ -142,6 +143,13 @@ body{
 .loading-sm{position:relative;inset:auto;min-height:180px;background:transparent;z-index:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}
 .spinner{width:36px;height:36px;border:3px solid var(--border);
   border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+
+/* ── Active states ──────────────────────────────────────────── */
+.btn-call:active,.popup-close:active,.login-btn:active,
+.pw-eye:active,.hdr-logo:active,.hdr-bell:active,
+.nav-item:active,.batch-print-btn:active{opacity:.65}
+.order-card:active{transform:scale(.99)}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .toast{position:fixed;bottom:24px;left:50%;
@@ -177,7 +185,7 @@ body{
   display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
   cursor:grab;touch-action:pan-y;user-select:none}
 .popup-title{font-size:16px;font-weight:700;pointer-events:none}
-.popup-close{width:30px;height:30px;background:var(--border);border:none;border-radius:50%;
+.popup-close{transition:opacity .15s;width:30px;height:30px;background:var(--border);border:none;border-radius:50%;
   cursor:pointer;color:var(--text);font-size:15px;
   display:flex;align-items:center;justify-content:center;touch-action:auto;pointer-events:auto}
 .popup-body{overflow-y:auto;flex:1;padding:16px;-webkit-overflow-scrolling:touch;
@@ -228,7 +236,7 @@ body{
 .login-input:focus{outline:none;border-color:var(--accent)}
 .login-input.input-error{border-color:var(--red)!important;animation:shake .3s}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+.login-btn{transition:opacity .15s;width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:#000;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}
 .login-btn:disabled{opacity:.5;cursor:not-allowed}
 .pw-wrap{position:relative;margin-bottom:10px}
@@ -272,7 +280,7 @@ body{
 .pp-change-photo{display:block;text-align:center;margin-top:8px;color:var(--accent);
   font-size:14px;font-weight:600;background:none;border:none;cursor:pointer;padding:4px}
 .pp-info{text-align:center;padding:8px 20px 16px}
-.pp-name{font-size:23px;font-weight:800;margin-bottom:4px}
+.pp-name{font-size:24px;font-weight:800;margin-bottom:4px}
 .pp-username{font-size:14px;color:var(--muted);margin-bottom:10px}
 .pp-bio{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:12px;
   max-width:280px;margin-left:auto;margin-right:auto}
@@ -283,7 +291,7 @@ body{
 .pp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
   background:var(--border);margin:16px 0}
 .pp-stat{background:var(--surface);padding:17px 8px;text-align:center}
-.pp-stat-num{font-size:25px;font-weight:800;color:var(--accent)}
+.pp-stat-num{font-size:24px;font-weight:800;color:var(--accent)}
 .pp-stat-lbl{font-size:11px;color:var(--muted);margin-top:4px}
 .pp-logout{margin:0 16px 16px;padding:15px;background:var(--red)22;color:var(--red);
   border:1px solid var(--red)44;border-radius:12px;font-size:15px;font-weight:700;
@@ -292,7 +300,7 @@ body{
 .pp-logout:hover{background:var(--red)44}
 .pp-divider{height:1px;background:var(--border);margin:0 16px 16px}
 
-.invoice-overlay{position:fixed;inset:0;background:#fff;color:#000;z-index:600;
+.invoice-overlay{position:fixed;inset:0;background:#fff;color:#000;z-index:700;
   overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
 .invoice-overlay.on{display:block}
 .inv-toolbar{position:sticky;top:0;background:#f5f5f5;
@@ -360,7 +368,7 @@ body{
   display:flex;align-items:center;gap:8px}
 .stk-search-inp{
   flex:1;background:var(--card);border:1px solid var(--border);
-  border-radius:9px;padding:9px 12px;
+  border-radius:10px;padding:9px 12px;
   color:var(--text);font-size:14px;outline:none;
   transition:border-color .2s}
 .stk-search-inp:focus{border-color:var(--accent)}
@@ -405,12 +413,12 @@ body{
 .prod-low-tag{
   position:absolute;top:8px;left:8px;z-index:2;
   background:rgba(239,68,68,.9);color:#fff;
-  font-size:9px;font-weight:700;
+  font-size:10px;font-weight:700;
   padding:2px 6px;border-radius:5px;letter-spacing:.3px}
 .prod-out-tag{
   position:absolute;top:8px;left:8px;z-index:2;
   background:rgba(239,68,68,1);color:#fff;
-  font-size:9px;font-weight:700;
+  font-size:10px;font-weight:700;
   padding:2px 6px;border-radius:5px}
 .prod-info{padding:9px 10px 10px}
 .prod-name{
@@ -554,16 +562,16 @@ body{
 .s-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:0 0 8px}
 /* Detail cells (step1) */
 .d2-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
-.d2-cell{background:var(--card);border-radius:9px;padding:10px 11px;border:1px solid var(--border)}
+.d2-cell{background:var(--card);border-radius:10px;padding:10px 11px;border:1px solid var(--border)}
 .d2-cell.full{grid-column:1/-1}
 .d2-k{font-size:10px;color:var(--muted);margin-bottom:3px}
 .d2-v{font-size:13px;font-weight:600;color:var(--text)}
 .d2-v.acc{color:var(--accent)}
 .d2-v.grn{color:var(--green)}
 .d2-v.tg-link{color:var(--blue);cursor:pointer;border-bottom:1px dotted var(--blue)55;display:inline-block}
-.lock-banner{background:var(--accent)0c;border:1px dashed rgba(240,165,0,.3);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--muted);text-align:center}
+.lock-banner{background:var(--accent)0c;border:1px dashed rgba(240,165,0,.3);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--muted);text-align:center}
 /* Step 2 */
-.bot-row{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:9px;margin-bottom:12px;font-size:12px;font-weight:600}
+.bot-row{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:10px;margin-bottom:12px;font-size:12px;font-weight:600}
 .bot-ok {background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green)}
 .bot-wait{background:rgba(240,165,0,.1);border:1px solid rgba(240,165,0,.25);color:var(--accent)}
 .bot-none{background:var(--card);border:1px solid var(--border);color:var(--muted)}
@@ -622,7 +630,7 @@ body{
 .upload-preview{width:100%;border-radius:8px;object-fit:cover;max-height:160px;display:block}
 .upload-change-lbl{font-size:11px;color:var(--accent);margin-top:6px;text-align:center}
 /* APV + Timeline */
-.apv-bar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:9px;padding:9px 12px;margin-top:8px;border:1px solid var(--border)}
+.apv-bar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:10px;padding:9px 12px;margin-top:8px;border:1px solid var(--border)}
 .apv-l{font-size:10px;color:var(--muted)}
 .apv-c{font-size:14px;font-weight:800;color:var(--accent);font-family:monospace}
 .apv-cp{font-size:10px;color:var(--blue);background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:5px;padding:3px 8px;cursor:pointer}
@@ -719,6 +727,139 @@ body{
   text-shadow:0 2px 8px rgba(0,0,0,.6)}
 .mv-slide.playing .mv-play-ico{display:none}
 
+
+/* ── Media viewer TikTok style ─────────────────────────────── */
+#mv-scroll{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch}
+.mv-slide{height:100dvh;width:100%;scroll-snap-align:start;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;background:#000;flex-shrink:0}
+.mv-slide img{max-width:100%;max-height:100%;object-fit:contain}
+.mv-yt-frame{width:100%;height:56.25vw;max-height:100dvh;border:none}
+.mv-slide-info{position:absolute;bottom:0;left:0;right:0;
+  padding:20px 16px max(env(safe-area-inset-bottom,16px),16px);
+  background:linear-gradient(transparent,rgba(0,0,0,.7))}
+.mv-slide-title{color:#fff;font-size:15px;font-weight:700;margin-bottom:4px}
+.mv-slide-sub{color:rgba(255,255,255,.7);font-size:12px}
+.mv-right-actions{position:absolute;right:12px;bottom:120px;
+  display:flex;flex-direction:column;gap:16px;align-items:center}
+.mv-action-btn{width:44px;height:44px;background:rgba(255,255,255,.15);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:22px;cursor:pointer;backdrop-filter:blur(4px)}
+
+
+/* ── Notification bell & list ─────────────────────────────── */
+.hdr-bell{position:relative;width:36px;height:36px;display:flex;
+  align-items:center;justify-content:center;cursor:pointer;
+  background:var(--card);border-radius:50%;border:none;color:var(--text);
+  font-size:19px;flex-shrink:0}
+.notif-badge{position:absolute;top:-3px;right:-3px;background:var(--red);
+  color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  padding:0 4px;pointer-events:none}
+.notif-ov{position:fixed;inset:0;z-index:9000;pointer-events:none}
+.notif-ov.on{pointer-events:all}
+.notif-panel{position:absolute;top:calc(var(--hdr-h,56px) + env(safe-area-inset-top,0px) + 4px);
+  right:8px;width:min(340px,calc(100vw - 16px));
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);overflow:hidden;
+  transform:scale(.94) translateY(-8px);opacity:0;transition:all .18s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;max-height:70dvh;display:flex;flex-direction:column}
+.notif-ov.on .notif-panel{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+.notif-header{padding:12px 16px;font-size:14px;font-weight:700;display:flex;
+  align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0}
+.notif-clear{font-size:12px;font-weight:600;color:var(--accent);cursor:pointer}
+.notif-list{overflow-y:auto;flex:1}
+.notif-item{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;
+  cursor:pointer;transition:background .12s;border-bottom:1px solid var(--border)}
+.notif-item:active{background:var(--card)}
+.notif-item.unread{background:rgba(240,165,0,.06)}
+.notif-ico{font-size:24px;flex-shrink:0;width:36px;text-align:center}
+.notif-body{flex:1;min-width:0}
+.notif-msg{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.notif-time{font-size:11px;color:var(--muted)}
+.notif-dot{width:8px;height:8px;background:var(--accent);border-radius:50%;
+  flex-shrink:0;margin-top:4px}
+.notif-empty{padding:30px;text-align:center;color:var(--muted);font-size:14px}
+
+
+
+/* ── Universal fullscreen popup ─────────────────────────────── */
+.fs-popup{position:fixed;inset:0;z-index:800;background:var(--bg);
+  display:flex;flex-direction:column;transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.fs-popup.open{transform:none}
+.fs-popup-hdr{display:flex;align-items:center;gap:10px;
+  padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 14px;
+  background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.fs-popup-title{font-size:17px;font-weight:700;flex:1}
+.fs-popup-close{width:34px;height:34px;background:var(--card);border:none;
+  border-radius:50%;font-size:16px;cursor:pointer;color:var(--text);
+  display:flex;align-items:center;justify-content:center}
+.fs-popup-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.fs-popup-ft{padding:12px 16px max(env(safe-area-inset-bottom,12px),12px);
+  border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+/* Batch table */
+.batch-table{width:100%;border-collapse:collapse}
+.batch-table th{padding:9px 10px;text-align:left;font-size:11px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;background:var(--surface);
+  position:sticky;top:0;border-bottom:2px solid var(--border)}
+.batch-table td{padding:9px 10px;font-size:13px;border-bottom:1px solid var(--border)}
+.batch-table tr.sel td{background:rgba(240,165,0,.08)}
+.batch-cb{width:20px;height:20px;border:2px solid var(--border);border-radius:5px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.batch-cb.on{background:var(--accent);border-color:var(--accent);color:#000;font-size:11px}
+/* Completed table */
+.comp-table{width:100%;border-collapse:collapse}
+.comp-table th{padding:8px 10px;text-align:left;font-size:11px;font-weight:700;
+  color:var(--muted);background:var(--surface);position:sticky;top:0;
+  border-bottom:2px solid var(--border)}
+.comp-table td{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--border)}
+.comp-sum{padding:14px 16px;background:var(--card);border-top:2px solid var(--border)}
+.comp-sum-row{display:flex;justify-content:space-between;font-size:14px;
+  padding:4px 0;border-bottom:1px solid var(--border)}
+.comp-sum-row.total{font-weight:800;font-size:16px;color:var(--accent);border:none}
+
+/* ── Batch label print ──────────────────────────────────────── */
+.batch-bar{display:none;align-items:center;justify-content:space-between;
+  padding:8px 14px;background:var(--card);border-bottom:1px solid var(--border);
+  gap:8px;flex-shrink:0}
+.batch-bar.on{display:flex}
+.batch-sel-all{font-size:13px;font-weight:600;color:var(--accent);cursor:pointer}
+.batch-count{font-size:13px;font-weight:700;flex:1;text-align:center}
+.batch-print-btn{padding:8px 16px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#000;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer}
+.batch-cancel{font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+/* Checkbox on cards in batch mode */
+.order-card.batch-mode{padding-left:12px;position:relative}
+.card-check{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:22px;height:22px;border:2px solid var(--border);border-radius:6px;
+  background:var(--surface);display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;flex-shrink:0;transition:all .15s;z-index:2}
+.order-card.selected .card-check{background:var(--accent);border-color:var(--accent);color:#000}
+.order-card.batch-mode .card-top{padding-left:34px}
+
+/* ── Thermal print layout ────────────────────────────────────── */
+@media print {
+  body > *:not(#thermal-print) {display:none!important}
+  #thermal-print {display:block!important;position:static!important}
+  @page {margin:0;size:80mm auto}
+}
+.thermal-label{
+  width:72mm;padding:3mm 4mm;border-bottom:2px dashed #000;
+  page-break-inside:avoid;font-family:'Battambang','Khmer OS',Arial,sans-serif;
+  font-size:10pt;break-after:page}
+.thermal-label:last-child{border-bottom:none}
+.thermal-shop{font-size:11pt;font-weight:900;text-align:center;margin-bottom:2mm}
+.thermal-divider{border:none;border-top:1px solid #000;margin:1.5mm 0}
+.thermal-row{display:flex;gap:2mm;margin-bottom:1mm;align-items:flex-start}
+.thermal-key{font-size:8pt;color:#333;flex-shrink:0;min-width:14mm}
+.thermal-val{font-size:9pt;font-weight:600;flex:1;word-break:break-word}
+.thermal-price{font-size:13pt;font-weight:900;text-align:right}
+.thermal-cod{font-size:9pt;font-weight:700;background:#000;color:#fff;
+  padding:1mm 3mm;display:inline-block;border-radius:2px;margin-top:1mm}
+
 /* ── Skeleton shimmer loader ────────────────────────────── */
 @keyframes shimmer{from{background-position:-400px 0}to{background-position:400px 0}}
 .skel{background:linear-gradient(90deg,var(--card) 25%,var(--surface) 50%,var(--card) 75%);
@@ -747,7 +888,7 @@ body{
 .cat-hdr-txt{flex:1;font-size:13px;line-height:1.4}
 .cat-hdr-txt b{color:var(--accent)}
 .cat-share{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;
-  border:none;border-radius:9px;padding:8px 13px;font-size:12px;font-weight:700;flex-shrink:0;cursor:pointer}
+  border:none;border-radius:10px;padding:8px 13px;font-size:12px;font-weight:700;flex-shrink:0;cursor:pointer}
 .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px}
 .cat-item{position:relative;aspect-ratio:1/1;background:var(--card);overflow:hidden;cursor:pointer}
 .cat-item-img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
@@ -811,6 +952,8 @@ body.light-mode{
   display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:15;
   border-bottom:1px solid #e5e5ea;transition:transform .25s}
 .cat-top-hdr.hidden{transform:translateY(-100%)}
+.cat-top-hdr.hidden~.cat-search-bar{opacity:0;pointer-events:none;transition:opacity .25s}
+.cat-search-bar{transition:opacity .25s}
 .cat-top-back{width:36px;height:36px;background:#f0f0f3;border-radius:50%;display:flex;
   align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0}
 .cat-top-title{font-size:16px;font-weight:700;color:#1c1c1e;flex:1}
@@ -981,7 +1124,7 @@ body.light-mode{
       <div class="khqr-qr-box" id="khqr-qr-area"><span style="font-size:56px">🔳</span></div>
       <div style="font-size:24px;font-weight:800;color:var(--accent)" id="khqr-amt-txt"></div>
       <div style="font-size:12px;color:var(--muted);margin-top:3px" id="khqr-sub-txt"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:9px;padding:9px 13px;margin:12px 0 4px;border:1px solid var(--border)" id="khqr-apv-row">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:10px;padding:9px 13px;margin:12px 0 4px;border:1px solid var(--border)" id="khqr-apv-row">
         <div><div style="font-size:10px;color:var(--muted)">APV Code</div><div id="khqr-apv-code" style="font-size:14px;font-weight:800;color:var(--accent);font-family:monospace"></div></div>
         <button class="apv-cp" onclick="cpAPV(document.getElementById('khqr-apv-code').textContent)">copy</button>
       </div>
@@ -1101,18 +1244,17 @@ function fmtDate(v){
   if(!v)return'—';
   const s=String(v).trim();
   if(!s||s==='—')return'—';
-  // Already dd/MM/yyyy format
-  if(/^\d{2}\/\d{2}\/\d{4}/.test(s))return s.substring(0,16);
-  // Parse JS Date string
+  if(/^\d{2}\/\d{2}\/\d{4}/.test(s))return s.substring(0,10); // dd/MM/yyyy
   const d=new Date(s);
   if(!isNaN(d)){
-    return d.toLocaleString('en-GB',{
-      day:'2-digit',month:'2-digit',year:'numeric',
-      hour:'2-digit',minute:'2-digit',
-      timeZone:'Asia/Phnom_Penh'
-    }).replace(',',' ');
+    const dd=String(d.getDate()).padStart(2,'0');
+    const mm=String(d.getMonth()+1).padStart(2,'0');
+    const yy=String(d.getFullYear()).slice(-2);
+    const hh=String(d.getHours()).padStart(2,'0');
+    const min=String(d.getMinutes()).padStart(2,'0');
+    return `${dd}/${mm}/${yy} ${hh}:${min}`;  // 05/11/26 10:53
   }
-  return s.substring(0,20);
+  return s.substring(0,16);
 }
 
 function callPhone(phone){
@@ -1233,6 +1375,445 @@ function bootWithData(data){
   const _VALID=['shipper','admin','owner','manager','cashier','stock',''];
   if(role&&!_VALID.includes(role)){clearSession();showPhoneLogin();return;}
   loadOrders();
+}
+
+
+
+
+
+// ── Fullscreen popup swipe-right → close ─────────────────────
+(function(){
+  let sx=0,sy=0,dragging=false;
+  document.addEventListener('touchstart',ev=>{
+    const pop=document.getElementById('fs-popup');
+    if(!pop||!pop.classList.contains('open')) return;
+    sx=ev.touches[0].clientX; sy=ev.touches[0].clientY;
+    if(sx<70){ dragging=true; pop.style.transition='none'; }
+  },{passive:true});
+  document.addEventListener('touchmove',ev=>{
+    if(!dragging) return;
+    const dx=Math.max(0,ev.touches[0].clientX-sx);
+    const pop=document.getElementById('fs-popup');
+    if(pop) pop.style.transform=`translateX(${dx*0.5}px)`;
+  },{passive:true});
+  document.addEventListener('touchend',ev=>{
+    if(!dragging) return; dragging=false;
+    const pop=document.getElementById('fs-popup');
+    if(!pop) return;
+    pop.style.transition='';
+    pop.style.transform='';
+    const dx=ev.changedTouches[0].clientX-sx;
+    const dy=Math.abs(ev.changedTouches[0].clientY-sy);
+    if(dx>60&&dy<80) closePopup();
+  },{passive:true});
+})();
+
+// ══════════════════════════════════════════════════════════════
+// UNIVERSAL FULLSCREEN POPUP SYSTEM
+// ══════════════════════════════════════════════════════════════
+let _popupBatchSel = new Set();
+
+function openPopup(type, data){
+  const popup  = document.getElementById('fs-popup');
+  const title  = document.getElementById('fs-popup-title');
+  const body   = document.getElementById('fs-popup-body');
+  const ft     = document.getElementById('fs-popup-ft');
+  const acts   = document.getElementById('fs-popup-actions');
+  if(!popup) return;
+  popup.classList.add('open');
+  document.body.style.overflow='hidden';
+  ft.style.display='none'; ft.innerHTML='';
+  acts.innerHTML='';
+
+  if(type==='label'){
+    // ── Single label ──────────────────────────────────────────
+    const o = data;
+    title.textContent = '🧾 Label';
+    acts.innerHTML=`<button onclick="_printLabelPopup()"  
+      style="background:var(--accent);color:#000;border:none;border-radius:10px;
+      padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer">🖨️ Print</button>`;
+    body.innerHTML=`
+      <div style="padding:16px;display:flex;justify-content:center">
+        <div class="thermal-label" style="border:1px solid var(--border);border-radius:8px">
+          <div class="thermal-shop">📦 ${e(shipperData?.name||'YB Shop')}</div>
+          <hr class="thermal-divider">
+          <div class="thermal-row"><span class="thermal-key">ឈ្មោះ</span><span class="thermal-val">${e(o.name||'—')}</span></div>
+          <div class="thermal-row"><span class="thermal-key">ទូរស័ព្ទ</span><span class="thermal-val">${e(o.phone||'—')}</span></div>
+          <div class="thermal-row"><span class="thermal-key">ទីតាំង</span><span class="thermal-val">${e(o.location||'—')}</span></div>
+          <div class="thermal-row"><span class="thermal-key">ទំនិញ</span><span class="thermal-val">${e(o.ordered||'—')}</span></div>
+          <hr class="thermal-divider">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+            <span class="thermal-cod">${e(o.payment||'COD')}</span>
+            <span class="thermal-price">$${e(o.pricing||o.retail||'—')}</span>
+          </div>
+          <div style="font-size:8pt;color:#888;margin-top:4px;text-align:right">${e(fmtDate(o.orderDate))}</div>
+        </div>
+      </div>`;
+    // Print CSS override
+    const tp=document.getElementById('thermal-print');
+    if(tp){ tp.innerHTML=body.innerHTML; }
+
+  } else if(type==='batch'){
+    // ── Batch select + print ──────────────────────────────────
+    const orders = data; // pending orders
+    _popupBatchSel.clear();
+    title.textContent = `🖨️ Print Labels (${orders.length})`;
+    ft.style.display='flex';
+    ft.innerHTML=`
+      <button onclick="_popupSelectAll()" style="flex:1;padding:12px;background:var(--card);
+        border:1px solid var(--border);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
+        Select all
+      </button>
+      <button onclick="_popupDoPrint()" style="flex:2;padding:12px;
+        background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;
+        border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer">
+        🖨️ Print <span id="popup-sel-count">(0)</span>
+      </button>`;
+    _renderBatchTable(orders);
+
+  } else if(type==='completed'){
+    // ── Completed history ─────────────────────────────────────
+    const orders = data;
+    title.textContent = `✅ ដឹកដល់ (${orders.length})`;
+    acts.innerHTML=`<button onclick="_exportCompletedImg()"
+      style="background:var(--card);border:1px solid var(--border);border-radius:10px;
+      padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text)">
+      📸 Export</button>`;
+    const total=orders.reduce((s,o)=>s+parseFloat(o.pricing||o.retail||0),0);
+    const cod=orders.filter(o=>(o.payment||'').toLowerCase().includes('cod')).length;
+    body.innerHTML=`
+      <div class="comp-sum" id="comp-sum-box">
+        <div class="comp-sum-row"><span>📦 Orders</span><span>${orders.length}</span></div>
+        <div class="comp-sum-row"><span>🚚 COD</span><span>${cod}</span></div>
+        <div class="comp-sum-row total"><span>💰 សរុប</span><span>$${total.toFixed(2)}</span></div>
+      </div>
+      <table class="comp-table" id="comp-table">
+        <thead><tr>
+          <th>ឈ្មោះ</th><th>ទូរស័ព្ទ</th><th>ទំនិញ</th><th>ថ្លៃ</th><th>ថ្ងៃ</th>
+        </tr></thead>
+        <tbody>${orders.map(o=>`
+          <tr onclick="closePopup();setTimeout(()=>openOrderSteps('${e(o.profileId)}'),200)">
+            <td>${e(o.name||'—')}</td>
+            <td style="white-space:nowrap">${e(o.phone||'—')}</td>
+            <td>${e((o.ordered||'—').substring(0,20))}</td>
+            <td style="color:var(--accent);font-weight:700">$${e(o.pricing||o.retail||'—')}</td>
+            <td style="white-space:nowrap;color:var(--muted)">${fmtDate(o.receiveDate||o.orderDate)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  }
+}
+
+function closePopup(){
+  document.getElementById('fs-popup')?.classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// Batch helpers
+function _renderBatchTable(orders){
+  const body=document.getElementById('fs-popup-body');
+  if(!body)return;
+  body.innerHTML=`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="batch-table" style="min-width:500px">
+    <thead><tr>
+      <th style="width:30px"></th>
+      <th>ឈ្មោះ</th><th>ទូរស័ព្ទ</th><th>ទីតាំង</th><th>ទំនិញ</th><th>ថ្លៃ</th>
+    </tr></thead>
+    <tbody>${orders.map(o=>`
+      <tr class="${_popupBatchSel.has(o.profileId)?'sel':''}"
+        onclick="_popupToggle('${e(o.profileId)}')">
+        <td><div class="batch-cb ${_popupBatchSel.has(o.profileId)?'on':''}">
+          ${_popupBatchSel.has(o.profileId)?'✓':''}
+        </div></td>
+        <td>${e(o.name||'—')}</td>
+        <td style="white-space:nowrap">${e(o.phone||'—')}</td>
+        <td>${e((o.location||'—').substring(0,16))}</td>
+        <td>${e((o.ordered||'—').substring(0,16))}</td>
+        <td style="color:var(--accent);font-weight:700">$${e(o.pricing||o.retail||'—')}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+  const ct=document.getElementById('popup-sel-count');
+  if(ct) ct.textContent=`(${_popupBatchSel.size})`;
+}
+function _popupToggle(pid){
+  if(_popupBatchSel.has(pid)) _popupBatchSel.delete(pid);
+  else _popupBatchSel.add(pid);
+  const pending=allOrders.filter(o=>!isCompleted(o));
+  _renderBatchTable(pending);
+}
+function _popupSelectAll(){
+  const pending=allOrders.filter(o=>!isCompleted(o));
+  if(_popupBatchSel.size===pending.length) _popupBatchSel.clear();
+  else pending.forEach(o=>_popupBatchSel.add(o.profileId));
+  _renderBatchTable(pending);
+}
+function _popupDoPrint(){
+  if(!_popupBatchSel.size){showToast('❌ ជ្រើសយ៉ាងហោចណាស់ 1',true);return;}
+  const orders=allOrders.filter(o=>_popupBatchSel.has(o.profileId));
+  _printThermalLabels(orders);
+}
+
+function _printLabelPopup(){
+  // Copy popup label content to thermal-print div for @media print isolation
+  const src=document.getElementById('fs-popup-body');
+  const tp =document.getElementById('thermal-print');
+  if(!tp||!src) return;
+  tp.innerHTML=src.innerHTML;
+  tp.style.display='block';
+  setTimeout(()=>{
+    window.print();
+    setTimeout(()=>{ tp.style.display='none'; tp.innerHTML=''; },800);
+  },200);
+}
+
+function _exportCompletedImg(){
+  const el=document.getElementById('fs-popup-body');
+  if(!el){showToast('❌ Nothing to export',true);return;}
+  showToast('⏳ Creating image...');
+  if(typeof html2canvas==='function'){
+    html2canvas(el,{
+      backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg')||'#0f0f0f',
+      scale: 2, useCORS: true, allowTaint: true
+    }).then(canvas=>{
+      const link=document.createElement('a');
+      link.download='yb-completed-'+new Date().toLocaleDateString('en-GB').replace(/\//g,'-')+'.png';
+      link.href=canvas.toDataURL('image/png');
+      link.click();
+      showToast('✅ Saved as image!');
+    }).catch(()=>{ window.print(); });
+  } else {
+    // Fallback if html2canvas not loaded
+    window.print();
+    showToast('💡 Tip: use Print → Save as PDF');
+  }
+}
+
+// ── Batch label print OLD (kept for compat)
+let _batchMode = false;
+let _batchSelected = new Set();
+
+function startBatchPrint(){
+  _batchMode = true;
+  _batchSelected.clear();
+  document.getElementById('batch-bar')?.classList.add('on');
+  _renderBatchCards();
+}
+
+function endBatchPrint(){
+  _batchMode = false;
+  _batchSelected.clear();
+  document.getElementById('batch-bar')?.classList.remove('on');
+  // Re-render normal cards
+  const pending = allOrders.filter(o=>!isCompleted(o));
+  const ol = document.getElementById('orders-list');
+  if(ol) ol.innerHTML = renderList(pending);
+}
+
+function _renderBatchCards(){
+  const pending = allOrders.filter(o=>!isCompleted(o));
+  const ol = document.getElementById('orders-list');
+  if(!ol) return;
+  ol.innerHTML = pending.map(o=>{
+    const sid = e(o.profileId);
+    const sel = _batchSelected.has(o.profileId);
+    return`<div class="order-card batch-mode ${sel?'selected':''}"
+      onclick="_batchToggle('${sid}')">
+      <div class="card-check" onclick="event.stopPropagation();_batchToggle('${sid}')">
+        ${sel?'✓':''}
+      </div>
+      <div class="card-top">
+        <div class="card-icon" onclick="event.stopPropagation();openPopup('label',allOrders.find(x=>x.profileId==='${sid}'))" style="cursor:pointer" title="Print label">📦</div>
+        <div class="card-body">
+          <span class="card-name">${e(o.name||'FB User')}</span>
+          <div class="card-phone">📞 ${e(o.phone||'—')}</div>
+          <div class="card-loc">📍 ${e((o.location||'—').substring(0,30))}</div>
+          <div class="card-item">🏷️ ${e((o.ordered||'—').substring(0,30))}</div>
+        </div>
+        <span class="card-badge badge-cod">$${e(o.pricing||o.retail||'—')}</span>
+      </div>
+    </div>`;
+  }).join('') || '<div class="notif-empty">គ្មាន order រង់ចាំ</div>';
+  _updateBatchCount();
+}
+
+function _batchToggle(profileId){
+  if(_batchSelected.has(profileId)) _batchSelected.delete(profileId);
+  else _batchSelected.add(profileId);
+  _renderBatchCards();
+}
+
+function batchSelectAll(){
+  const pending = allOrders.filter(o=>!isCompleted(o));
+  if(_batchSelected.size === pending.length){
+    _batchSelected.clear();
+  } else {
+    pending.forEach(o=>_batchSelected.add(o.profileId));
+  }
+  _renderBatchCards();
+}
+
+function _updateBatchCount(){
+  const el = document.getElementById('batch-count');
+  if(el) el.textContent = _batchSelected.size + ' ជ្រើស';
+  // Update select all text
+  const pending = allOrders.filter(o=>!isCompleted(o));
+  const sa = document.querySelector('.batch-sel-all');
+  if(sa) sa.textContent = _batchSelected.size === pending.length ? 'Deselect all' : 'Select all';
+}
+
+function batchDoPrint(){
+  if(!_batchSelected.size){
+    showToast('❌ ជ្រើសយ៉ាងហោចណាស់ 1 order',true); return;
+  }
+  const orders = allOrders.filter(o=>_batchSelected.has(o.profileId));
+  _printThermalLabels(orders);
+}
+
+function _printThermalLabels(orders){
+  const shopName = shipperData?.name||'YB Shop';
+  const html = orders.map(o=>`
+    <div class="thermal-label">
+      <div class="thermal-shop">📦 ${e(shopName)}</div>
+      <hr class="thermal-divider">
+      <div class="thermal-row">
+        <span class="thermal-key">ឈ្មោះ</span>
+        <span class="thermal-val">${e(o.name||'—')}</span>
+      </div>
+      <div class="thermal-row">
+        <span class="thermal-key">ទូរស័ព្ទ</span>
+        <span class="thermal-val">${e(o.phone||'—')}</span>
+      </div>
+      <div class="thermal-row">
+        <span class="thermal-key">ទីតាំង</span>
+        <span class="thermal-val">${e(o.location||'—')}</span>
+      </div>
+      <div class="thermal-row">
+        <span class="thermal-key">ទំនិញ</span>
+        <span class="thermal-val">${e(o.ordered||'—')}</span>
+      </div>
+      <hr class="thermal-divider">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span class="thermal-cod">${e(o.payment||'COD')}</span>
+        <span class="thermal-price">$${e(o.pricing||o.retail||'—')}</span>
+      </div>
+      <div style="font-size:8pt;color:#666;margin-top:1.5mm;text-align:right">
+        ${e(fmtDate(o.orderDate))}
+      </div>
+    </div>`).join('');
+
+  const tp = document.getElementById('thermal-print');
+  if(!tp) return;
+  tp.innerHTML = html;
+  tp.style.display = 'block';
+
+  // Open print dialog
+  setTimeout(()=>{
+    window.print();
+    // Hide after print
+    setTimeout(()=>{
+      tp.style.display = 'none';
+      tp.innerHTML = '';
+    }, 1000);
+  }, 300);
+}
+
+// ── Notification system (Facebook style) ─────────────────────
+const _notifList = [];  // {id, msg, profileId, ts, read}
+let _notifOpen = false;
+
+function addNotif(msg, profileId){
+  _notifList.unshift({
+    id: Date.now()+'',
+    msg: sanitizeStr(msg),
+    profileId: profileId||null,
+    ts: Date.now(),
+    read: false
+  });
+  // Keep max 30
+  if(_notifList.length > 30) _notifList.pop();
+  _renderNotifBadge();
+}
+
+function _renderNotifBadge(){
+  const unread = _notifList.filter(n=>!n.read).length;
+  const badge  = document.getElementById('notif-badge');
+  if(!badge) return;
+  if(unread > 0){
+    badge.textContent = unread > 9 ? '9+' : unread;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function _renderNotifList(){
+  const el = document.getElementById('notif-list');
+  if(!el) return;
+  if(!_notifList.length){
+    el.innerHTML = '<div class="notif-empty">គ្មាន notification</div>';
+    return;
+  }
+  el.innerHTML = _notifList.map(n=>`
+    <div class="notif-item ${n.read?'':'unread'}"
+      onclick="_clickNotif('${e(n.id)}')">
+      <div class="notif-ico">📦</div>
+      <div class="notif-body">
+        <div class="notif-msg">${e(n.msg)}</div>
+        <div class="notif-time">${_relTime(n.ts)}</div>
+      </div>
+      ${n.read?'':'<div class="notif-dot"></div>'}
+    </div>`).join('');
+}
+
+function _clickNotif(id){
+  const n = _notifList.find(x=>x.id===id);
+  if(n){
+    n.read = true;
+    _renderNotifBadge();
+  }
+  closeNotif();
+  if(n?.profileId){
+    setTimeout(()=>openOrderSteps(n.profileId), 200);
+  } else {
+    // Go to pending tab
+    activeTab='pending'; setView('main');
+  }
+}
+
+function toggleNotif(){
+  if(_notifOpen) closeNotif();
+  else openNotif();
+}
+
+function openNotif(){
+  _notifOpen = true;
+  _renderNotifList();
+  document.getElementById('notif-ov')?.classList.add('on');
+  // Mark all as read after 3s
+  setTimeout(()=>{
+    _notifList.forEach(n=>n.read=true);
+    _renderNotifBadge();
+  }, 3000);
+}
+
+function closeNotif(){
+  _notifOpen = false;
+  document.getElementById('notif-ov')?.classList.remove('on');
+}
+
+function clearNotifs(){
+  _notifList.length = 0;
+  _renderNotifBadge();
+  _renderNotifList();
+  closeNotif();
+}
+
+function _relTime(ts){
+  const d = Math.floor((Date.now()-ts)/1000);
+  if(d<60) return 'ទើបតែ';
+  if(d<3600) return Math.floor(d/60)+'m ago';
+  if(d<86400) return Math.floor(d/3600)+'h ago';
+  return Math.floor(d/86400)+'d ago';
 }
 
 // Request notification permission on first load (after brief delay = user gesture)
@@ -1398,7 +1979,7 @@ function renderList(list){
       ontouchstart="startHold(this,'${sid}')" ontouchend="endHold(event)" ontouchcancel="cancelHold()"
       onmousedown="startHold(this,'${sid}')" onmouseup="endHold(event)" onmouseleave="cancelHold()">
       <div class="card-top">
-        <div class="card-icon">📦</div>
+        <div class="card-icon" onclick="event.stopPropagation();openPopup('label',allOrders.find(x=>x.profileId==='${sid}'))" style="cursor:pointer" title="Print label">📦</div>
         <div class="card-body">
           <span class="card-name">${e(o.name||'FB User')}</span>
           <div class="card-phone">📞 <span onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px">${e(o.phone||'—')}</span></div>
@@ -1414,12 +1995,12 @@ function renderList(list){
           <div class="card-date">${fmtDate(o.orderDate)}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <button class="btn-call" onclick="event.stopPropagation();event.preventDefault();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" >📞</button>
+          <button class="btn-call" style="display:none" onclick="event.stopPropagation();event.preventDefault();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" >📞</button>
           ${done
-            ?`<div class="btn-done">✅ ${e(o.receiveDate||'ដឹកដល់')}</div>`
+            ?`<div class="btn-done">✅ ${fmtDate(o.receiveDate)||'ដឹកដល់'}</div>`
             :`<button class="btn-deliver"
-                onclick="event.stopPropagation();askDeliver('${sid}','${e(o.name||'')}')">
-                🚚 ដឹកដល់
+                onclick="event.stopPropagation();openOrderSteps('${sid}')">
+                🚀 រៀបដឹក
                </button>`}
         </div>
       </div>
@@ -1543,7 +2124,16 @@ async function openDetail(profileId){
       </div>
     </div>
     <div class="detail-section">
-      <div class="detail-label">ការបញ្ជាទិញ</div>
+      <!-- Existing invoice photo (from previous step 2) -->
+    ${_so.invoiceImageUrl?`
+    <div style="margin-bottom:12px">
+      <div class="detail-label">📎 Invoice Photo</div>
+      <div style="border-radius:10px;overflow:hidden;cursor:zoom-in;max-height:140px;background:var(--card)"
+        onclick="openMediaViewer([{url:'${e(_so.invoiceImageUrl)}',type:'image',title:'Invoice'}],0)">
+        <img src="${e(_so.invoiceImageUrl)}" style="width:100%;max-height:140px;object-fit:cover">
+      </div>
+    </div>`:''}
+    <div class="detail-label">ការបញ្ជាទិញ</div>
       <div class="detail-grid">
         <div class="detail-item full"><div class="key">ទំនិញ</div><div class="val">${e(o.ordered||'—')}</div></div>
         <div class="detail-item"><div class="key">តម្លៃ</div>
@@ -1763,11 +2353,51 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
   <div class="mv-scroll" id="mv-scroll"></div>
 </div>
 
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-ov" id="notif-ov" onclick="if(event.target===this)closeNotif()">
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-header">
+      <span>🔔 Notifications</span>
+      <span class="notif-clear" onclick="clearNotifs()">Clear all</span>
+    </div>
+    <div class="notif-list" id="notif-list">
+      <div class="notif-empty">គ្មាន notification</div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Universal Fullscreen Popup -->
+<div class="fs-popup" id="fs-popup">
+  <div class="fs-popup-hdr">
+    <button class="fs-popup-close" onclick="closePopup()">←</button>
+    <div class="fs-popup-title" id="fs-popup-title">—</div>
+    <div id="fs-popup-actions"></div>
+  </div>
+  <div class="fs-popup-body" id="fs-popup-body"></div>
+  <div class="fs-popup-ft" id="fs-popup-ft" style="display:none"></div>
+</div>
+
+<!-- Thermal print container (hidden, shown on print) -->
+<div id="thermal-print" style="display:none"></div>
+
 <!-- NAV MENU -->
 <div class="nav-ov" id="nav-ov" onclick="if(event.target===this)closeNavMenu()">
   <div class="nav-sheet" id="nav-sheet">
     <div class="nav-handle"></div>
     <div class="nav-title">YB Shop</div>
+    <div class="nav-item" onclick="closeNavMenu();setView('catalog')">
+      <div class="nav-item-ico" style="background:rgba(0,122,255,.15)">🛍️</div>
+      <div><div class="nav-item-lbl">Catalog</div><div class="nav-item-sub">Share your products</div></div>
+    </div>
+    <!-- Category quick filter chips -->
+    <div id="nav-cat-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px 4px;border-top:1px solid var(--border)"></div>
+    <div class="nav-item" onclick="closeNavMenu();setView('stock')">
+      <div class="nav-item-ico" style="background:rgba(34,197,94,.15)">📦</div>
+      <div><div class="nav-item-lbl">Stock</div><div class="nav-item-sub">Products & inventory</div></div>
+    </div>
     <div class="nav-item" onclick="closeNavMenu();setView('profile')">
       <div class="nav-item-ico" style="background:rgba(240,165,0,.15)">👤</div>
       <div><div class="nav-item-lbl">Account</div><div class="nav-item-sub" id="nav-user-name">—</div></div>
@@ -1886,17 +2516,26 @@ function openExternalLink(url){
   try{tg.openLink(url);}catch(_){try{window.open(url,'_blank','noopener');}catch(_){}}
 }
 
+let _alertCount = 0;
+let _alertHideTimer = null;
 function showAlert(msg){
   const safe = sanitizeStr(msg);
+  // Also add to notification list
+  const _nPid = allOrders.find(o=>!isCompleted(o))?.profileId||null;
+  addNotif(safe, _nPid);
+  _alertCount++;
 
-  // ── 1. Persistent fixed banner (always in DOM, outside #root) ──
+  // ── 1. Global banner with count (dedup) ──────────────────
   const gb = document.getElementById('global-alert-bar');
   const gt = document.getElementById('global-alert-txt');
   if(gb && gt){
-    gt.textContent = safe;
+    gt.textContent = _alertCount>1 ? `(${_alertCount}) ${safe}` : safe;
     gb.classList.remove('hidden');
-    clearTimeout(gb._t);
-    gb._t = setTimeout(()=>gb.classList.add('hidden'), 8000);
+    clearTimeout(_alertHideTimer);
+    _alertHideTimer = setTimeout(()=>{
+      gb.classList.add('hidden');
+      _alertCount=0;
+    }, 8000);
   }
 
   // ── 2. Inline alert inside main view (if currently showing) ──
@@ -1924,6 +2563,7 @@ function showAlert(msg){
 function dismissAlert(){
   const gb=document.getElementById('global-alert-bar');
   if(gb)gb.classList.add('hidden');
+  _alertCount=0;
   const alertEl=document.getElementById('new-alert');
   if(alertEl)alertEl.classList.add('hidden');
   visibleCount=CHUNK; renderAll();
@@ -2003,6 +2643,15 @@ function closeStockBg(ev){
 
 // ── Load products ─────────────────────────────────────────
 async function _loadStk(forceRefresh=false){
+  if(!forceRefresh && _stk.length>0 && _stkCache && (Date.now()-_stkCacheTs)<STK_TTL){
+    _renderStk(); return;
+  }
+  // Safety timeout — never leave spinner > 12s
+  const _stkTimeout=setTimeout(()=>{
+    const b=document.getElementById('sht-body');
+    if(b&&b.querySelector('.spinner'))
+      b.innerHTML='<div class="lc"><div style="font-size:24px">⚠️</div><span>Timeout — ចុច ⟳ Retry</span></div>';
+  },12000);
   if(!forceRefresh&&_stkCache&&(Date.now()-_stkCacheTs)<STK_TTL){
     _stk=_stkCache;_renderStk();return;
   }
@@ -2010,11 +2659,13 @@ async function _loadStk(forceRefresh=false){
   body.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
   try{
     const res=await gs('getShipperProducts', shipperData?.phone||'');
+    clearTimeout(_stkTimeout);
     if(res&&res.error)throw new Error(res.error);
     _stk=Array.isArray(res)?res:(res.products||[]);
     _stkCache=_stk;_stkCacheTs=Date.now();
     _renderStk();
   }catch(err){
+    clearTimeout(_stkTimeout);
     document.getElementById('sht-body').innerHTML=`
       <div class="empty">
         <div class="empty-icon">⚠️</div>
@@ -2071,10 +2722,12 @@ function _renderStk(){
       ${isOut?`<span class="prod-out-tag">🚫 អស់</span>`
              :isLow?`<span class="prod-low-tag">⚠️ ជិតអស់</span>`:''}
       <button class="prod-add" onclick="event.stopPropagation();openMv('${pid}','${pname}',${qty},${mn})">+</button>
-      <div class="prod-img" style="background:${p.image_url?'var(--surface)':grd[gi]}">
+      <div class="prod-img" style="background:${p.image_url?'var(--surface)':grd[gi]};cursor:${p.image_url?'zoom-in':'default'}"
+        onclick="event.stopPropagation();_openStockItemViewer('${pid}')">
         ${p.image_url
           ?`<img src="${e(p.image_url)}" loading="lazy" onerror="this.style.display='none'">`
           :`<span style="position:relative;z-index:1">📦</span>`}
+        ${p.video_url?`<div style="position:absolute;bottom:4px;right:4px;font-size:14px;line-height:1">▶️</div>`:''}
       </div>
       <div class="prod-info">
         <div class="prod-name">${pname}</div>
@@ -2227,10 +2880,15 @@ function openProductDetail(productId) {
   root.innerHTML=`
     <div style="padding-bottom:100px">
       ${_buildBackHeader('📦 '+e(p.name||'Product'),"setView('stock')")}
-      <!-- Image / emoji display -->
-      <div style="width:100%;aspect-ratio:4/3;background:var(--card);display:flex;align-items:center;justify-content:center;overflow:hidden">
+      <!-- Image / media display → click opens TikTok viewer -->
+      <div style="width:100%;aspect-ratio:4/3;background:var(--card);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;position:relative"
+        onclick="_openProductMediaViewer(${JSON.stringify(JSON.stringify(p))})">
         ${p.image_url?`<img src="${e(p.image_url)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`:
           `<span style="font-size:72px">📦</span>`}
+        ${(p.video_url||p['Video URL'])?`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3)"><span style="font-size:44px">▶️</span></div>`:''}
+        <div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:700;padding:4px 8px;border-radius:20px">
+          ${(p.video_url||p['Video URL'])?'📹 Tap to watch':'🖼️ Tap to view'}
+        </div>
       </div>
       <!-- Info -->
       <div style="padding:16px">
@@ -2271,6 +2929,32 @@ function openProductDetail(productId) {
       </div>
     </div>`;
 }
+
+
+// ── Stock item → media viewer ─────────────────────────────────
+function _openStockItemViewer(productId){
+  const p=(_stkCache||_stk||[]).find(x=>(x.product_id||x.id)===productId);
+  if(!p){ showToast('ផលិតផលអត់ស្គាល់',true); return; }
+  const items=_buildProductMedia(p);
+  if(!items.length){
+    // No media — go to product detail instead
+    openProductDetail(productId);
+    return;
+  }
+  openMediaViewer(items, 0);
+}
+
+function _openProductMediaViewer(pJson){
+  try{
+    const p=typeof pJson==='string'?JSON.parse(pJson):pJson;
+    const items=_buildProductMedia(p);
+    if(!items.length){
+      showToast('គ្មានរូបភាព/វីដេអូ');return;
+    }
+    openMediaViewer(items, 0);
+  }catch(e){showToast('Error: '+e.message,true);}
+}
+
 function _buildLinkedOrders(productName){
   const q=(productName||'').toLowerCase().substring(0,10);
   const linked=allOrders.filter(o=>!isCompleted(o)&&(o.ordered||'').toLowerCase().includes(q));
@@ -2460,15 +3144,26 @@ function openAddProduct(){
 // ════════════════════════════════════════════════════════════
 // VIEW SYSTEM — mockup v2 pattern (no overlay popups)
 // ════════════════════════════════════════════════════════════
-let _view = 'main';  // main | order-detail | stock | profile | catalog
+let _view = 'main';
+let _scrollPos = {}; // save scroll per view  // main | order-detail | stock | profile | catalog
 let _catOffset = 0;  // catalog pagination
 let _ppPhotoOffset = 0;
 
-function setView(v) {
+function setView(v, opts) {
+  // Save current scroll before leaving
+  _scrollPos[_view] = window.scrollY;
+  const prevView = _view;
   _view = v;
-  // Fix body padding: sub-views have their own sticky header inside #root
   document.body.style.paddingTop = (v === 'main') ? '' : '0';
-  window.scrollTo(0,0);
+  if(opts && opts.noScroll) { /* keep position */ }
+  else if(v === 'main' && _scrollPos['main'] && !opts?.resetScroll) {
+    // Restore scroll position when going back to main
+    renderView();
+    requestAnimationFrame(()=>window.scrollTo(0, _scrollPos['main']||0));
+    return;
+  } else {
+    window.scrollTo(0,0);
+  }
   renderView();
 }
 
@@ -2524,17 +3219,27 @@ function renderMain() {
       ${searching?'':renderProfileCardHTML()}
       ${searching?'':_buildStats(pending.length, completed.length)}
       <div class="fbar">
-        <span class="fbar-label">Filter${searching?` <span style="background:var(--accent);color:#000;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700">${orders.length}</span>`:''}</span>
+        <span class="fbar-label">Filter${searching?` <span style="background:var(--accent);color:#000;font-size:10px;padding:1px 5px;border-radius:8px;font-weight:700">${orders.length}</span>`:''}</span>
         <label class="toggle" onclick="toggleCOD()">
           <div class="toggle-track ${codOnly?'on':''}" id="cod-track"><div class="toggle-thumb"></div></div>
           <span class="toggle-text">COD ប៉ុណ្ណោះ</span>
         </label>
+        ${activeTab==='pending'?`<button onclick="startBatchPrint()"
+          style="padding:6px 12px;background:var(--card);border:1px solid var(--border);
+          border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text)">
+          🖨️ Label</button>`:''}
       </div>
       ${searching?`<div style="padding:8px 12px;font-size:12px;color:var(--muted)">🔍 លទ្ធផល ${orders.length}</div>`:`<div class="tabs">
-        <div class="tab ${activeTab==='pending'?'active':''}"  onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
-        <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
+        <div class="tab ${activeTab==='pending'?'active':''}"><span onclick="setTab('pending')">🚚 រង់ចាំ</span> <span onclick="event.stopPropagation();openPopup('batch',allOrders.filter(o=>!isCompleted(o)))" style="cursor:pointer;background:var(--accent);color:#000;padding:1px 7px;border-radius:10px;font-size:12px;font-weight:800">${pending.length}</span></div>
+        <div class="tab ${activeTab==='completed'?'active':''}"><span onclick="setTab('completed')">✅ ដឹកដល់</span> <span onclick="event.stopPropagation();openPopup('completed',allOrders.filter(o=>isCompleted(o)))" style="cursor:pointer;background:var(--green);color:#fff;padding:1px 7px;border-radius:10px;font-size:12px;font-weight:800">${completed.length}</span></div>
         <div class="tab" onclick="setView('stock')">📦 ស្តុក</div>
       </div>`}
+      <div class="batch-bar" id="batch-bar">
+        <span class="batch-sel-all" onclick="batchSelectAll()">Select all</span>
+        <span class="batch-count" id="batch-count">0 selected</span>
+        <button class="batch-print-btn" onclick="batchDoPrint()">🖨️ Print</button>
+        <span class="batch-cancel" onclick="endBatchPrint()">✕</span>
+      </div>
       <div class="content" id="orders-list">${renderList(listToRender)}</div>
     </div>`;
   // Populate hdr-sub (Bug 14)
@@ -2552,7 +3257,9 @@ function _buildMainHeader(){
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px" id="hdr-actions">
       <input class="hdr-search" id="hdr-search-inp" placeholder="🔍 ស្វែងរក..."
         oninput="debounceSearch(this.value)" onsearch="debounceSearch(this.value)">
-      <div class="hdr-badge" id="pending-count">0</div>
+      <button class="hdr-bell" id="hdr-bell-btn" onclick="toggleNotif()">
+        🔔<span class="notif-badge" id="notif-badge" style="display:none">0</span>
+      </button>
     </div>
   </div>
   <div class="new-order-alert hidden" id="new-alert" onclick="dismissAlert()">
@@ -2716,7 +3423,7 @@ async function renderCatalog() {
     <div class="cat-wrap" id="cat-wrap" style="color:#1c1c1e">
       <div class="cat-top-hdr" id="cat-hdr">
         <div class="cat-top-back" onclick="setView('main')">←</div>
-        <div class="cat-top-title">${e(shopName)}</div>
+        <div><div class="cat-top-title">${e(shopName)}</div><div style="font-size:10px;color:#aeaeb2;margin-top:1px">Share · Bring it to world 🌍</div></div>
         <div class="cat-top-cart" onclick="openCart('list')" id="cat-cart-btn">
           🛒<span class="cat-top-cart-badge" id="cat-cart-count" style="display:none">0</span>
         </div>
@@ -2736,7 +3443,13 @@ async function renderCatalog() {
       <div style="height:60px"></div>
     </div>`;
   _catOffset=0; _catSearch=''; _catCatFilter='ទំហស់';
-  _loadCatalogItems(true);
+  // Fast path: if already loaded, render immediately from cache
+  if(_allCatalogItems.length){
+    _buildCatChips();
+    _renderCatalogGrid();
+  } else {
+    _loadCatalogItems(true);
+  }
   // auto-hide header on scroll
   let lastY=0;
   window.onscroll=()=>{
@@ -2800,6 +3513,17 @@ function _renderCatalogGrid(){
           + ដាក់ក្នុងត្រន
         </button>
       </div>`;
+    // Image area → media viewer | anywhere else → product detail
+    const catImg=div.querySelector('.cat-prod-img');
+    if(catImg){
+      catImg.style.cursor='zoom-in';
+      catImg.addEventListener('click',ev=>{
+        ev.stopPropagation();
+        const items=_buildProductMedia(p);
+        if(items.length) openMediaViewer(items,0);
+        else openCatalogProduct(p);
+      });
+    }
     div.onclick=()=>openCatalogProduct(p);
     grid.appendChild(div);
   });
@@ -2873,19 +3597,43 @@ function openMediaViewer(itemsOrIdx, startIdx=0){
   const scroll=document.getElementById('mv-scroll');
   if(!scroll) return;
 
-  // Build all slides
+  // Build all slides — supports image, mp4, YouTube
   scroll.innerHTML=_mediaItems.map((item,i)=>{
-    const isVideo=item.type==='video'||/\.(mp4|mov|webm|m3u8)/i.test(item.url||'');
-    const media=isVideo
-      ?`<video src="${e(item.url)}" playsinline preload="metadata"
-          style="width:100%;height:100%;object-fit:contain"
+    const isYT  =_isYT(item.url||'');
+    const isMp4 =!isYT&&/\.(mp4|mov|webm|m3u8)/i.test(item.url||'');
+    const isVid =isYT||isMp4||item.type==='video';
+    let media;
+    if(isYT){
+      const embedUrl=_ytEmbed(item.url, i===startIdx);
+      media=`<div style="width:100%;position:relative;padding-bottom:177.78%;background:#000">
+        <iframe id="mv-yt-${i}" class="mv-yt-frame"
+          style="position:absolute;inset:0;width:100%;height:100%"
+          src="${e(embedUrl)}"
+          allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+          allowfullscreen></iframe>
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;cursor:pointer"
+          onclick="_mvYTPlay(${i})"></div>
+      </div>`;
+    } else if(isMp4){
+      media=`<video src="${e(item.url)}" playsinline preload="metadata"
+          style="width:100%;max-height:100dvh;object-fit:contain"
           onclick="_mvTogglePlay(this)"></video>
-         <div class="mv-play-ico" id="mv-pi-${i}">▶️</div>`
-      :`<img src="${e(item.url)}" loading="${i===startIdx?'eager':'lazy'}"
-          onload="this.style.opacity=1" style="opacity:0;transition:opacity .3s">`;
+         <div class="mv-play-ico" id="mv-pi-${i}">▶️</div>`;
+    } else {
+      media=`<img src="${e(item.url)}" loading="${i===startIdx?'eager':'lazy'}"
+          onload="this.style.opacity=1"
+          style="opacity:0;transition:opacity .3s;max-width:100%;max-height:100dvh;object-fit:contain">`;
+    }
     return`<div class="mv-slide" id="mv-slide-${i}" data-idx="${i}">
       ${media}
-      ${item.title?`<div class="mv-caption">${e(item.title)}</div>`:''}
+      <div class="mv-slide-info">
+        ${item.title?`<div class="mv-slide-title">${e(item.title)}</div>`:''}
+        ${item.price?`<div class="mv-slide-sub">$${e(item.price)}</div>`:''}
+      </div>
+      <div class="mv-right-actions">
+        <div class="mv-action-btn" onclick="closeMediaViewer()">✕</div>
+        ${item.product_id?`<div class="mv-action-btn" onclick="_mvOpenProduct('${e(item.product_id)}')">📦</div>`:''}
+      </div>
     </div>`;
   }).join('');
 
@@ -2948,6 +3696,20 @@ function _mvAutoplay(idx){
   }
 }
 
+
+function _mvYTPlay(idx){
+  // Reload iframe with autoplay when user taps
+  const iframe=document.getElementById('mv-yt-'+idx);
+  if(!iframe) return;
+  const item=_mediaItems[idx];
+  if(!item) return;
+  iframe.src=_ytEmbed(item.url, true);
+}
+function _mvOpenProduct(productId){
+  closeMediaViewer();
+  setTimeout(()=>openProductDetail(productId), 300);
+}
+
 function _mvTogglePlay(vid){
   const slide=vid.closest('.mv-slide');
   const idx=parseInt(slide?.dataset.idx||'0');
@@ -2974,6 +3736,44 @@ function closeMediaViewer(){
   _mvObserver?.disconnect();
   _mvObserver=null;
 }
+
+// ── YouTube URL utilities ─────────────────────────────────────
+function _ytId(url){
+  if(!url) return null;
+  // Shorts: youtube.com/shorts/ID
+  let m=url.match(/youtube\.com\/shorts\/([\w-]+)/);
+  if(m) return m[1];
+  // youtu.be/ID
+  m=url.match(/youtu\.be\/([\w-]+)/);
+  if(m) return m[1];
+  // youtube.com/watch?v=ID
+  m=url.match(/[?&]v=([\w-]+)/);
+  if(m) return m[1];
+  return null;
+}
+function _ytEmbed(url, autoplay=false){
+  const id=_ytId(url);
+  if(!id) return null;
+  return `https://www.youtube.com/embed/${id}?playsinline=1&rel=0`
+    +(autoplay?'&autoplay=1':'');
+}
+function _isYT(url){ return !!_ytId(url); }
+function _isVideo(url){
+  return _isYT(url)||/\.(mp4|mov|webm|m3u8)/i.test(url||'');
+}
+
+// ── Build media items from product ───────────────────────────
+function _buildProductMedia(product){
+  const items=[];
+  // Image first
+  if(product.image_url&&product.image_url.startsWith('http'))
+    items.push({url:product.image_url, type:'image', title:product.name});
+  // Video (YouTube Shorts or mp4)
+  const vid=product.video_url||product['Video URL']||'';
+  if(vid) items.push({url:vid, type:'video', title:product.name});
+  return items;
+}
+
 // ESC key
 document.addEventListener('keydown',ev=>{
   if(ev.key==='Escape') closeMediaViewer();
@@ -3007,6 +3807,19 @@ function openNavMenu(){
   const tl=document.getElementById('nav-theme-lbl');
   if(tl) tl.textContent=_isDark?'Dark mode':'Light mode';
   ov.classList.add('on');
+  // Populate category chips from loaded products
+  const chips = document.getElementById('nav-cat-chips');
+  if(chips && (_allCatalogItems.length||_stk.length)){
+    const src = _allCatalogItems.length ? _allCatalogItems : _stk;
+    const cats = [...new Set(src.map(p=>p.category||'').filter(Boolean))].slice(0,8);
+    chips.innerHTML = cats.map(cat=>`
+      <div onclick="closeNavMenu();_catCatFilter='${e(cat)}';setView('catalog')"
+        style="background:var(--card);border:1px solid var(--border);border-radius:16px;
+        padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;
+        color:${_catCatFilter===cat?'var(--accent)':'var(--text)'}">
+        ${e(cat)}
+      </div>`).join('');
+  }
 }
 function closeNavMenu(){
   document.getElementById('nav-ov')?.classList.remove('on');
@@ -3059,6 +3872,34 @@ function loadingHTML(msg=''){
   },{passive:true});
 })();
 
+
+// ── Cart sheet swipe-down to close ───────────────────────────
+(function(){
+  let sy=0, dy=0, drag=false;
+  document.addEventListener('touchstart', ev=>{
+    const handle=document.querySelector('.cart-handle');
+    const hdr=document.querySelector('#cart-sheet .cart-hd');
+    if((handle&&handle.contains(ev.target))||(hdr&&hdr.contains(ev.target))){
+      sy=ev.touches[0].clientY; dy=0; drag=true;
+      const s=document.getElementById('cart-sheet');
+      if(s) s.style.transition='none';
+    }
+  },{passive:true});
+  document.addEventListener('touchmove', ev=>{
+    if(!drag) return;
+    dy=Math.max(0,ev.touches[0].clientY-sy);
+    const s=document.getElementById('cart-sheet');
+    if(s) s.style.transform=`translateY(${dy}px)`;
+  },{passive:true});
+  document.addEventListener('touchend', ()=>{
+    if(!drag) return; drag=false;
+    const s=document.getElementById('cart-sheet');
+    if(s){s.style.transition='';s.style.transform='';}
+    if(dy>100) closeCart();
+    dy=0;
+  },{passive:true});
+})();
+
 // ── Cart bottom sheet ─────────────────────────────────────────
 let _cartStep = 1; // 1=list, 2=form, 3=pay
 let _coData = {};  // checkout data
@@ -3069,6 +3910,7 @@ function openCart(step){
 }
 function closeCart(){
   document.getElementById('cart-ov')?.classList.remove('on');
+  // NOTE: _coData NOT cleared — preserved for next open
 }
 function _renderCartSheet(){
   const ttls=['','🛒 ក្រណាត់', '📋 ព័ត៌មានអ្នកទទួល', '💳 ការទូទាត់'];
@@ -3216,7 +4058,7 @@ async function _confirmOrder(){
       note:_coData.note||''
     });
     if(r&&r.success){
-      _catCart=[];_coData={};
+      _catCart=[];_coData={};  // clear after success only
       closeCart();
       _updateCartBadge();
       showToast('✅ ​ ​ ​ ​ ​ ​!');
@@ -3249,9 +4091,9 @@ function openCatalogProduct(p) {
         <!-- Qty selector -->
         <div style="display:flex;align-items:center;gap:14px;background:var(--card);border-radius:12px;padding:12px 16px;border:1px solid var(--border);margin-bottom:16px">
           <span style="font-size:14px;color:var(--muted);flex:1">ចំនួន</span>
-          <button onclick="_catQtyAdj('${e(p.code||p.id||'')}',false)" style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:20px;cursor:pointer;line-height:1">−</button>
+          <button onclick="_catQtyAdj('${e(p.code||p.id||'')}',false)" style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:20px;cursor:pointer;line-height:1">−</button>
           <span id="cat-qty-${e(p.code||p.id||'')}" style="font-size:18px;font-weight:700;min-width:30px;text-align:center">${existingQty||1}</span>
-          <button onclick="_catQtyAdj('${e(p.code||p.id||'')}',true)"  style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:20px;cursor:pointer;line-height:1">+</button>
+          <button onclick="_catQtyAdj('${e(p.code||p.id||'')}',true)"  style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:20px;cursor:pointer;line-height:1">+</button>
         </div>
         <!-- Add to cart + buy now -->
         <div style="display:flex;gap:10px">
@@ -3393,12 +4235,21 @@ function openOrderSteps(profileId){
   _saveStepState();
 }
 function closeStepSheet(){
+  const wasSearch=!!_searchAll;
+  const savedSearch=_searchAll;
   const ov=document.getElementById('step-overlay');
   if(ov)ov.classList.remove('on');
   document.body.style.overflow='';
   document.body.style.touchAction='';
   _clearStepState();
   if(_view==='order-detail')setView('main');
+  // Restore search state after navigation
+  if(wasSearch){
+    setTimeout(()=>{
+      const inp=document.getElementById('hdr-search-inp');
+      if(inp&&savedSearch){inp.value=savedSearch;}
+    },200);
+  }
 }
 function closeStepBg(ev){}
 
@@ -3465,7 +4316,7 @@ function _buildS1(){
   const hasTG=!!(o.tgUsername&&!String(o.tgUsername).includes('INSERT')&&String(o.tgUsername).trim().length>1);
   const isCod=(o.payment||'').toLowerCase().includes('cod');
   const phoneHtml=hasTG
-    ?`<div class="d2-v tg-link" onclick="openCustomerTG('${e(o.tgUsername)}')">📞 ${e(o.phone||'—')}<span style="font-size:9px;margin-left:4px;color:var(--blue)">→ TG</span></div>`
+    ?`<div class="d2-v tg-link" onclick="openCustomerTG('${e(o.tgUsername)}')">📞 ${e(o.phone||'—')}<span style="font-size:10px;margin-left:4px;color:var(--blue)">→ TG</span></div>`
     :`<div class="d2-v">${e(o.phone||'—')}</div>`;
   return`
     <div class="s-lbl">អ្នកទទួល</div>
@@ -3597,14 +4448,17 @@ async function _saveStep2AndNext(){
   const btn=document.getElementById('s2-next');
   if(btn){btn.disabled=true;btn.textContent='⏳...';}
   try{
+    const calc=_calcTotal();
     await gs('updateOrder',{
-      profile_id   :_so.profileId,
-      tenant_id    :typeof STORE!=='undefined'?STORE:'yb9999',
-      delivery_fee :_s2.deliveryFee||'',
-      tracking_number:_s2.trackingNumber||'',
-      shipper_phone:_s2.shipperPhone||'',
-      total_paid    :_calcTotal().total.toFixed(2),
-      shop_discount :_s2.shopDiscount?(_s2.shopDiscountAmt||'1.5'):'',
+      profile_id      :_so.profileId,
+      tenant_id       :typeof STORE!=='undefined'?STORE:'yb9999',
+      delivery_fee    :parseFloat(_s2.deliveryFee||0).toFixed(2),
+      tracking_number :_s2.trackingNumber||'',
+      shipper_phone   :_s2.shipperPhone||shipperData?.phone||'',
+      total_paid      :calc.total.toFixed(2),
+      discount        :_s2.shopDiscount?(parseFloat(_s2.shopDiscountAmt||1.5)+parseFloat(calc.retailDisc||0)).toFixed(2):'0',
+      shop_discount   :_s2.shopDiscount?(_s2.shopDiscountAmt||'1.5'):'0',
+      status          :'Processing',
     });
     // Update local order object
     const idx=allOrders.findIndex(x=>x.profileId===_so.profileId);
