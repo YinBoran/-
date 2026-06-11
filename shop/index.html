@@ -2342,94 +2342,6 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
 </div>
 <script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script>
 
-
-<!-- MEDIA FULLSCREEN VIEWER — TikTok style -->
-<div class="media-viewer" id="media-viewer">
-  <div class="mv-topbar">
-    <button class="mv-close" onclick="closeMediaViewer()">✕</button>
-    <div class="mv-counter" id="mv-counter"></div>
-    <div style="width:44px"></div>
-  </div>
-  <div class="mv-scroll" id="mv-scroll"></div>
-</div>
-
-
-<!-- NOTIFICATION PANEL -->
-<div class="notif-ov" id="notif-ov" onclick="if(event.target===this)closeNotif()">
-  <div class="notif-panel" id="notif-panel">
-    <div class="notif-header">
-      <span>🔔 Notifications</span>
-      <span class="notif-clear" onclick="clearNotifs()">Clear all</span>
-    </div>
-    <div class="notif-list" id="notif-list">
-      <div class="notif-empty">គ្មាន notification</div>
-    </div>
-  </div>
-</div>
-
-
-
-<!-- Universal Fullscreen Popup -->
-<div class="fs-popup" id="fs-popup">
-  <div class="fs-popup-hdr">
-    <button class="fs-popup-close" onclick="closePopup()">←</button>
-    <div class="fs-popup-title" id="fs-popup-title">—</div>
-    <div id="fs-popup-actions"></div>
-  </div>
-  <div class="fs-popup-body" id="fs-popup-body"></div>
-  <div class="fs-popup-ft" id="fs-popup-ft" style="display:none"></div>
-</div>
-
-<!-- Thermal print container (hidden, shown on print) -->
-<div id="thermal-print" style="display:none"></div>
-
-<!-- NAV MENU -->
-<div class="nav-ov" id="nav-ov" onclick="if(event.target===this)closeNavMenu()">
-  <div class="nav-sheet" id="nav-sheet">
-    <div class="nav-handle"></div>
-    <div class="nav-title">YB Shop</div>
-    <div class="nav-item" onclick="closeNavMenu();setView('catalog')">
-      <div class="nav-item-ico" style="background:rgba(0,122,255,.15)">🛍️</div>
-      <div><div class="nav-item-lbl">Catalog</div><div class="nav-item-sub">Share your products</div></div>
-    </div>
-    <!-- Category quick filter chips -->
-    <div id="nav-cat-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px 4px;border-top:1px solid var(--border)"></div>
-    <div class="nav-item" onclick="closeNavMenu();setView('stock')">
-      <div class="nav-item-ico" style="background:rgba(34,197,94,.15)">📦</div>
-      <div><div class="nav-item-lbl">Stock</div><div class="nav-item-sub">Products & inventory</div></div>
-    </div>
-    <div class="nav-item" onclick="closeNavMenu();setView('profile')">
-      <div class="nav-item-ico" style="background:rgba(240,165,0,.15)">👤</div>
-      <div><div class="nav-item-lbl">Account</div><div class="nav-item-sub" id="nav-user-name">—</div></div>
-    </div>
-    <div class="nav-item" onclick="toggleDarkMode()">
-      <div class="nav-item-ico" style="background:rgba(59,130,246,.15)" id="nav-theme-ico">☀️</div>
-      <div><div class="nav-item-lbl">Display</div><div class="nav-item-sub" id="nav-theme-lbl">Dark mode</div></div>
-      <div style="margin-left:auto"><div class="toggle-track" id="nav-dark-track"><div class="toggle-thumb"></div></div></div>
-    </div>
-    <div class="nav-item" onclick="closeNavMenu();doLogout()" style="color:var(--red)">
-      <div class="nav-item-ico" style="background:rgba(239,68,68,.15)">🚪</div>
-      <div><div class="nav-item-lbl" style="color:var(--red)">Logout</div></div>
-    </div>
-  </div>
-</div>
-<!-- CART OVERLAY -->
-<div class="cart-ov" id="cart-ov" onclick="if(event.target===this)closeCart()">
-  <div class="cart-sheet" id="cart-sheet">
-    <div class="cart-handle"></div>
-    <div class="cart-hd">
-      <div class="cart-hd-ttl">
-        <span id="cart-sheet-ico">🛒</span>
-        <span id="cart-sheet-ttl">តន្ត្រី</span>
-        <div class="cart-step-dots" id="cart-dots"></div>
-      </div>
-      <button class="cart-close" onclick="closeCart()">✕</button>
-    </div>
-    <div class="cart-body" id="cart-body"></div>
-    <div class="cart-ft" id="cart-ft"></div>
-  </div>
-</div>
-
 </body></html>`;
   try{
     const w=window.open('','_blank');
@@ -4974,5 +4886,95 @@ function _restoreStepState(){
 }
 // ============================================================
 </script>
+
+
+<!-- MEDIA FULLSCREEN VIEWER — TikTok style -->
+<div class="media-viewer" id="media-viewer">
+  <div class="mv-topbar">
+    <button class="mv-close" onclick="closeMediaViewer()">✕</button>
+    <div class="mv-counter" id="mv-counter"></div>
+    <div style="width:44px"></div>
+  </div>
+  <div class="mv-scroll" id="mv-scroll"></div>
+</div>
+
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-ov" id="notif-ov" onclick="if(event.target===this)closeNotif()">
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-header">
+      <span>🔔 Notifications</span>
+      <span class="notif-clear" onclick="clearNotifs()">Clear all</span>
+    </div>
+    <div class="notif-list" id="notif-list">
+      <div class="notif-empty">គ្មាន notification</div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Universal Fullscreen Popup -->
+<div class="fs-popup" id="fs-popup">
+  <div class="fs-popup-hdr">
+    <button class="fs-popup-close" onclick="closePopup()">←</button>
+    <div class="fs-popup-title" id="fs-popup-title">—</div>
+    <div id="fs-popup-actions"></div>
+  </div>
+  <div class="fs-popup-body" id="fs-popup-body"></div>
+  <div class="fs-popup-ft" id="fs-popup-ft" style="display:none"></div>
+</div>
+
+<!-- Thermal print container (hidden, shown on print) -->
+<div id="thermal-print" style="display:none"></div>
+
+<!-- NAV MENU -->
+<div class="nav-ov" id="nav-ov" onclick="if(event.target===this)closeNavMenu()">
+  <div class="nav-sheet" id="nav-sheet">
+    <div class="nav-handle"></div>
+    <div class="nav-title">YB Shop</div>
+    <div class="nav-item" onclick="closeNavMenu();setView('catalog')">
+      <div class="nav-item-ico" style="background:rgba(0,122,255,.15)">🛍️</div>
+      <div><div class="nav-item-lbl">Catalog</div><div class="nav-item-sub">Share your products</div></div>
+    </div>
+    <!-- Category quick filter chips -->
+    <div id="nav-cat-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px 4px;border-top:1px solid var(--border)"></div>
+    <div class="nav-item" onclick="closeNavMenu();setView('stock')">
+      <div class="nav-item-ico" style="background:rgba(34,197,94,.15)">📦</div>
+      <div><div class="nav-item-lbl">Stock</div><div class="nav-item-sub">Products & inventory</div></div>
+    </div>
+    <div class="nav-item" onclick="closeNavMenu();setView('profile')">
+      <div class="nav-item-ico" style="background:rgba(240,165,0,.15)">👤</div>
+      <div><div class="nav-item-lbl">Account</div><div class="nav-item-sub" id="nav-user-name">—</div></div>
+    </div>
+    <div class="nav-item" onclick="toggleDarkMode()">
+      <div class="nav-item-ico" style="background:rgba(59,130,246,.15)" id="nav-theme-ico">☀️</div>
+      <div><div class="nav-item-lbl">Display</div><div class="nav-item-sub" id="nav-theme-lbl">Dark mode</div></div>
+      <div style="margin-left:auto"><div class="toggle-track" id="nav-dark-track"><div class="toggle-thumb"></div></div></div>
+    </div>
+    <div class="nav-item" onclick="closeNavMenu();doLogout()" style="color:var(--red)">
+      <div class="nav-item-ico" style="background:rgba(239,68,68,.15)">🚪</div>
+      <div><div class="nav-item-lbl" style="color:var(--red)">Logout</div></div>
+    </div>
+  </div>
+</div>
+<!-- CART OVERLAY -->
+<div class="cart-ov" id="cart-ov" onclick="if(event.target===this)closeCart()">
+  <div class="cart-sheet" id="cart-sheet">
+    <div class="cart-handle"></div>
+    <div class="cart-hd">
+      <div class="cart-hd-ttl">
+        <span id="cart-sheet-ico">🛒</span>
+        <span id="cart-sheet-ttl">តន្ត្រី</span>
+        <div class="cart-step-dots" id="cart-dots"></div>
+      </div>
+      <button class="cart-close" onclick="closeCart()">✕</button>
+    </div>
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-ft" id="cart-ft"></div>
+  </div>
+</div>
+
+
 </body>
 </html>
