@@ -664,49 +664,70 @@ body{
 .alert-ov.on .alert-box2{transform:scale(1)}
 .alert-msg{font-size:17px;font-weight:700;color:var(--text);line-height:1.4;margin:10px 0 18px}
 .alert-ok{padding:12px 36px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer}
+
+/* ── VIEW-SWAP ARCHITECTURE ────────────────────────────── */
+#root{min-height:100vh}
+.content{padding:10px;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.catalog-badge{font-size:12px;font-weight:700;padding:6px 13px;border-radius:20px;
+  background:rgba(240,165,0,.1);color:var(--accent);border:1px solid rgba(240,165,0,.35);
+  cursor:pointer;white-space:nowrap;flex-shrink:0}
+/* catalog 3-col grid */
+.cat-hdr{position:sticky;top:0;z-index:15;
+  background:linear-gradient(180deg,rgba(15,15,15,.97),rgba(15,15,15,.85));
+  backdrop-filter:blur(8px);
+  padding:calc(10px + var(--sat)) 16px 12px;
+  border-bottom:1px solid var(--border);transition:transform .25s ease}
+.cat-hdr.hidden{transform:translateY(-100%)}
+.cat-hdr-row{display:flex;align-items:center;gap:10px}
+.cat-hdr-back{width:34px;height:34px;background:var(--surface);border:1px solid var(--border);
+  border-radius:50%;color:var(--text);font-size:16px;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;cursor:pointer}
+.cat-hdr-txt{flex:1;font-size:13px;line-height:1.4}
+.cat-hdr-txt b{color:var(--accent)}
+.cat-share{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;
+  border:none;border-radius:9px;padding:8px 13px;font-size:12px;font-weight:700;flex-shrink:0;cursor:pointer}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px}
+.cat-item{position:relative;aspect-ratio:1/1;background:var(--card);overflow:hidden;cursor:pointer}
+.cat-item-img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
+.cat-item-img.loaded{opacity:1}
+.cat-item-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:32px}
+.cat-price{position:absolute;left:0;right:0;bottom:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.85));
+  padding:14px 6px 5px;font-size:12px;font-weight:800;color:#fff;text-align:center}
+.cat-name{position:absolute;left:0;right:0;top:0;
+  background:linear-gradient(rgba(0,0,0,.6),transparent);
+  padding:5px 5px 12px;font-size:10px;font-weight:700;color:rgba(255,255,255,.9);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* profile photo grid 3-col */
+.pp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:0 0 4px}
+.pp-grid-item{aspect-ratio:1/1;background:var(--card);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer}
+.pp-grid-item img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
+.pp-grid-item img.loaded{opacity:1}
+.pp-sentinel{height:50px;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:12px}
+/* detail view: sticky footer */
+.detail-sticky-ft{position:sticky;bottom:0;background:var(--bg);
+  padding:10px 14px max(env(safe-area-inset-bottom,12px),12px);
+  border-top:1px solid var(--border);display:flex;gap:7px}
+/* back-header for sub-views */
+.hdr-back-btn{width:36px;height:36px;background:var(--surface);border:1px solid var(--border);
+  border-radius:50%;cursor:pointer;color:var(--text);font-size:19px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
 </style>
 </head>
 <body>
 
-<div class="hdr" id="main-hdr">
-  <div class="hdr-logo" onclick="refreshOrders(true)">YB</div>
-  <div class="hdr-info" onclick="refreshOrders(true)">
-    <h1>YB Shipper</h1>
-    <p id="hdr-sub"></p>
-  </div>
-  <div class="hdr-actions" id="hdr-actions" style="display:none">
-    <input class="hdr-search" id="hdr-search-inp"
-      placeholder="🔍 ស្វែងរក..."
-      oninput="debounceSearch(this.value)"
-      onsearch="debounceSearch(this.value)">
-    <div class="hdr-badge" id="pending-count">0</div>
-  </div>
-</div>
-<div class="hdr-spacer" id="hdr-spacer"></div>
-
-<div class="new-order-alert hidden" id="new-alert" onclick="dismissAlert()">
-  🔔 <span id="new-alert-txt">មានការដឹកថ្មី!</span> — ចុចដើម្បីមើល
-</div>
-
-<div id="app-content">
+<div id="root">
   <div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>
 </div>
 
 <div class="toast" id="toast"></div>
 <div class="hold-ring" id="hold-ring"><div class="hold-ring-inner">🧾</div></div>
 
-<div class="popup-overlay" id="detail-overlay" onclick="closeDetailIfBg(event)">
-  <div class="popup" id="detail-popup">
-    <div class="popup-handle" id="popup-handle"></div>
-    <div class="popup-head">
-      <span class="popup-title" id="detail-title">Order Detail</span>
-      <button class="popup-close" onclick="closeDetail()">✕</button>
-    </div>
-    <div class="popup-body" id="detail-body"></div>
-    <div class="popup-foot" id="detail-foot"></div>
-  </div>
-</div>
-
+<!-- Confirm dialog (deliver) -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-icon">🚚</div>
@@ -719,43 +740,7 @@ body{
   </div>
 </div>
 
-<div class="profile-page" id="profile-page">
-  <div class="pp-back">
-    <button class="pp-back-btn" onclick="closeProfile()">←</button>
-    <span style="font-size:16px;font-weight:700">Profile</span>
-  </div>
-  <div id="pp-content">
-    <div class="loading loading-sm"><div class="spinner"></div></div>
-  </div>
-</div>
-
-<div class="invoice-overlay" id="invoice-overlay">
-  <div class="inv-toolbar">
-    <button onclick="closeInvoiceOverlay()"
-      style="padding:8px 14px;background:#333;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">← Back</button>
-    <button onclick="window.print()"
-      style="padding:8px 18px;background:#f0a500;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">🖨️ Print</button>
-    <button id="label-btn-inv" onclick="printLabel(_currentInvId)"
-      style="padding:8px 14px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">📦 Label</button>
-  </div>
-  <div id="invoice-content" style="padding:10px;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
-</div>
-
-<!-- ====== STOCK OVERLAY ====== -->
-<div class="stock-overlay" id="stock-overlay" onclick="closeStockBg(event)">
-  <div class="stock-sheet" id="stock-sheet">
-    <div class="sht-handle" id="sht-handle"></div>
-    <div class="sht-head" id="sht-head">
-      <span class="sht-title">📦 ស្តុកទំនិញ</span>
-      <button class="popup-close" onclick="closeStockSheet()" style="touch-action:auto;pointer-events:auto">✕</button>
-    </div>
-    <div class="sht-body" id="sht-body">
-      <div class="loading loading-sm"><div class="spinner"></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ====== MOVEMENT OVERLAY ====== -->
+<!-- Movement form (bottom sheet, kept) -->
 <div class="mv-overlay" id="mv-overlay" onclick="closeMvBg(event)">
   <div class="mv-sheet" id="mv-sheet">
     <div class="mv-handle"></div>
@@ -775,9 +760,7 @@ body{
       <div class="mv-fld">
         <div class="mv-lbl">ចំនួន</div>
         <div class="mv-qty-wrap">
-          <input class="mv-inp mv-qty-inp" id="mv-qty"
-            type="number" min="1" inputmode="numeric" placeholder="0"
-            oninput="updateMvResult()">
+          <input class="mv-inp mv-qty-inp" id="mv-qty" type="number" min="1" inputmode="numeric" placeholder="0" oninput="updateMvResult()">
           <span class="mv-qty-result" id="mv-result"></span>
         </div>
       </div>
@@ -790,8 +773,17 @@ body{
   </div>
 </div>
 
+<!-- Print invoice overlay (kept for printing) -->
+<div class="invoice-overlay" id="invoice-overlay">
+  <div class="inv-toolbar">
+    <button onclick="closeInvoiceOverlay()" style="padding:8px 14px;background:#333;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">← Back</button>
+    <button onclick="window.print()" style="padding:8px 18px;background:#f0a500;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer">🖨️ Print</button>
+    <button id="label-btn-inv" onclick="printLabel(_currentInvId)" style="padding:8px 14px;background:#3b82f6;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">📦 Label</button>
+  </div>
+  <div id="invoice-content" style="padding:10px;font-family:'Battambang','Khmer OS Siemreap',sans-serif"></div>
+</div>
 
-<!-- KHQR POPUP -->
+<!-- KHQR POPUP (kept as overlay) -->
 <div class="khqr-ov" id="khqr-ov">
   <div class="khqr-popup" id="khqr-popup">
     <div class="khqr-ph"></div>
@@ -803,14 +795,15 @@ body{
       <div class="khqr-qr-box" id="khqr-qr-area"><span style="font-size:56px">🔳</span></div>
       <div style="font-size:24px;font-weight:800;color:var(--accent)" id="khqr-amt-txt"></div>
       <div style="font-size:12px;color:var(--muted);margin-top:3px" id="khqr-sub-txt"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:9px;padding:9px 13px;margin:12px 0 4px;border:1px solid var(--border)" id="khqr-apv-row" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:9px;padding:9px 13px;margin:12px 0 4px;border:1px solid var(--border)" id="khqr-apv-row">
         <div><div style="font-size:10px;color:var(--muted)">APV Code</div><div id="khqr-apv-code" style="font-size:14px;font-weight:800;color:var(--accent);font-family:monospace"></div></div>
-        <button class="apv-cp" id="khqr-copy-btn" onclick="cpAPV(document.getElementById('khqr-apv-code').textContent)">copy</button>
+        <button class="apv-cp" onclick="cpAPV(document.getElementById('khqr-apv-code').textContent)">copy</button>
       </div>
       <button class="khqr-paid-btn" id="khqr-confirm-btn" onclick="confirmKHQR()">✅ ទូទាត់រួច</button>
     </div>
   </div>
 </div>
+
 <!-- ALERT MODAL -->
 <div class="alert-ov" id="alert-ov">
   <div class="alert-box2">
@@ -819,24 +812,6 @@ body{
     <button class="alert-ok" onclick="closeAlertModal()">OK</button>
   </div>
 </div>
-<!-- ====== STEP OVERLAY (3-step order flow) ====== -->
-<div class="step-overlay" id="step-overlay" onclick="closeStepBg(event)">
-  <div class="step-sht" id="step-sht">
-    <div class="step-handle" id="step-handle"></div>
-    <div class="step-ind" id="step-ind"></div>
-    <div class="step-num-lbl" id="step-num-lbl"></div>
-    <div class="step-hd">
-      <div class="step-hd-l">
-        <div class="step-hd-ttl" id="step-hd-ttl">Order Detail</div>
-        <div class="step-hd-sub" id="step-hd-sub"></div>
-      </div>
-      <button class="popup-close" onclick="closeStepSheet()" style="touch-action:auto;pointer-events:auto;flex-shrink:0">✕</button>
-    </div>
-    <div class="step-body" id="step-body"></div>
-    <div class="step-ft" id="step-ft"></div>
-  </div>
-</div>
-
 <script>
 // ── Safe Telegram init (works in TG WebApp + iPhone Safari) ──
 const tg = window.Telegram?.WebApp ?? {
@@ -983,9 +958,7 @@ if(tgId){
 
 // FIX 2: showPhoneLogin — hide header, no scroll
 function showPhoneLogin(){
-  document.getElementById('main-hdr').style.display='none';
-  document.body.style.overflow='hidden';
-  document.getElementById('app-content').innerHTML=`
+  document.getElementById('root').innerHTML=`
     <div style="height:100dvh;background:#0f0f0f;display:flex;align-items:center;justify-content:center;padding:20px;padding-top:env(safe-area-inset-top)">
       <div class="login-box">
         <h3>🚚 YB Shipper Login</h3>
@@ -1039,9 +1012,6 @@ function bootWithData(data){
   shipperData={phone:sanitizeStr(data.phone),name:sanitizeStr(data.name||'Shipper'),role:sanitizeStr(data.role||'shipper')};
   const role=(shipperData.role||'').toLowerCase();
   if(role&&role!=='shipper'&&role!=='admin'){clearSession();showPhoneLogin();return;}
-  document.getElementById('main-hdr').style.display='flex';
-  document.body.style.overflow='';
-  document.getElementById('hdr-actions').style.display='flex';
   loadOrders();
 }
 
@@ -1059,7 +1029,7 @@ function doLogout(){
 }
 
 async function loadOrders(){
-  document.getElementById('app-content').innerHTML=
+  document.getElementById('root').innerHTML=
     '<div class="loading"><div class="spinner"></div>កំពុងផ្ទើកទិន្ន័យ...</div>';
   try{
     const r=await gs('handleShipperOrders',shipperData?.phone||'');
@@ -1136,13 +1106,14 @@ function toggleCOD(){
 
 function renderAll(){
   setTimeout(_restoreStepState, 600);
+  if(_view !== 'main') return; // don't overwrite sub-views
   const pending   = orders.filter(o=>!isCompleted(o));
   const completed = orders.filter(o=>isCompleted(o));
   lastCount=allOrders.filter(o=>!isCompleted(o)).length;
   document.getElementById('pending-count').textContent=pending.length;
   const searching=hasActiveSearch();
   const listToRender = searching ? orders : (activeTab==='pending' ? pending : completed);
-  document.getElementById('app-content').innerHTML=`
+  document.getElementById('root').innerHTML=`
     ${searching?'':renderProfileCard()}
     ${searching?'':`<div class="stats">
       <div class="stat"><div class="stat-num">${orders.length}</div><div class="stat-lbl">សរុប</div></div>
@@ -1566,9 +1537,8 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
   }catch(_){showToast('❌ Please allow popups',true);}
 }
 
-async function openProfile(){
-  document.getElementById('profile-page').classList.add('on');
-  document.body.style.overflow='hidden';
+function openProfile(){ setView('profile'); }
+async function _openProfileOLD(){
   const el=document.getElementById('pp-content');
   el.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
   try{
@@ -1643,7 +1613,7 @@ function handlePhotoUpload(ev){
   };
   r.readAsDataURL(file);
 }
-function closeProfile(){document.getElementById('profile-page').classList.remove('on');document.body.style.overflow='';}
+function closeProfile(){ setView('main'); }
 function openExternalLink(url){
   try{tg.openLink(url);}catch(_){try{window.open(url,'_blank','noopener');}catch(_){}}
 }
@@ -1666,7 +1636,7 @@ function dismissAlert(){
 }
 
 function showError(msg){
-  document.getElementById('app-content').innerHTML=`
+  document.getElementById('root').innerHTML=`
     <div class="empty">
       <div class="empty-icon">⚠️</div><h3>Error</h3><p>${e(msg)}</p>
       <button onclick="loadOrders()"
@@ -1693,17 +1663,8 @@ let _mvCurQty=0;  // current stock qty
 let _stkSearch='';
 
 // ── Open / Close stock sheet ──────────────────────────────
-function openStockSheet(){
-  document.getElementById('stock-overlay').classList.add('on');
-  document.body.style.overflow='hidden';
-  document.body.style.touchAction='none';
-  _loadStk();
-}
-function closeStockSheet(){
-  document.getElementById('stock-overlay').classList.remove('on');
-  document.body.style.overflow='';
-  document.body.style.touchAction='';
-}
+function openStockSheet(){ setView('stock'); }
+function closeStockSheet(){ setView('main'); }
 function closeStockBg(ev){
   if(ev.target===document.getElementById('stock-overlay'))closeStockSheet();
 }
@@ -1987,6 +1948,331 @@ function openAddProduct(){
 // END STOCK MODULE
 // ============================================================
 
+
+// ════════════════════════════════════════════════════════════
+// VIEW SYSTEM — mockup v2 pattern (no overlay popups)
+// ════════════════════════════════════════════════════════════
+let _view = 'main';  // main | order-detail | stock | profile | catalog
+let _catOffset = 0;  // catalog pagination
+let _ppPhotoOffset = 0;
+
+function setView(v) {
+  _view = v;
+  // scroll to top on view change
+  window.scrollTo(0,0);
+  renderView();
+}
+
+function renderView() {
+  const root = document.getElementById('root');
+  if(!root) return;
+  // remove invoice overlay if showing
+  if(_view !== 'invoice') closeInvoiceOverlay();
+  // Rebuild based on view
+  switch(_view) {
+    case 'main':         renderMain();   break;
+    case 'order-detail': renderDetail(); break;
+    case 'stock':        renderStock();  break;
+    case 'profile':      renderProfile();break;
+    case 'catalog':      renderCatalog();break;
+  }
+  // Auto-hide header on main + catalog
+  if(_view==='main' || _view==='stock') bindMainScroll();
+}
+
+// ── MAIN VIEW ─────────────────────────────────────────────
+function renderMain() {
+  const root = document.getElementById('root');
+  const pending   = allOrders.filter(o=>!isCompleted(o));
+  const completed = allOrders.filter(o=>isCompleted(o));
+  lastCount = pending.length;
+  const searching = hasActiveSearch();
+  const listToRender = searching ? orders : (activeTab==='pending' ? pending : completed);
+  document.getElementById('pending-count') && (document.getElementById('pending-count').textContent = pending.length);
+
+  root.innerHTML = `
+    ${_buildMainHeader()}
+    <div id="main-body">
+      ${searching?'':renderProfileCardHTML()}
+      ${searching?'':_buildStats(pending.length, completed.length)}
+      <div class="fbar">
+        <span class="fbar-label">Filter${searching?` <span style="background:var(--accent);color:#000;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700">${orders.length}</span>`:''}</span>
+        <label class="toggle" onclick="toggleCOD()">
+          <div class="toggle-track ${codOnly?'on':''}" id="cod-track"><div class="toggle-thumb"></div></div>
+          <span class="toggle-text">COD ប៉ុណ្ណោះ</span>
+        </label>
+      </div>
+      ${searching?`<div style="padding:8px 12px;font-size:12px;color:var(--muted)">🔍 លទ្ធផល ${orders.length}</div>`:`<div class="tabs">
+        <div class="tab ${activeTab==='pending'?'active':''}"  onclick="setTab('pending')">🚚 រង់ចាំ (${pending.length})</div>
+        <div class="tab ${activeTab==='completed'?'active':''}" onclick="setTab('completed')">✅ ដឹកដល់ (${completed.length})</div>
+        <div class="tab" onclick="setView('stock')">📦 ស្តុក</div>
+      </div>`}
+      <div class="content" id="orders-list">${renderList(listToRender)}</div>
+    </div>`;
+  bindMainScroll();
+}
+
+function _buildMainHeader(){
+  return `<div class="hdr" id="main-hdr">
+    <div class="hdr-logo" onclick="refreshOrders(true)">YB</div>
+    <div class="hdr-info" onclick="refreshOrders(true)">
+      <h1>YB Shipper</h1><p id="hdr-sub"></p>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px" id="hdr-actions">
+      <input class="hdr-search" id="hdr-search-inp" placeholder="🔍 ស្វែងរក..."
+        oninput="debounceSearch(this.value)" onsearch="debounceSearch(this.value)">
+      <div class="hdr-badge" id="pending-count">0</div>
+    </div>
+  </div>
+  <div class="new-order-alert hidden" id="new-alert" onclick="dismissAlert()">
+    🔔 <span id="new-alert-txt">មានការដឹកថ្មី!</span> — ចុចដើម្បីមើល
+  </div>`;
+}
+function _buildStats(p, c){
+  return `<div class="stats">
+    <div class="stat"><div class="stat-num">${orders.length}</div><div class="stat-lbl">សរុប</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--green)">${c}</div><div class="stat-lbl">ដឹកដល់</div></div>
+    <div class="stat"><div class="stat-num">${p}</div><div class="stat-lbl">រង់ចាំ</div></div>
+  </div>`;
+}
+function renderProfileCardHTML(){
+  if(!shipperData)return'';
+  const ini=(shipperData.name||'S').charAt(0).toUpperCase();
+  const lp=getLocalPhoto();
+  const avHtml=lp?`<img src="${lp}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`${ini}`;
+  return`<div class="profile" onclick="setView('profile')" style="cursor:pointer">
+    <div class="profile-av" id="mini-av">${avHtml}</div>
+    <div style="flex:1;min-width:0">
+      <div class="profile-name">${e(shipperData.name||tgName||'Shipper')}</div>
+      <div class="profile-phone">${e(shipperData.phone||'—')}</div>
+    </div>
+    <div class="catalog-badge" onclick="event.stopPropagation();setView('catalog')">🛍️ Catalog ›</div>
+  </div>`;
+}
+
+// ── BACK-HEADER for sub views ─────────────────────────────
+function _buildBackHeader(title, onBack='setView(\'main\')') {
+  return `<div class="hdr" style="position:sticky;top:0;z-index:20">
+    <button class="hdr-back-btn" onclick="${onBack}">←</button>
+    <div class="hdr-info"><h1>${title}</h1></div>
+  </div>`;
+}
+
+// ── ORDER DETAIL VIEW (was step-overlay) ──────────────────
+function renderDetail() {
+  if(!_so) { setView('main'); return; }
+  const root = document.getElementById('root');
+  root.innerHTML = `
+    <div style="padding-top:0">
+      ${_buildBackHeader('Order Detail', "setView('main')")}
+      <div style="padding:14px 16px">
+        <div class="step-ind" id="step-ind"></div>
+        <div class="step-num-lbl" id="step-num-lbl"></div>
+        <div class="step-hd" style="padding:10px 0;border-bottom:1px solid var(--border);margin-bottom:12px">
+          <div class="step-hd-l">
+            <div class="step-hd-ttl" id="step-hd-ttl">Order Detail</div>
+            <div class="step-hd-sub" id="step-hd-sub"></div>
+          </div>
+        </div>
+        <div id="step-body" style="padding-bottom:80px"></div>
+        <div class="detail-sticky-ft" id="step-ft"></div>
+      </div>
+    </div>`;
+  _renderStep();
+}
+
+// ── STOCK VIEW (was stock-overlay, now inline tab) ────────
+function renderStock() {
+  const root = document.getElementById('root');
+  root.innerHTML = `
+    ${_buildBackHeader('📦 ស្តុកទំនិញ', "setView('main')")}
+    <div id="sht-body" style="padding:0"><div class="loading loading-sm"><div class="spinner"></div></div></div>`;
+  _loadStk();
+}
+
+// ── PROFILE VIEW ──────────────────────────────────────────
+async function renderProfile() {
+  const root = document.getElementById('root');
+  root.innerHTML = `
+    ${_buildBackHeader('Profile', "setView('main')")}
+    <div class="content" id="pp-content">
+      <div class="loading loading-sm"><div class="spinner"></div></div>
+    </div>`;
+  await _loadProfileContent();
+}
+
+async function _loadProfileContent(){
+  const el = document.getElementById('pp-content');
+  if(!el) return;
+  try {
+    const p = await gs('userProfile', shipperData?.phone||'');
+    const ini = (p.name||shipperData?.name||'S').charAt(0).toUpperCase();
+    const lp  = getLocalPhoto();
+    const photoSrc = lp||(p.photo&&p.photo.startsWith('http')?e(p.photo):'');
+    const hasLink  = p.link&&!p.link.includes('INSERT')&&p.link.length>3&&!p.link.startsWith('tg:');
+    el.innerHTML = `
+      <div class="pp-avatar-wrap" onclick="triggerPhotoUpload()">
+        <div class="pp-avatar" style="position:relative">
+          ${photoSrc?`<img id="pp-av-img" src="${photoSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'">`:'' }
+          <span id="pp-av-ini" style="${photoSrc?'display:none':'display:flex'};align-items:center;justify-content:center;width:100%;height:100%;font-size:38px;font-weight:700;color:#000">${ini}</span>
+          <div class="pp-avatar-cam" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:5px;font-size:16px;color:#fff">📷</div>
+        </div>
+        <div class="pp-change">Change photo</div>
+      </div>
+      <input type="file" id="photo-file-inp" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+      <div class="pp-info">
+        <div class="pp-name">${e(p.name||'Shipper')}</div>
+        ${p.username?`<div class="pp-username">@${e(p.username)}</div>`:''}
+        ${p.bio?`<div class="pp-bio">${e(p.bio)}</div>`:''}
+        ${hasLink?`<a class="pp-link" onclick="openExternalLink('${e(p.link)}')">🔗 ${e(p.link.replace(/^https?:\/\//,'').substring(0,32))}</a>`:''}
+      </div>
+      <div class="pp-stats">
+        <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.achievements)||0}</div><div class="pp-stat-lbl">✅ ដឹកបាន</div></div>
+        <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.pending)||0}</div><div class="pp-stat-lbl">🚚 កំពុងដឹក</div></div>
+        <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.total)||0}</div><div class="pp-stat-lbl">📦 សរុប</div></div>
+      </div>
+      <div class="pp-section-ttl">📷 Photos & Videos</div>
+      <div class="pp-grid" id="pp-grid"></div>
+      <div class="pp-sentinel" id="pp-sentinel">⏳</div>
+      <div style="height:1px;background:var(--border);margin:16px 0 0"></div>
+      <button class="pp-logout" onclick="doLogout()">🚪 Logout</button>`;
+    _ppPhotoOffset = 0;
+    _loadProfilePhotos();
+  } catch(_) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><p>Failed to load profile</p></div>`;
+  }
+}
+
+async function _loadProfilePhotos() {
+  try {
+    // Attempt to load profile photos (Phase 3 feature — may return empty)
+    const res = await gs('getProfilePhotos', {phone: shipperData?.phone||'', offset: _ppPhotoOffset, limit: 6});
+    const photos = Array.isArray(res) ? res : [];
+    const grid = document.getElementById('pp-grid');
+    const sentinel = document.getElementById('pp-sentinel');
+    if(!grid) return;
+    if(photos.length) {
+      photos.forEach(ph => {
+        const item = document.createElement('div');
+        item.className = 'pp-grid-item';
+        if(ph.url) {
+          const img = document.createElement('img');
+          img.src = ph.url;
+          img.onload = () => img.classList.add('loaded');
+          img.onerror = () => { item.innerHTML = ph.emoji||'📷'; };
+          item.appendChild(img);
+        } else {
+          item.innerHTML = ph.emoji||'📷';
+        }
+        grid.appendChild(item);
+      });
+      _ppPhotoOffset += photos.length;
+      if(sentinel && photos.length < 6) { sentinel.textContent = '— ចប់ —'; return; }
+    } else {
+      if(sentinel) sentinel.textContent = '';
+      return;
+    }
+    // Observe sentinel for more
+    if(sentinel) {
+      sentinel.textContent = '⏳ Scroll ដើម្បីផ្ទុកបន្ថែម';
+      const io = new IntersectionObserver(es => {
+        if(!es[0].isIntersecting) return;
+        io.disconnect(); _loadProfilePhotos();
+      }, {rootMargin:'80px'});
+      io.observe(sentinel);
+    }
+  } catch(_) {
+    const sentinel = document.getElementById('pp-sentinel');
+    if(sentinel) sentinel.textContent = '';
+  }
+}
+
+// ── CATALOG VIEW ──────────────────────────────────────────
+async function renderCatalog() {
+  const root = document.getElementById('root');
+  const shopName = shipperData?.name || 'YB Store';
+  const slug = (typeof STORE !== 'undefined' ? STORE : 'yb9999');
+  root.innerHTML = `
+    <div class="cat-hdr" id="cat-hdr">
+      <div class="cat-hdr-row">
+        <div class="cat-hdr-back" onclick="setView('main')">←</div>
+        <div class="cat-hdr-txt"><b>${e(shopName)}</b> — Share your catalog,<br>bring it to real customers 🛍️</div>
+        <button class="cat-share" onclick="shareCatalogLink()">🔗 Share</button>
+      </div>
+    </div>
+    <div class="cat-grid" id="cat-grid">
+      <div style="grid-column:1/-1;padding:30px;text-align:center"><div class="spinner"></div></div>
+    </div>
+    <div id="cat-sentinel" style="height:60px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px"></div>`;
+  _catOffset = 0;
+  _loadCatalogItems(true);
+  bindCatalogScroll();
+}
+
+let _allCatalogItems = [];
+async function _loadCatalogItems(reset=false) {
+  try {
+    if(reset || !_allCatalogItems.length) {
+      const res = await gs('getPublicProducts', {store_id: typeof STORE!=='undefined'?STORE:'yb9999'});
+      _allCatalogItems = Array.isArray(res) ? res : (res?.products||[]);
+    }
+    const PAGE = 12;
+    const slice = _allCatalogItems.slice(_catOffset, _catOffset + PAGE);
+    const grid = document.getElementById('cat-grid');
+    if(!grid) return;
+    if(reset) grid.innerHTML = '';
+    // Render cards with lazy image loading
+    slice.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'cat-item';
+      const hasImg = p.image_url && p.image_url.startsWith('http');
+      div.innerHTML = `
+        ${hasImg?`<img class="cat-item-img" src="${e(p.image_url)}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.style.display='none'">`:''}
+        <div class="cat-item-ph" ${hasImg?'style="z-index:0;opacity:.3"':''}>${p.category||'📦'}</div>
+        <div class="cat-name">${e((p.name||'').substring(0,22))}</div>
+        <div class="cat-price">$${e(p.price||'—')}</div>`;
+      grid.appendChild(div);
+    });
+    _catOffset += slice.length;
+    const sentinel = document.getElementById('cat-sentinel');
+    if(_catOffset >= _allCatalogItems.length) {
+      if(sentinel) sentinel.textContent = `— ${_allCatalogItems.length} Products —`;
+      return;
+    }
+    // Observe for more
+    if(sentinel) {
+      sentinel.textContent = '⏳';
+      const io = new IntersectionObserver(es => {
+        if(!es[0].isIntersecting) return;
+        io.disconnect(); _loadCatalogItems();
+      }, {rootMargin:'120px'});
+      io.observe(sentinel);
+    }
+  } catch(err) {
+    const grid = document.getElementById('cat-grid');
+    if(grid) grid.innerHTML = `<div style="grid-column:1/-1;padding:30px;text-align:center;color:var(--muted)">${e(err.message)}</div>`;
+  }
+}
+function bindCatalogScroll(){
+  let lastY = 0;
+  window.onscroll = () => {
+    const y = window.scrollY, hdr = document.getElementById('cat-hdr');
+    if(!hdr) return;
+    if(y>lastY+6&&y>40) hdr.classList.add('hidden');
+    else if(y<lastY-6) hdr.classList.remove('hidden');
+    lastY = y;
+  };
+}
+function shareCatalogLink() {
+  const slug = typeof STORE!=='undefined'?STORE:'yb9999';
+  const url  = 'https://yinboran.github.io/s/'+slug;
+  try { navigator.clipboard.writeText(url).then(()=>showToast('✅ Link copied!')); }
+  catch(_) { showToast(url); }
+}
+// ════════════════════════════════════════════════════════════
+// END VIEW SYSTEM
+// ════════════════════════════════════════════════════════════
+
 // ============================================================
 // STEP MODULE v63 — 3-step order flow
 // ============================================================
@@ -2019,10 +2305,7 @@ function openOrderSteps(profileId){
   else _step=1;
   _s3={payType:'',bank:'',amount:'',receiptImg:'',confirmed:done};
   _s3PaidSoFar=0;
-  document.getElementById('step-overlay').classList.add('on');
-  document.body.style.overflow='hidden';
-  document.body.style.touchAction='none';
-  _renderStep();
+  setView('order-detail');
   _saveStepState();
 }
 function closeStepSheet(){
@@ -2031,7 +2314,7 @@ function closeStepSheet(){
   document.body.style.touchAction='';
   _clearStepState();
 }
-function closeStepBg(ev){if(ev.target===document.getElementById('step-overlay'))closeStepSheet();}
+function closeStepBg(ev){}
 
 // Swipe-down on step sheet
 (function(){
@@ -2749,7 +3032,7 @@ function _restoreStepState(){
     const o=allOrders.find(x=>x.profileId===sv.profileId);
     if(!o) return;
     openOrderSteps(sv.profileId);
-    if(sv.step>1){_step=sv.step;_renderStep();}
+    if(sv.step>1){_step=sv.step;if(_view==='order-detail')_renderStep();}
   }catch(_){}
 }
 // ============================================================
