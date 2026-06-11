@@ -1,0 +1,10 @@
+# Create shop/manifest.json:
+{
+  "name": "YB Shop",
+  "short_name": "YB",
+  "start_url": "/shop/",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "icons": []
+}
