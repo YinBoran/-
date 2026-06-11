@@ -2,7 +2,11 @@
 <html lang="km">
 <head>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="../config.js?v=2"></script>
+<script>
+// Inline config fallback — if config.js loads first, its values win
+if(typeof API==='undefined')   window.API   = 'https://mr.yinboran.workers.dev/';
+if(typeof STORE==='undefined') window.STORE = 'yb9999';
+</script>
 <meta charset="UTF-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
