@@ -1844,7 +1844,7 @@ async function _openProfileOLD(){
         <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.pending)||0}</div><div class="pp-stat-lbl">🚚 កំពុងដឹក</div></div>
         <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.total)||0}</div><div class="pp-stat-lbl">📦 សរុប</div></div>
       </div>
-      <div class="pp-divider"></div>
+      <div class="pp-divider"></div>`;
   }catch(_){
     const ini=(shipperData?.name||'S').charAt(0).toUpperCase();
     const lp=getLocalPhoto();
@@ -2663,7 +2663,7 @@ async function _loadProfileContent(){
       <div class="pp-section-ttl">📷 Photos & Videos</div>
       <div id="pp-grid"></div>
       <div class="pp-sentinel" id="pp-sentinel"></div>
-      <div style="height:1px;background:var(--border);margin:16px 0 0"></div>
+      <div style="height:1px;background:var(--border);margin:16px 0 0"></div>`;
     _ppPhotoOffset = 0;
     _loadProfilePhotos();
   } catch(_) {
