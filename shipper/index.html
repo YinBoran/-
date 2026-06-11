@@ -2,17 +2,22 @@
 <html lang="km">
 <head>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
+// Inline config fallback — if config.js loads first, its values win
 if(typeof API==='undefined')   window.API   = 'https://mr.yinboran.workers.dev/';
 if(typeof STORE==='undefined') window.STORE = 'yb9999';
-</script> <meta charset="UTF-8">
+</script>
+<meta charset="UTF-8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-...
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<title>YB Shop</title>
 <style>
 :root {
-  --bg:#0f0f0f;
-  --accent:#f0a500; /* បន្ទាត់ទី ២០ នឹងលែងលោត Error ទៀតហើយ */
+  --bg:#0f0f0f; --surface:#1a1a1a; --card:#222; --border:#333;
+  --accent:#f0a500; --accent2:#e05c00;
   --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
   --text:#f0f0f0; --muted:#888;
   --font:'Segoe UI',system-ui,sans-serif;
@@ -1921,13 +1926,9 @@ function dismissAlert(){
 }
 
 function showError(msg){
-  document.getElementById('root').innerHTML=`
-    <div class="empty">
-      <div class="empty-icon">⚠️</div><h3>Error</h3><p>${e(msg)}</p>
-      <button onclick="loadOrders()"
-        style="margin-top:16px;padding:11px 22px;background:var(--accent);color:#000;
-        border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px">Retry</button>
-    </div>`;
+  if(msg){
+  document.getElementById('root').innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div><h3>Error</h3><p>${e(msg)}</p><button onclick="loadOrders()"style="margin-top:16px;padding:11px 22px;background:var(--accent);color:#000; border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px">Retry</button></div>`;
+  }
 }
 function showToast(msg,isErr){
   const t=document.getElementById('toast');
