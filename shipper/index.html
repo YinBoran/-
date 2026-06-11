@@ -685,16 +685,38 @@ body{
   font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
 /* ── Media fullscreen viewer ───────────────────────────────── */
 .media-viewer{position:fixed;inset:0;background:#000;z-index:600;
-  display:flex;flex-direction:column;opacity:0;pointer-events:none;
-  transition:opacity .2s}
+  opacity:0;pointer-events:none;transition:opacity .22s;overflow:hidden}
 .media-viewer.on{opacity:1;pointer-events:all}
-.media-viewer-hd{position:absolute;top:0;left:0;right:0;padding:max(env(safe-area-inset-top,16px),16px) 16px 12px;
+/* TikTok scroll container */
+.mv-scroll{width:100%;height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mv-scroll::-webkit-scrollbar{display:none}
+/* Each full-screen slide */
+.mv-slide{width:100%;height:100dvh;flex-shrink:0;position:relative;
+  scroll-snap-align:start;display:flex;align-items:center;justify-content:center;
+  background:#000}
+.mv-slide img{width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.mv-slide video{width:100%;height:100%;object-fit:contain}
+/* Top bar */
+.mv-topbar{position:fixed;top:0;left:0;right:0;z-index:10;
+  padding:max(env(safe-area-inset-top,16px),16px) 14px 10px;
   display:flex;align-items:center;justify-content:space-between;
-  background:linear-gradient(rgba(0,0,0,.5),transparent);z-index:1}
-.media-viewer-close{color:#fff;font-size:22px;background:none;border:none;cursor:pointer;
-  width:40px;height:40px;display:flex;align-items:center;justify-content:center}
-.media-viewer-content{flex:1;display:flex;align-items:center;justify-content:center}
-.media-viewer-content img{max-width:100%;max-height:100%;object-fit:contain}
+  background:linear-gradient(rgba(0,0,0,.55),transparent);pointer-events:none}
+.mv-topbar button{pointer-events:all}
+.mv-close{color:#fff;font-size:24px;background:none;border:none;cursor:pointer;
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  border-radius:50%;-webkit-tap-highlight-color:transparent}
+.mv-counter{color:rgba(255,255,255,.85);font-size:13px;font-weight:600;
+  background:rgba(0,0,0,.35);padding:4px 10px;border-radius:20px}
+/* Bottom caption */
+.mv-caption{position:absolute;bottom:0;left:0;right:0;
+  padding:30px 14px max(env(safe-area-inset-bottom,16px),16px);
+  background:linear-gradient(transparent,rgba(0,0,0,.7));
+  color:#fff;font-size:13px;font-weight:600;pointer-events:none}
+/* Video play overlay */
+.mv-play-ico{position:absolute;font-size:52px;opacity:.85;pointer-events:none;
+  text-shadow:0 2px 8px rgba(0,0,0,.6)}
+.mv-slide.playing .mv-play-ico{display:none}
 
 /* ── Skeleton shimmer loader ────────────────────────────── */
 @keyframes shimmer{from{background-position:-400px 0}to{background-position:400px 0}}
@@ -1693,14 +1715,14 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
 <script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script>
 
 
-<!-- MEDIA FULLSCREEN VIEWER -->
+<!-- MEDIA FULLSCREEN VIEWER — TikTok style -->
 <div class="media-viewer" id="media-viewer">
-  <div class="media-viewer-hd">
-    <button class="media-viewer-close" onclick="closeMediaViewer()">✕</button>
-    <div style="color:#fff;font-size:13px;font-weight:600" id="media-viewer-title"></div>
-    <div style="width:40px"></div>
+  <div class="mv-topbar">
+    <button class="mv-close" onclick="closeMediaViewer()">✕</button>
+    <div class="mv-counter" id="mv-counter"></div>
+    <div style="width:44px"></div>
   </div>
-  <div class="media-viewer-content" id="media-viewer-content"></div>
+  <div class="mv-scroll" id="mv-scroll"></div>
 </div>
 
 <!-- NAV MENU -->
@@ -2776,26 +2798,145 @@ function buildMediaGrid(items){
   }).join('')+'</div>';
 }
 let _mediaItems=[];
-function openMediaViewer(idx){
-  const item=_mediaItems[idx];if(!item)return;
+let _mvCurIdx=0;
+
+// ── openMediaViewer(items, startIdx) ─────────────────────────
+// items: [{url, type?, title?}]  type: 'image'|'video' (auto-detect if omitted)
+// startIdx: which item to open first (default 0)
+function openMediaViewer(itemsOrIdx, startIdx=0){
+  // Legacy call: openMediaViewer(idx) with global _mediaItems
+  if(typeof itemsOrIdx==='number'){
+    startIdx=itemsOrIdx;
+  } else if(Array.isArray(itemsOrIdx)){
+    _mediaItems=itemsOrIdx;
+  }
+  if(!_mediaItems.length) return;
+  startIdx=Math.max(0,Math.min(startIdx,_mediaItems.length-1));
+  _mvCurIdx=startIdx;
+
+  const scroll=document.getElementById('mv-scroll');
+  if(!scroll) return;
+
+  // Build all slides
+  scroll.innerHTML=_mediaItems.map((item,i)=>{
+    const isVideo=item.type==='video'||/\.(mp4|mov|webm|m3u8)/i.test(item.url||'');
+    const media=isVideo
+      ?`<video src="${e(item.url)}" playsinline preload="metadata"
+          style="width:100%;height:100%;object-fit:contain"
+          onclick="_mvTogglePlay(this)"></video>
+         <div class="mv-play-ico" id="mv-pi-${i}">▶️</div>`
+      :`<img src="${e(item.url)}" loading="${i===startIdx?'eager':'lazy'}"
+          onload="this.style.opacity=1" style="opacity:0;transition:opacity .3s">`;
+    return`<div class="mv-slide" id="mv-slide-${i}" data-idx="${i}">
+      ${media}
+      ${item.title?`<div class="mv-caption">${e(item.title)}</div>`:''}
+    </div>`;
+  }).join('');
+
+  // Show viewer
   const viewer=document.getElementById('media-viewer');
-  const content=document.getElementById('media-viewer-content');
-  const title=document.getElementById('media-viewer-title');
-  if(!viewer||!content)return;
-  const isVideo=item.type==='video'||String(item.url||'').match(/\.(mp4|mov|webm)/i);
-  content.innerHTML=isVideo
-    ?`<video src="${e(item.url)}" controls autoplay playsinline
-       style="max-width:100%;max-height:90vh"></video>`
-    :`<img src="${e(item.url)}" style="max-width:100%;max-height:90vh;object-fit:contain">`;
-  if(title) title.textContent=(item.name||'')+'  '+(idx+1)+'/'+_mediaItems.length;
   viewer.classList.add('on');
+  document.body.style.overflow='hidden';
+
+  // Jump to startIdx instantly
+  const targetSlide=document.getElementById(`mv-slide-${startIdx}`);
+  if(targetSlide) targetSlide.scrollIntoView({behavior:'instant'});
+
+  _mvUpdateCounter(startIdx);
+
+  // Autoplay if video
+  _mvAutoplay(startIdx);
+
+  // Scroll observer → update counter + autoplay
+  _mvObserver?.disconnect();
+  _mvObserver=new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      if(en.intersectionRatio>=0.6){
+        const idx=parseInt(en.target.dataset.idx);
+        _mvCurIdx=idx;
+        _mvUpdateCounter(idx);
+        _mvAutoplay(idx);
+      }
+    });
+  },{threshold:0.6});
+  scroll.querySelectorAll('.mv-slide').forEach(s=>_mvObserver.observe(s));
+
   try{tg.HapticFeedback.impactOccurred('light');}catch(_){}
 }
-function closeMediaViewer(){
-  document.getElementById('media-viewer')?.classList.remove('on');
-  // Stop any playing video
-  document.querySelector('#media-viewer-content video')?.pause();
+
+let _mvObserver=null;
+
+function _mvUpdateCounter(idx){
+  const el=document.getElementById('mv-counter');
+  if(el) el.textContent=_mediaItems.length>1?`${idx+1} / ${_mediaItems.length}`:'';
 }
+
+function _mvAutoplay(idx){
+  // Pause all videos first
+  document.querySelectorAll('#mv-scroll video').forEach(v=>{
+    v.pause();
+    const pi=document.getElementById('mv-pi-'+[...document.querySelectorAll('#mv-scroll .mv-slide')].indexOf(v.closest('.mv-slide')));
+    if(pi) pi.style.display='';
+    v.closest('.mv-slide')?.classList.remove('playing');
+  });
+  // Play current if video
+  const slide=document.getElementById(`mv-slide-${idx}`);
+  if(!slide) return;
+  const vid=slide.querySelector('video');
+  if(vid){
+    vid.play().then(()=>{
+      slide.classList.add('playing');
+      const pi=document.getElementById(`mv-pi-${idx}`);
+      if(pi) pi.style.display='none';
+    }).catch(()=>{});
+  }
+}
+
+function _mvTogglePlay(vid){
+  const slide=vid.closest('.mv-slide');
+  const idx=parseInt(slide?.dataset.idx||'0');
+  const pi=document.getElementById(`mv-pi-${idx}`);
+  if(vid.paused){
+    vid.play().then(()=>{
+      slide?.classList.add('playing');
+      if(pi) pi.style.display='none';
+    }).catch(()=>{});
+  } else {
+    vid.pause();
+    slide?.classList.remove('playing');
+    if(pi) pi.style.display='';
+  }
+}
+
+function closeMediaViewer(){
+  const viewer=document.getElementById('media-viewer');
+  if(!viewer) return;
+  viewer.classList.remove('on');
+  document.body.style.overflow='';
+  // Pause all videos
+  document.querySelectorAll('#mv-scroll video').forEach(v=>v.pause());
+  _mvObserver?.disconnect();
+  _mvObserver=null;
+}
+// ESC key
+document.addEventListener('keydown',ev=>{
+  if(ev.key==='Escape') closeMediaViewer();
+});
+// Swipe-down to close (when on first slide)
+(function(){
+  let _msy=0;
+  document.addEventListener('touchstart',ev=>{
+    if(!document.getElementById('media-viewer')?.classList.contains('on')) return;
+    _msy=ev.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchend',ev=>{
+    if(!document.getElementById('media-viewer')?.classList.contains('on')) return;
+    const dy=ev.changedTouches[0].clientY-_msy;
+    const scroll=document.getElementById('mv-scroll');
+    // Only close if at top slide and swiped down >80px
+    if(dy>80 && scroll && scroll.scrollTop<10) closeMediaViewer();
+  },{passive:true});
+})();
 
 
 // ── Nav Menu ─────────────────────────────────────────────────
@@ -2835,18 +2976,22 @@ function loadingHTML(msg=''){
 
 // ── Global swipe-right = back handler ─────────────────────────
 (function(){
-  let _sx=0,_sy=0,_sd=false;
+  let _sx=0,_sy=0,_sd=false,_moved=false;
   document.addEventListener('touchstart',ev=>{
     _sx=ev.touches[0].clientX;
     _sy=ev.touches[0].clientY;
-    _sd=false;
+    _sd=false;_moved=false;
+  },{passive:true});
+  document.addEventListener('touchmove',ev=>{
+    _moved=true;
   },{passive:true});
   document.addEventListener('touchend',ev=>{
-    if(_sd) return;
+    if(_sd||!_moved) return;
     const dx=ev.changedTouches[0].clientX-_sx;
     const dy=Math.abs(ev.changedTouches[0].clientY-_sy);
-    // Swipe right from left edge (< 60px) → back
-    if(dx>60&&dy<80&&_sx<60&&_view!=='main'){
+    // Widen to 80px start zone (Telegram iOS uses ~80px for its own gesture)
+    // Require dx>80 so short taps don't trigger
+    if(dx>80&&dy<60&&_sx<80&&_view!=='main'){
       _sd=true;
       if(_view==='order-detail')     {closeStepSheet();return;}
       if(_view==='stock')            {setView('main');return;}
