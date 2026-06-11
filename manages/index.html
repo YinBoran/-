@@ -10,7 +10,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Kantumruy+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ═══ VARIABLES ═══════════════════════════════════════════ */
 :root{
   --p:#1A73E8; --p-lt:#D3E3FD; --p-dk:#041E49;
   --bg:#F6F8FC; --card:#fff; --text:#202124; --muted:#5F6368; --border:#DADCE0;
@@ -26,7 +25,7 @@
   --ease:cubic-bezier(.4,0,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden} /* FIX: prevent page-level scroll */
+html,body{height:100%;overflow:hidden}
 body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit}
@@ -60,7 +59,7 @@ input,select,textarea{font-family:inherit}
 #sb-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #sb-sub{font-size:11px;color:var(--muted);margin-top:1px}
 #sb.col .sb-brand{opacity:0;width:0;pointer-events:none}
-.sb-tog{width:32px;height:32px;border:none;background:none;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0}
+.sb-tog{width:32px;height:32px;border:none;background:none;border-radius:50%;display:flex;align-items:center;justify-content:justify-content;color:var(--muted);flex-shrink:0}
 .sb-tog:hover{background:var(--bg)}
 .sb-tog svg{width:20px;height:20px;fill:currentColor}
 .sb-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px}
@@ -98,8 +97,6 @@ input,select,textarea{font-family:inherit}
 .tb-btn.pri{background:var(--p);color:#fff;border-color:var(--p)}
 .tb-btn.pri:hover{opacity:.87}
 .tb-btn svg{width:15px;height:15px;fill:currentColor}
-
-/* content area scrolls, not the whole page */
 .content{flex:1;overflow-y:auto;padding:24px;scroll-behavior:smooth}
 .page{display:none}.page.on{display:block}
 .pg-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap}
@@ -110,17 +107,17 @@ input,select,textarea{font-family:inherit}
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px}
 .mc{background:var(--card);border-radius:var(--r);padding:18px 20px;border:1px solid var(--border);box-shadow:var(--sh-sm);position:relative;overflow:hidden;cursor:default}
 .mc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
-.mc.blue::before{background:var(--p)} .mc.green::before{background:var(--green)}
-.mc.amber::before{background:var(--amber)} .mc.red::before{background:var(--red)}
+.mc.blue::before{background:var(--p)}.mc.green::before{background:var(--green)}
+.mc.amber::before{background:var(--amber)}.mc.red::before{background:var(--red)}
 .mc.indigo::before{background:var(--indigo)}.mc.teal::before{background:var(--teal)}
 .mc-ico{width:36px;height:36px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;margin-bottom:10px}
 .mc-ico svg{width:20px;height:20px}
-.mc.blue .mc-ico{background:var(--p-lt)} .mc.blue .mc-ico svg{fill:var(--p)}
-.mc.green .mc-ico{background:var(--green-lt)} .mc.green .mc-ico svg{fill:var(--green)}
-.mc.amber .mc-ico{background:var(--amber-lt)} .mc.amber .mc-ico svg{fill:var(--amber)}
-.mc.red .mc-ico{background:var(--red-lt)} .mc.red .mc-ico svg{fill:var(--red)}
-.mc.indigo .mc-ico{background:var(--indigo-lt)} .mc.indigo .mc-ico svg{fill:var(--indigo)}
-.mc.teal .mc-ico{background:var(--teal-lt)} .mc.teal .mc-ico svg{fill:var(--teal)}
+.mc.blue .mc-ico{background:var(--p-lt)}.mc.blue .mc-ico svg{fill:var(--p)}
+.mc.green .mc-ico{background:var(--green-lt)}.mc.green .mc-ico svg{fill:var(--green)}
+.mc.amber .mc-ico{background:var(--amber-lt)}.mc.amber .mc-ico svg{fill:var(--amber)}
+.mc.red .mc-ico{background:var(--red-lt)}.mc.red .mc-ico svg{fill:var(--red)}
+.mc.indigo .mc-ico{background:var(--indigo-lt)}.mc.indigo .mc-ico svg{fill:var(--indigo)}
+.mc.teal .mc-ico{background:var(--teal-lt)}.mc.teal .mc-ico svg{fill:var(--teal)}
 .mc-val{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1}
 .mc-lbl{font-size:12px;color:var(--muted);margin-top:4px;font-weight:500}
 
@@ -135,7 +132,7 @@ input,select,textarea{font-family:inherit}
 .tbl-wrap{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh-sm);overflow:hidden}
 .tbl-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;flex-shrink:0}
 .tbl-count{font-size:12px;color:var(--muted);font-weight:500}
-.tbl-body{overflow-y:auto;max-height:calc(100vh - 320px)} /* scrollable table body */
+.tbl-body{overflow-y:auto;max-height:calc(100vh - 320px)}
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
 .tbl thead{background:#F8F9FA;position:sticky;top:0;z-index:10}
 .tbl th{padding:10px 13px;text-align:left;font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
@@ -157,7 +154,6 @@ input,select,textarea{font-family:inherit}
 .rb.p:hover svg{fill:var(--green)}
 .rb svg{width:15px;height:15px;fill:var(--muted)}
 .empty-row{text-align:center;padding:48px;color:var(--muted);font-size:14px}
-/* infinite scroll sentinel */
 #cust-sentinel,#prod-sentinel{height:40px;display:flex;align-items:center;justify-content:center}
 .load-more-spin{display:none;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--p);border-radius:50%;animation:spin .6s linear infinite}
 .loading-more .load-more-spin{display:inline-block}
@@ -183,20 +179,18 @@ input,select,textarea{font-family:inherit}
 .stk-bar{height:5px;border-radius:3px;background:var(--border);margin-top:3px;overflow:hidden}
 .stk-fill{height:100%;border-radius:3px;transition:width .4s}
 
-/* ═══ SKELETON LOADING ══════════════════════════════════ */
+/* ═══ SKELETON ══════════════════════════════════════════ */
 .skel{background:linear-gradient(90deg,#F1F3F4 25%,#E8EBEE 50%,#F1F3F4 75%);background-size:200%;animation:shimmer 1.4s infinite;border-radius:4px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .skel-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid #F5F6F7}
 .skel-cell{height:12px;border-radius:4px}
-.skel-m{width:36px;height:36px;border-radius:var(--r)}
 .mc-skel{background:var(--card);border-radius:var(--r);padding:18px 20px;border:1px solid var(--border);box-shadow:var(--sh-sm)}
 
-/* ═══ MODAL — FIXED so it never scrolls with page ══════ */
+/* ═══ MODAL ═════════════════════════════════════════════ */
 .ovl{position:fixed;inset:0;background:rgba(32,33,36,.5);z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;backdrop-filter:blur(2px)}
 .ovl.on{opacity:1;pointer-events:all}
 .mdl{position:fixed;top:50%;left:50%;transform:translate(-50%,-48%) scale(.96);z-index:600;background:var(--card);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.2);width:min(580px,95vw);max-height:88vh;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:all .2s var(--ease)}
 .mdl.on{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1)}
-/* prevent background scroll while modal open */
 body.modal-open{overflow:hidden}
 .mdl-h{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
 .mdl-title{font-size:16px;font-weight:700}
@@ -217,7 +211,6 @@ body.modal-open{overflow:hidden}
 .fld .ro{background:#F8F9FA;color:var(--muted);cursor:not-allowed}
 .fld .hint{font-size:11px;color:var(--muted);margin-top:2px}
 .fld .info-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:var(--bg);border-radius:99px;font-size:12px;font-weight:500;margin-top:4px;border:1px solid var(--border)}
-/* tag input for categories */
 .tag-wrap{border:1px solid var(--border);border-radius:var(--r);padding:6px 8px;display:flex;flex-wrap:wrap;gap:4px;cursor:text;transition:border .2s;background:var(--card)}
 .tag-wrap:focus-within{border-color:var(--p);box-shadow:0 0 0 2px #1A73E815}
 .tag-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--p-lt);color:var(--p);border-radius:99px;font-size:12px;font-weight:600}
@@ -234,6 +227,13 @@ body.modal-open{overflow:hidden}
 .btn-g{background:var(--green);color:#fff}.btn-g:hover{opacity:.87}
 .btn svg{width:14px;height:14px;fill:currentColor}
 
+/* ═══ OTP STEP ══════════════════════════════════════════ */
+.otp-step{display:none}
+.otp-step.on{display:block}
+.otp-inp{width:100%;padding:14px;border:1px solid var(--border);border-radius:var(--r);font-size:24px;font-weight:700;text-align:center;letter-spacing:10px;outline:none;transition:border .2s;margin-bottom:10px;font-family:'Courier New',monospace}
+.otp-inp:focus{border-color:var(--p);box-shadow:0 0 0 2px #1A73E820}
+.otp-hint{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+
 /* ═══ CHARTS ════════════════════════════════════════════ */
 .ch-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .ch-lbl{font-size:12px;color:var(--muted);width:80px;flex-shrink:0;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -249,10 +249,6 @@ body.modal-open{overflow:hidden}
 .sv.ok::before{content:'● ';color:var(--green)}
 .sv.no::before{content:'○ ';color:var(--red)}
 
-/* ═══ ALERTS ════════════════════════════════════════════ */
-.alert-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F5F6F7}
-.alert-row:last-child{border-bottom:none}
-
 /* ═══ TOAST ═════════════════════════════════════════════ */
 #toasts{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:7px;z-index:9999;pointer-events:none}
 .toast{background:var(--text);color:#fff;padding:11px 15px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:var(--sh);display:flex;align-items:center;gap:9px;animation:tin .25s var(--ease);pointer-events:all;min-width:220px}
@@ -261,42 +257,16 @@ body.modal-open{overflow:hidden}
 .toast svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
 @keyframes tin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
 @keyframes tout{to{opacity:0;transform:translateX(20px)}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 /* ═══ CIRCULAR LOADER ════════════════════════════════════ */
 .spin-loader{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--p);border-radius:50%;animation:spin 1s linear infinite}
 .dl-tab.on{color:var(--p);border-bottom-color:var(--p)}
 .dl-panel{display:none}.dl-panel.on{display:block}
 
-/* ═══ PRINT ══════════════════════════════════════════════ */
-@media screen{#pz{display:none}}
-@media print{
-  body > *:not(#pz){display:none!important}
-  #pz{display:block!important}
-  @page { size: A4 landscape; margin: 3.8mm; }
-  /* Shipping label (small) */
-  .lbl-sm{width:148mm;padding:10mm;font-family:var(--font)}
-  .lbl-sm .lbl-h{font-size:18px;font-weight:900;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px}
-  .lbl-sm .lbl-row{font-size:13px;margin:5px 0}
-  /* A5 invoice */
-  .inv-a5{width:100%;box-sizing:border-box;padding:10mm;font-family:var(--font)}
-  .inv-a5 .inv-h{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:16px}
-  .inv-a5 .inv-logo{font-size:20px;font-weight:900}
-  .inv-a5 .inv-meta p{font-size:11px;text-align:right}
-  .inv-a5 h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#555;border-bottom:1px solid #ddd;padding-bottom:3px;margin-bottom:8px;margin-top:12px}
-  .inv-a5 p{font-size:12px;margin:3px 0}
-  .inv-a5 table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
-  .inv-a5 th{background:#f5f5f5;padding:7px 10px;text-align:left;font-weight:700;border:1px solid #ddd}
-  .inv-a5 td{padding:7px 10px;border:1px solid #ddd}
-  .inv-a5 .total-row{font-weight:800;font-size:14px}
-  @page{margin:0.25in;size:A4 landscape}
-}
-
 /* ═══ DEV LOG ══════════════════════════════════════════ */
 .dl-tab{padding:7px 16px;border-radius:99px;border:1px solid var(--border);font-size:13px;font-weight:500;color:var(--muted);background:var(--card);transition:all .15s}
 .dl-tab:hover{border-color:var(--p);color:var(--p)}
 .dl-tab.on{background:var(--p);color:#fff;border-color:var(--p)}
-.dl-panel{display:none}.dl-panel.on{display:block}
 .version-block{background:var(--card);border-radius:var(--r);border:1px solid var(--border);margin-bottom:12px;overflow:hidden}
 .version-head{padding:12px 16px;background:#F8F9FA;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .version-badge{background:var(--p);color:#fff;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700;font-family:'Courier New',monospace}
@@ -310,31 +280,31 @@ body.modal-open{overflow:hidden}
 .bug-tbl td{padding:8px 12px;border-bottom:1px solid #F1F3F4;vertical-align:top}
 .bug-tbl tr:hover td{background:#F8FBFF}
 .bug-tbl tr:last-child td{border-bottom:none}
-.api-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px}
-.api-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.api-method{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:#FF6B35;color:#fff;font-family:'Courier New',monospace}
-.api-path{font-family:'Courier New',monospace;font-size:13px;color:var(--p)}
-.api-body{padding:12px 16px}
-.code-block{background:#1E2029;color:#E6EDF3;padding:14px 16px;border-radius:var(--r);font-family:'Courier New',monospace;font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre;margin-top:8px}
-.code-block .kw{color:#FF79C6}
-.code-block .str{color:#F1FA8C}
-.code-block .cmt{color:#6272A4}
-.code-block .fn{color:#50FA7B}
-.phase-card{border-left:4px solid var(--p);padding:12px 16px;background:var(--p-lt);border-radius:0 var(--r) var(--r) 0;margin-bottom:10px}
-.phase-card.amber{border-left-color:var(--amber);background:var(--amber-lt)}
-.phase-card.green{border-left-color:var(--green);background:var(--green-lt)}
-.roadmap-week{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
-.rw-head{padding:10px 16px;background:#F8F9FA;border-bottom:1px solid var(--border);font-weight:700;font-size:14px;display:flex;gap:10px;align-items:center}
-.rw-badge{background:var(--indigo);color:#fff;padding:1px 8px;border-radius:99px;font-size:11px}
-.rw-body{padding:10px 16px}
-.rw-task{padding:5px 0;font-size:13px;display:flex;gap:8px;border-bottom:1px solid #F5F6F7}
-.rw-task:last-child{border-bottom:none}
-.ai-prompt{background:#1E2029;color:#E6EDF3;padding:20px;border-radius:var(--r);font-family:'Courier New',monospace;font-size:12px;line-height:1.8;white-space:pre-wrap;overflow-x:auto}
 .err-tag{display:inline-block;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-right:4px}
 .priority-critical{background:var(--red-lt);color:var(--red)}
 .priority-high{background:var(--amber-lt);color:var(--amber)}
 .priority-medium{background:var(--p-lt);color:var(--p)}
 .priority-low{background:#F1F3F4;color:var(--muted)}
+
+@media print{
+  body > *:not(#pz){display:none!important}
+  #pz{display:block!important}
+  @page{size:A4 landscape;margin:3.8mm}
+  .lbl-sm{width:148mm;padding:10mm;font-family:var(--font)}
+  .lbl-sm .lbl-h{font-size:18px;font-weight:900;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px}
+  .lbl-sm .lbl-row{font-size:13px;margin:5px 0}
+  .inv-a5{width:100%;box-sizing:border-box;padding:10mm;font-family:var(--font)}
+  .inv-a5 .inv-h{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:16px}
+  .inv-a5 .inv-logo{font-size:20px;font-weight:900}
+  .inv-a5 .inv-meta p{font-size:11px;text-align:right}
+  .inv-a5 h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#555;border-bottom:1px solid #ddd;padding-bottom:3px;margin-bottom:8px;margin-top:12px}
+  .inv-a5 p{font-size:12px;margin:3px 0}
+  .inv-a5 table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
+  .inv-a5 th{background:#f5f5f5;padding:7px 10px;text-align:left;font-weight:700;border:1px solid #ddd}
+  .inv-a5 td{padding:7px 10px;border:1px solid #ddd}
+  .inv-a5 .total-row{font-weight:800;font-size:14px}
+}
+
 @media(max-width:768px){
   #sb{position:fixed;transform:translateX(-100%);transition:transform .25s}
   #sb.open{transform:none;box-shadow:var(--sh)}
@@ -346,39 +316,49 @@ body.modal-open{overflow:hidden}
 </head>
 <body>
 
-<!-- ══════════ AUTH ══════════ -->
+<!-- ══ AUTH ══════════════════════════════════════════════ -->
 <div id="auth" class="hidden">
   <div class="auth-box">
     <div class="auth-av" id="auth-av">YB</div>
     <h2 class="auth-title" id="auth-name">YB Dashboard</h2>
-    <p class="auth-sub">Sign in to manage your store</p>
-    <div style="position:relative;margin-bottom:10px">
-      <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.61 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 3.12 4.18 2 2 0 0 1 5.09 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l.46-.46a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 23 18v2.92z"/></svg>
-      </span>
-      <input class="auth-inp" type="tel" id="ph" placeholder="Phone number" autocomplete="tel" style="padding-left:38px;margin-bottom:0" onkeydown="if(event.key==='Enter')document.getElementById('pw').focus()">
+    <p class="auth-sub" id="auth-sub-txt">Sign in to manage your store</p>
+
+    <!-- Step 1: credentials -->
+    <div id="step-creds">
+      <div style="position:relative;margin-bottom:10px">
+        <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.61 19a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 3.12 4.18 2 2 0 0 1 5.09 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l.46-.46a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 23 18v2.92z"/></svg>
+        </span>
+        <input class="auth-inp" type="tel" id="ph" placeholder="Phone number" autocomplete="tel" style="padding-left:38px;margin-bottom:0">
+      </div>
+      <div style="position:relative;margin-bottom:10px">
+        <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <input class="auth-inp" type="password" id="pw" placeholder="Password" autocomplete="current-password" style="padding-left:38px;padding-right:42px;margin-bottom:0">
+        <button onclick="togglePw()" tabindex="-1" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;opacity:.45;padding:4px" id="pw-eye">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
     </div>
-    <div style="position:relative;margin-bottom:10px">
-      <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.45;pointer-events:none">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      </span>
-      <input class="auth-inp" type="password" id="pw" placeholder="Password" autocomplete="current-password" style="padding-left:38px;padding-right:42px;margin-bottom:0">
-      <button onclick="togglePw()" tabindex="-1" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;opacity:.45;padding:4px" id="pw-eye">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eye-icon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      </button>
+
+    <!-- Step 2: OTP -->
+    <div id="step-otp" class="otp-step">
+      <div class="otp-hint" id="otp-hint">OTP code sent to your Telegram.<br>Enter the 6-digit code below.</div>
+      <input class="otp-inp" type="text" id="otp-inp" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+      <button class="btn btn-o" onclick="backToLogin()" style="width:100%;margin-bottom:10px;justify-content:center">← Back</button>
     </div>
+
     <button class="auth-btn" id="login-btn" onclick="doLogin()">
       <span id="login-txt">Sign in</span>
-      <span id="login-spin" style="display:none">...</span>
+      <span id="login-spin" style="display:none;margin-left:6px">...</span>
     </button>
     <div class="auth-err" id="auth-err"></div>
   </div>
 </div>
 
-<!-- ══════════ APP ══════════ -->
+<!-- ══ APP ════════════════════════════════════════════════ -->
 <div id="app" class="hidden">
-
-  <!-- Sidebar -->
   <aside id="sb">
     <div class="sb-head">
       <div id="sb-logo">YB</div>
@@ -424,7 +404,6 @@ body.modal-open{overflow:hidden}
     </div>
   </aside>
 
-  <!-- Main -->
   <div class="main">
     <header class="topbar">
       <span class="tb-crumb" id="tb-crumb">Dashboard</span>
@@ -442,56 +421,53 @@ body.modal-open{overflow:hidden}
     </header>
 
     <main class="content" id="content">
-      <!-- ── DASHBOARD ── -->
+      <!-- DASHBOARD -->
       <div id="pg-dashboard" class="page on">
         <div class="pg-head">
           <div><div class="pg-title">Dashboard</div><div class="pg-sub" id="dash-date"></div></div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-o" onclick="printDashboardA4()" title="Print all orders as A4"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>Print A4</button>
+            <button class="btn btn-o" onclick="printDashboardA4()"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>Print A4</button>
             <button class="btn btn-p" onclick="openAddCustomer()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Order</button>
           </div>
         </div>
         <div class="metrics" id="dash-m">
-          <div class="mc-skel skel" style="height:116px"><div class="spin-loader"></div></div>
-          <div class="mc-skel skel" style="height:116px"><div class="spin-loader"></div></div>
-          <div class="mc-skel skel" style="height:116px"><div class="spin-loader"></div></div>
-          <div class="mc-skel skel" style="height:116px"><div class="spin-loader"></div></div>
-          <div class="mc-skel skel" style="height:116px"><div class="spin-loader"></div></div>
-          <div class="mc-skel skel" style="height:116px"><div class="spin-loader"></div></div>
+          <div class="mc-skel skel" style="height:116px"></div>
+          <div class="mc-skel skel" style="height:116px"></div>
+          <div class="mc-skel skel" style="height:116px"></div>
+          <div class="mc-skel skel" style="height:116px"></div>
         </div>
         <div id="dash-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px"></div>
         <div class="dash-grid">
           <div class="sec">
-            <div class="sec-h" style="justify-content:space-between;align-items:center;gap:10px;display:flex">
+            <div class="sec-h" style="justify-content:space-between">
               <div><span class="sec-t">Undelivered Orders</span><br><span style="font-size:12px;color:var(--muted)">Needs action</span></div>
               <button class="btn btn-p" onclick="openAddCustomer()" style="font-size:12px;height:32px">Add Order</button>
             </div>
-            <div id="dash-undelivered"><div class="skel-row"><div class="skel skel-cell" style="width:60%"></div></div><div class="skel-row"><div class="skel skel-cell" style="width:50%"></div></div></div>
+            <div id="dash-undelivered"><div class="skel-row"><div class="skel skel-cell" style="width:60%"></div></div></div>
           </div>
           <div class="sec" id="dash-alerts-sec" style="display:none">
             <div class="sec-h">
-              <span class="sec-t" style="color:var(--amber)">Low Stock Graph</span>
-              <button class="btn btn-o" onclick="go('products')" style="font-size:12px;height:28px">Manage Stock →</button>
+              <span class="sec-t" style="color:var(--amber)">Low Stock</span>
+              <button class="btn btn-o" onclick="go('products')" style="font-size:12px;height:28px">Manage →</button>
             </div>
             <div class="sec-b" id="dash-alerts-b"></div>
           </div>
         </div>
       </div>
 
-      <!-- ── CUSTOMERS ── -->
+      <!-- CUSTOMERS -->
       <div id="pg-customers" class="page">
         <div class="pg-head">
           <div><div class="pg-title">Customers</div><div class="pg-sub" id="c-sub">Loading…</div></div>
           <div style="display:flex;gap:8px">
             <button class="btn btn-o" onclick="exportPDF('customers')"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>Print / PDF</button>
-            <button class="btn btn-o" onclick="printCustomerInvoiceHorizontal()" title="Print horizontal invoice"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>IMG</button>
             <button class="btn btn-p" onclick="openAddCustomer()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>Add Customer</button>
           </div>
         </div>
         <div class="fbar">
           <select id="c-pm" onchange="renderCust()"><option value="cod">COD</option><option value="paid">Paid</option><option value="unpaid">Unpaid</option></select>
           <div style="display:flex;align-items:center;gap:8px;white-space:nowrap">
-            <span style="font-size:13px;font-weight:500;color:var(--text)">Date between</span>
+            <span style="font-size:13px;font-weight:500">Date between</span>
             <input type="date" id="c-df" onchange="renderCust()">
             <input type="date" id="c-dt" onchange="renderCust()">
           </div>
@@ -504,7 +480,7 @@ body.modal-open{overflow:hidden}
         </div>
       </div>
 
-      <!-- ── PRODUCTS ── -->
+      <!-- PRODUCTS -->
       <div id="pg-products" class="page">
         <div class="pg-head">
           <div><div class="pg-title">Products</div><div class="pg-sub" id="p-sub">Loading…</div></div>
@@ -521,11 +497,9 @@ body.modal-open{overflow:hidden}
         </div>
       </div>
 
-      <!-- ── REPORTS ── -->
+      <!-- REPORTS -->
       <div id="pg-reports" class="page">
-        <div class="pg-head">
-          <div><div class="pg-title">Reports</div><div class="pg-sub">View and filter orders</div></div>
-        </div>
+        <div class="pg-head"><div><div class="pg-title">Reports</div><div class="pg-sub">View and filter orders</div></div></div>
         <div style="display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid var(--border);flex-wrap:wrap">
           <button class="dl-tab on" data-t="summary" onclick="dlTab('summary')" style="padding:12px 16px;border:none;background:none;cursor:pointer;font-weight:600;color:var(--p);border-bottom:3px solid var(--p)">Summary</button>
           <button class="dl-tab" data-t="orders" onclick="dlTab('orders')" style="padding:12px 16px;border:none;background:none;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:3px solid transparent">Order History</button>
@@ -544,75 +518,37 @@ body.modal-open{overflow:hidden}
           </div>
         </div>
         <div id="dl-orders" class="dl-panel" style="display:none">
-          <div class="sec" style="margin-top:0"><div class="sec-h" style="justify-content:space-between"><span class="sec-t">Complete Order History</span><button class="btn btn-o" onclick="printOrdersReport()" style="font-size:12px;height:28px"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>Print</button></div><div id="r-tbl-full" style="overflow-x:auto"></div></div>
+          <div class="sec" style="margin-top:0"><div class="sec-h" style="justify-content:space-between"><span class="sec-t">Order History</span><button class="btn btn-o" onclick="printOrdersReport()" style="font-size:12px;height:28px">Print</button></div><div id="r-tbl-full" style="overflow-x:auto"></div></div>
         </div>
       </div>
 
-      <!-- ── SETTINGS ── -->
+      <!-- SETTINGS -->
       <div id="pg-settings" class="page">
-        <div class="pg-head">
-          <div><div class="pg-title">Settings</div><div class="pg-sub">Read from Settings sheet row 2</div></div>
-        </div>
+        <div class="pg-head"><div><div class="pg-title">Settings</div><div class="pg-sub">Read from Settings sheet row 2</div></div></div>
         <div class="sec"><div class="sec-h"><span class="sec-t">Configuration</span><span style="font-size:12px;color:var(--muted)">Edit in Google Sheets → Settings tab</span></div>
           <div class="sec-b"><div id="settings-b"><div class="skel skel-cell" style="height:180px"></div></div></div>
         </div>
       </div>
 
-      <!-- ── DEV LOG ── -->
+      <!-- DEV LOG -->
       <div id="pg-devlog" class="page">
         <div class="pg-head">
-          <div><div class="pg-title">Dev Log</div><div class="pg-sub">Project reference, bug registry, PayWay guide &amp; AI prompt</div></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-o" onclick="saveDevLog()" id="btn-save-doc">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>Save to Google Doc
-            </button>
-            <a class="btn btn-o" id="link-doc" href="https://docs.google.com/document/d/1V-5KlFLtfcj7p8qAdo-LGy_T_89pm8ikCs8W6MxSmJo/edit" target="_blank">
-              <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>Open Doc
-            </a>
-            <a class="btn btn-o" href="https://drive.google.com/drive/folders/1TW3rwkbDfEovZsJx3eACPJL2zULVjCwz" target="_blank">
-              <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>Open Drive
-            </a>
-            <button class="btn btn-o" onclick="window.print()">
-              <svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>Print
-            </button>
-          </div>
+          <div><div class="pg-title">Dev Log</div><div class="pg-sub">Project reference & bug registry</div></div>
         </div>
-
-        <!-- Tab Nav -->
         <div style="display:flex;gap:4px;margin-bottom:18px;flex-wrap:wrap" id="dl-tabs">
           <button class="dl-tab on" data-t="changelog" onclick="dlTab('changelog')">📋 Changelog</button>
           <button class="dl-tab" data-t="bugs" onclick="dlTab('bugs')">🐛 Bug Registry</button>
           <button class="dl-tab" data-t="payway" onclick="dlTab('payway')">💳 PayWay API</button>
-          <button class="dl-tab" data-t="features" onclick="dlTab('features')">✨ Features</button>
-          <button class="dl-tab" data-t="roadmap" onclick="dlTab('roadmap')">🗺 Roadmap</button>
-          <button class="dl-tab" data-t="ai" onclick="dlTab('ai')">🤖 AI Prompt</button>
         </div>
-
-        <!-- Tab Content -->
-        <div id="dl-changelog" class="dl-panel on">
-          <div id="dl-changelog-body"><div class="skel skel-cell" style="height:300px"></div></div>
-        </div>
-        <div id="dl-bugs" class="dl-panel">
-          <div id="dl-bugs-body"><div class="skel skel-cell" style="height:300px"></div></div>
-        </div>
-        <div id="dl-payway" class="dl-panel">
-          <div id="dl-payway-body"><div class="skel skel-cell" style="height:300px"></div></div>
-        </div>
-        <div id="dl-features" class="dl-panel">
-          <div id="dl-features-body"><div class="skel skel-cell" style="height:300px"></div></div>
-        </div>
-        <div id="dl-roadmap" class="dl-panel">
-          <div id="dl-roadmap-body"><div class="skel skel-cell" style="height:300px"></div></div>
-        </div>
-        <div id="dl-ai" class="dl-panel">
-          <div id="dl-ai-body"></div>
-        </div>
+        <div id="dl-changelog" class="dl-panel on"><div id="dl-changelog-body"><div class="skel skel-cell" style="height:200px"></div></div></div>
+        <div id="dl-bugs" class="dl-panel"><div id="dl-bugs-body"><div class="skel skel-cell" style="height:200px"></div></div></div>
+        <div id="dl-payway" class="dl-panel"><div id="dl-payway-body"></div></div>
       </div>
     </main>
   </div>
 </div>
 
-<!-- ══════════ MODAL ══════════ -->
+<!-- ══ MODAL ══════════════════════════════════════════════ -->
 <div class="ovl" id="ovl" onclick="closeMdl()"></div>
 <div class="mdl" id="mdl">
   <div class="mdl-h"><span class="mdl-title" id="mdl-t">—</span>
@@ -622,21 +558,22 @@ body.modal-open{overflow:hidden}
   <div class="mdl-f" id="mdl-f"></div>
 </div>
 
-<!-- ══════════ TOASTS / PRINT ══════════ -->
 <div id="toasts"></div>
 <div id="pz"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// STORAGE HELPER — must be defined BEFORE D uses it
+// FIX 1 — STORAGE: page prefs → localStorage | token → sessionStorage
 // ═══════════════════════════════════════════════════════════
-function ss(k, v) { 
-  if(v===undefined) return localStorage.getItem(k); 
-  localStorage.setItem(k,v); 
+function ss(k, v) {
+  if (v === undefined) return localStorage.getItem(k);
+  localStorage.setItem(k, v);
 }
+function tok()  { return sessionStorage.getItem('ybtoken') || ''; }
+function role() { return sessionStorage.getItem('ybrole')  || ''; }
 
 // ═══════════════════════════════════════════════════════════
-// STATE — persisted keys use sessionStorage
+// STATE
 // ═══════════════════════════════════════════════════════════
 const D = {
   page: ss('page') || 'dashboard',
@@ -650,534 +587,534 @@ const D = {
 };
 
 // ═══════════════════════════════════════════════════════════
-// API BRIDGE — fetch-based (works on GitHub Pages)
+// FIX 2 — GS() BRIDGE: always inject Bearer token
 // ═══════════════════════════════════════════════════════════
-
 async function GS(fn, ...args) {
   const arg  = args.length === 0 ? undefined : args.length === 1 ? args[0] : args;
-  const data = arg !== undefined ? encodeURIComponent(JSON.stringify(arg)) : "";
-  const url  = `${API}?action=gs&fn=${fn}${data ? '&data=' + data : ''}`;
+  const data = arg !== undefined ? encodeURIComponent(JSON.stringify(arg)) : '';
+  const t    = tok();
+  const url  = `${API}?action=gs&fn=${fn}${data ? '&data=' + data : ''}${t ? '&token=' + encodeURIComponent(t) : ''}`;
   const res  = await fetch(url);
-  if (!res.ok) throw new Error("HTTP " + res.status);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
   const json = await res.json();
   if (json && json.error) throw new Error(json.error);
   return json;
 }
 
 // ═══════════════════════════════════════════════════════════
-// AUTH
+// FIX 3 — AUTH: chkAuth verifies token server-side
 // ═══════════════════════════════════════════════════════════
-function chkAuth() {
-  ss('ybauth') === '1' ? showApp() : showAuth();
+async function chkAuth() {
+  const t    = tok();
+  const auth = ss('ybauth');
+  if (!t || auth !== '1') { showAuth(); return; }
+  try {
+    const r = await GS('getUserPermissions');
+    if (r && r.role) {
+      sessionStorage.setItem('ybrole', r.role);
+      sessionStorage.setItem('ybname', r.name || '');
+      showApp();
+    } else {
+      _clearSession();
+      showAuth();
+    }
+  } catch(e) {
+    // Network/offline — trust local token
+    if (t) showApp(); else showAuth();
+  }
 }
-function showAuth(){
+
+function _clearSession() {
+  sessionStorage.clear();
+  localStorage.removeItem('ybauth');
+}
+
+function showAuth() {
   document.getElementById('auth').classList.remove('hidden');
   document.getElementById('app').classList.add('hidden');
-  setTimeout(()=>{ const p=document.getElementById('pw'); if(p) p.focus(); },200);
+  document.getElementById('app').classList.remove('ready');
+  _showStep('creds');
+  setTimeout(() => document.getElementById('ph')?.focus(), 200);
 }
-function showApp(){ document.getElementById('auth').classList.add('hidden'); const a=document.getElementById('app'); a.classList.remove('hidden'); setTimeout(()=>a.classList.add('ready'),10); initApp(); }
-document.getElementById('pw')?.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-document.addEventListener('DOMContentLoaded',()=>{ document.getElementById('ph')?.addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('pw')?.focus(); }); });
-
-document.addEventListener('keydown', e=>{
-  if(e.key!=='Enter' || e.ctrlKey || e.metaKey || e.altKey) return;
-  const mdl=document.getElementById('mdl');
-  // If a modal is open, make Enter activate the modal's primary action
-  if(mdl && mdl.classList.contains('on')){
-    const active=document.activeElement;
-    if(active && active.tagName==='TEXTAREA') return;
-    if(active && active.isContentEditable) return;
-    e.preventDefault();
-    // Prefer clicking a primary button in the modal footer
-    const pBtn = document.querySelector('#mdl-f .btn-p, #mdl-f .btn.btn-p, #mdl .mdl-f .btn-p');
-    if(pBtn){ try{ pBtn.click(); }catch(_){ }
-      return;
-    }
-    // Fallbacks for known modal types
-    if(['add-cust','edit-cust'].includes(D.modal.type)){ saveCust(); return; }
-    if(['add-prod','edit-prod'].includes(D.modal.type)){ saveProd(); return; }
-    if(['del-cust'].includes(D.modal.type)){ delCust(); return; }
-    if(['del-prod'].includes(D.modal.type)){ delProd(); return; }
-    return;
-  }
-  // When no modal, leave Enter behavior to specific handlers (e.g., login input)
-});
-
-let _pwVisible=false;
-function togglePw(){
-  _pwVisible=!_pwVisible;
-  const inp=document.getElementById('pw');
-  inp.type=_pwVisible?'text':'password';
-  document.getElementById('eye-icon').style.opacity=_pwVisible?'1':'.45';
+function showApp() {
+  document.getElementById('auth').classList.add('hidden');
+  const a = document.getElementById('app');
+  a.classList.remove('hidden');
+  setTimeout(() => a.classList.add('ready'), 10);
+  initApp();
 }
 
-// ── AUTH CONFIG ─────────────────────────────────────────────
-// Developer: change fn to swap auth method, toggle usePhone UI
-const AUTH = {
-  fn:       'verifyPassword',   // GAS function to call
-  usePhone: true,               // show phone field (display only)
-};
-// ────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// FIX 4 — doLogin(): Step1 + OTP + Step2 + store token
+// ═══════════════════════════════════════════════════════════
+let _loginPhone = '';
+
+function _showStep(step) {
+  document.getElementById('step-creds').style.display = step === 'creds' ? '' : 'none';
+  document.getElementById('step-otp').classList.toggle('on', step === 'otp');
+  document.getElementById('auth-sub-txt').textContent =
+    step === 'otp' ? 'Enter OTP from Telegram' : 'Sign in to manage your store';
+  document.getElementById('login-txt').textContent =
+    step === 'otp' ? 'Verify OTP' : 'Sign in';
+  document.getElementById('auth-err').textContent = '';
+  if (step === 'otp') setTimeout(() => document.getElementById('otp-inp')?.focus(), 150);
+}
+
+function backToLogin() {
+  _loginPhone = '';
+  document.getElementById('otp-inp').value = '';
+  document.getElementById('pw').value = '';
+  _showStep('creds');
+  // Restore button onclick
+  document.getElementById('login-btn').onclick = doLogin;
+}
 
 async function doLogin() {
+  const ph  = (document.getElementById('ph')?.value || '').trim().replace(/\D/g, '');
   const pw  = (document.getElementById('pw')?.value || '').trim();
   const btn = document.getElementById('login-btn');
   const err = document.getElementById('auth-err');
   if (err) err.textContent = '';
 
-  if (!pw) {
-    if (err) err.textContent = 'Enter password';
-    document.getElementById('pw')?.focus();
+  // ── OTP step ─────────────────────────────────────────────
+  if (document.getElementById('step-otp').classList.contains('on')) {
+    const otp = (document.getElementById('otp-inp')?.value || '').trim();
+    if (!otp || otp.length < 6) { if (err) err.textContent = 'Enter 6-digit OTP'; return; }
+    if (btn) { btn.disabled = true; document.getElementById('login-txt').textContent = 'Verifying…'; document.getElementById('login-spin').style.display = 'inline'; }
+    try {
+      const r2 = await GS('loginStep2', { phone: _loginPhone, otp });
+      if (!r2 || r2.error) throw new Error(r2?.error || 'Wrong OTP');
+      // FIX: store token in sessionStorage (NOT localStorage — security H3)
+      sessionStorage.setItem('ybtoken', r2.token  || '');
+      sessionStorage.setItem('ybrole',  r2.role   || 'viewer');
+      sessionStorage.setItem('ybname',  r2.name   || '');
+      ss('ybauth', '1');
+      showApp();
+    } catch(e) {
+      if (err) err.textContent = e.message || 'OTP verification failed';
+      if (btn) { btn.disabled = false; document.getElementById('login-txt').textContent = 'Verify OTP'; document.getElementById('login-spin').style.display = 'none'; }
+    }
     return;
   }
 
-  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+  // ── Credentials step ─────────────────────────────────────
+  if (!ph) { if (err) err.textContent = 'Enter phone number'; document.getElementById('ph')?.focus(); return; }
+  if (!pw) { if (err) err.textContent = 'Enter password';    document.getElementById('pw')?.focus(); return; }
+  if (ph.length < 9 || ph.length > 10) { if (err) err.textContent = 'Phone must be 9-10 digits'; return; }
 
+  if (btn) { btn.disabled = true; document.getElementById('login-txt').textContent = 'Checking…'; document.getElementById('login-spin').style.display = 'inline'; }
   try {
-    const r = await GS(AUTH.fn, pw);
-    if (r === true || r === 'true' || r) {
-      sessionStorage.clear();
-      ss('ybauth', '1');
-      showApp();
-    } else {
-      if (err) err.textContent = 'Wrong password';
-      document.getElementById('pw').value = '';
-      document.getElementById('pw').focus();
-      if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
-    }
+    const r1 = await GS('loginStep1', { identifier: ph, password: pw });
+    if (!r1 || r1.error) throw new Error(r1?.error || 'Login failed');
+    // Step 1 OK → show OTP input
+    _loginPhone = ph;
+    _showStep('otp');
+    if (btn) { btn.disabled = false; document.getElementById('login-txt').textContent = 'Verify OTP'; document.getElementById('login-spin').style.display = 'none'; }
+    document.getElementById('otp-hint').textContent =
+      `OTP sent to your Telegram (${ph.slice(0,3)}***${ph.slice(-3)}). Enter the 6-digit code.`;
   } catch(e) {
-    if (err) err.textContent = 'Error: ' + e.message;
-    if (btn) { btn.disabled = false; btn.textContent = 'Sign in'; }
+    if (err) err.textContent = e.message || 'Login failed';
+    if (btn) { btn.disabled = false; document.getElementById('login-txt').textContent = 'Sign in'; document.getElementById('login-spin').style.display = 'none'; }
   }
 }
 
-
+// ═══════════════════════════════════════════════════════════
+// FIX 5 — doLogout(): invalidate server session + clear all
+// ═══════════════════════════════════════════════════════════
 function doLogout() {
-  localStorage.clear();
-  window.location.href = '/';
+  const t = tok();
+  if (t) GS('logout', { token: t }).catch(() => {});
+  _clearSession();
+  ['page','sbc'].forEach(k => localStorage.removeItem(k));
+  showAuth();
+}
+
+// ═══════════════════════════════════════════════════════════
+// keyboard helpers
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ph')?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('pw')?.focus(); });
+  document.getElementById('pw')?.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('otp-inp')?.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.ctrlKey || e.metaKey || e.altKey) return;
+  const mdl = document.getElementById('mdl');
+  if (mdl && mdl.classList.contains('on')) {
+    const active = document.activeElement;
+    if (active && active.tagName === 'TEXTAREA') return;
+    e.preventDefault();
+    const pBtn = document.querySelector('#mdl-f .btn-p');
+    if (pBtn) { pBtn.click(); return; }
+    if (['add-cust','edit-cust'].includes(D.modal.type)) { saveCust(); return; }
+    if (['add-prod','edit-prod'].includes(D.modal.type)) { saveProd(); return; }
+    if (D.modal.type === 'del-cust') { delCust(); return; }
+    if (D.modal.type === 'del-prod') { delProd(); return; }
+  }
+});
+
+let _pwVisible = false;
+function togglePw() {
+  _pwVisible = !_pwVisible;
+  document.getElementById('pw').type = _pwVisible ? 'text' : 'password';
+  document.getElementById('eye-icon').style.opacity = _pwVisible ? '1' : '.45';
 }
 
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-async function initApp(){
-  if(D.sbCol) toggleSb(true);
+async function initApp() {
+  // Show user name in sidebar
+  const name = sessionStorage.getItem('ybname') || 'Admin';
+  document.getElementById('sb-un').textContent = name;
+  document.getElementById('sb-av').textContent  = name[0]?.toUpperCase() || 'A';
+
+  if (D.sbCol) toggleSb(true);
   go(D.page, true);
-  loadCfg().then(()=>loadAll());
+  loadCfg().then(() => loadAll());
 }
 
-async function loadAll(){
-  D.cust.loading=true;
+async function loadAll() {
+  D.cust.loading = true;
   document.getElementById('c-tbl').innerHTML = '<div class="empty-row" style="padding:40px 0"><div class="load-more-spin" style="display:inline-block;margin:0 auto"></div></div>';
   const [c, p] = await Promise.all([
-    GS('getCustomersData').catch(()=>[]),
-    GS('getProductsData').catch(()=>[])
+    GS('getCustomersData').catch(e => { console.warn('getCustomersData:', e.message); return []; }),
+    GS('getProductsData').catch(e  => { console.warn('getProductsData:',  e.message); return []; })
   ]);
-  D.cust.loading=false;
-  if(c && c.length>1){ D.cust.raw=c; document.getElementById('nb-c').textContent=c.length-1; }
-  if(p && p.length>1){ D.prod.raw=p; document.getElementById('nb-p').textContent=p.length-1; D.cats=extractCats(); }
+  D.cust.loading = false;
+  if (c && c.length > 1) { D.cust.raw = c; document.getElementById('nb-c').textContent = c.length - 1; }
+  if (p && p.length > 1) { D.prod.raw = p; document.getElementById('nb-p').textContent = p.length - 1; D.cats = extractCats(); }
   buildDash(); renderCust(); renderProd();
 }
 
-async function loadCfg(){
-  try{ const c=await GS('getAppConfig'); if(c) applyCfg(c); }catch(_){ applyCfg(D.cfg); }
+async function loadCfg() {
+  try { const c = await GS('getAppConfig'); if (c) applyCfg(c); } catch(_) { applyCfg(D.cfg); }
 }
-function applyCfg(c){
-  D.cfg={...D.cfg,...c};
-  if(c.primaryColor && /^#[0-9a-f]{6}$/i.test(c.primaryColor)){
+function applyCfg(c) {
+  D.cfg = { ...D.cfg, ...c };
+  if (c.primaryColor && /^#[0-9a-f]{6}$/i.test(c.primaryColor)) {
     document.documentElement.style.setProperty('--p', c.primaryColor);
-    document.documentElement.style.setProperty('--p-lt', c.primaryColor+'22');
+    document.documentElement.style.setProperty('--p-lt', c.primaryColor + '22');
   }
-  const n = c.storeName||'YIN BORAN';
+  const n = c.storeName || 'YIN BORAN';
   document.getElementById('sb-name').textContent = n;
-  document.getElementById('sb-sub').textContent  = c.storeSub||'Electronics';
-  document.title = n+' Manages';
-  const ini = n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'YB';
+  document.getElementById('sb-sub').textContent  = c.storeSub || 'Electronics';
+  document.title = n + ' Manages';
+  const ini = n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'YB';
   D.cfg.initials = ini;
-  document.getElementById('sb-av').textContent   = ini[0]||'A';
-  document.getElementById('auth-av').textContent = ini;
+  ['sb-logo','auth-av'].forEach(id => setLogo(id, c.logoUrl, ini));
   document.getElementById('auth-name').textContent = n;
-  ['sb-logo','auth-av'].forEach(id=>setLogo(id, c.logoUrl, ini));
   const chip = document.getElementById('chip');
-  const ct = (c.connectType||'TEST').toUpperCase();
-  chip.textContent = ct; chip.className = 'chip '+(ct==='PROD'?'prod':'test');
+  const ct = (c.connectType || 'TEST').toUpperCase();
+  chip.textContent = ct; chip.className = 'chip ' + (ct === 'PROD' ? 'prod' : 'test');
   document.getElementById('dash-date').textContent =
-    'Today: '+new Date().toLocaleDateString('km-KH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    'Today: ' + new Date().toLocaleDateString('km-KH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 }
-function setLogo(id, url, ini){
-  const el=document.getElementById(id); if(!el) return;
-  if(url&&!url.includes('INSERT')&&!url.startsWith('https://your'))
-    el.innerHTML=`<img src="${e(url)}" alt="logo" onerror="this.parentNode.textContent='${e(ini)}'">`;
-  else el.textContent=ini;
+function setLogo(id, url, ini) {
+  const el = document.getElementById(id); if (!el) return;
+  if (url && !url.includes('INSERT') && !url.startsWith('https://your'))
+    el.innerHTML = `<img src="${e(url)}" alt="logo" onerror="this.parentNode.textContent='${e(ini)}'">`;
+  else el.textContent = ini;
 }
 
 // ═══════════════════════════════════════════════════════════
-// NAVIGATION — state saved in sessionStorage
+// NAVIGATION
 // ═══════════════════════════════════════════════════════════
-function go(page, skipSave){
+function go(page, skipSave) {
   D.page = page;
-  if(!skipSave) ss('page', page);
-  document.querySelectorAll('.nb-item[data-p]').forEach(el=>el.classList.toggle('on', el.dataset.p===page));
-  document.querySelectorAll('.page').forEach(el=>el.classList.toggle('on', el.id==='pg-'+page));
-  const names={dashboard:'Dashboard',customers:'Customers',products:'Products',reports:'Reports',settings:'Settings'};
-  document.getElementById('tb-crumb').textContent = names[page]||page;
-  if(page==='reports')  loadReports();
-  if(page==='settings') loadSettings();
+  if (!skipSave) ss('page', page);
+  document.querySelectorAll('.nb-item[data-p]').forEach(el => el.classList.toggle('on', el.dataset.p === page));
+  document.querySelectorAll('.page').forEach(el => el.classList.toggle('on', el.id === 'pg-' + page));
+  const names = { dashboard:'Dashboard', customers:'Customers', products:'Products', reports:'Reports', settings:'Settings', devlog:'Dev Log' };
+  document.getElementById('tb-crumb').textContent = names[page] || page;
+  if (page === 'reports')  loadReports();
+  if (page === 'settings') loadSettings();
+  if (page === 'devlog')   loadDevLogStatic();
 }
-function toggleSb(restore){
-  D.sbCol = restore===true ? true : !D.sbCol;
+function toggleSb(restore) {
+  D.sbCol = restore === true ? true : !D.sbCol;
   document.getElementById('sb').classList.toggle('col', D.sbCol);
-  ss('sbc', D.sbCol?'1':'0');
+  ss('sbc', D.sbCol ? '1' : '0');
 }
-function refreshPage(){
-  if(D.page==='customers'||D.page==='dashboard') loadAll();
-  else if(D.page==='reports') loadReports();
-  else if(D.page==='settings') loadSettings();
+function refreshPage() {
+  if (D.page === 'customers' || D.page === 'dashboard') loadAll();
+  else if (D.page === 'reports') loadReports();
+  else if (D.page === 'settings') loadSettings();
 }
 
 // ═══════════════════════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════════════════════
-function buildDash(){
-  const rows=D.cust.raw; if(!rows||rows.length<2) return;
-  const hm=cm(rows[0]); const data=rows.slice(1);
-  const now=new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
+function buildDash() {
+  const rows = D.cust.raw; if (!rows || rows.length < 2) return;
+  const hm = cm(rows[0]); const data = rows.slice(1);
+  const now = new Date(); const year = now.getFullYear(); const month = now.getMonth();
   const counts = { total:0, codPP:0, cod:0, booking:0 };
-  let delivered=0, rev=0;
-  const sCnt={};
-  const saleCount={};
-  const sourceCols = rows[0].map((h,i)=>({h:String(h||'').trim().toLowerCase(), i})).filter(o=>/(source|order from|from|platform|channel)/.test(o.h)).map(o=>o.i);
-  const srcCount = { FB:0, 'Web APP':0, MGMT:0 };
-
-  data.forEach(r=>{
-    const st=s(r,hm,'Status').toLowerCase();
-    const pm=s(r,hm,'Payment').toLowerCase();
-    const od=s(r,hm,'Order Date');
-    const odDate=pd(od);
-    const isCurrentMonth = odDate && odDate.getFullYear()===year && odDate.getMonth()===month;
-    const isCodPP = pm.includes('cod pp')||pm.includes('codpp');
-    const isCod = pm.includes('cod') && !isCodPP;
-    const ordered = s(r,hm,'Ordered')||s(r,hm,'Name')||s(r,hm,'Item Name')||'Unknown';
-    saleCount[ordered] = (saleCount[ordered]||0)+1;
-    const source = sourceCols.length ? String(r[sourceCols[0]]||'').trim().toUpperCase() : '';
-    if(source.includes('FB')) srcCount.FB++;
-    if(source.includes('WEB')) srcCount['Web APP']++;
-    if(source.includes('MGMT')) srcCount.MGMT++;
-
-    if(isCurrentMonth){
+  let delivered = 0; const sCnt = {}; const saleCount = {};
+  data.forEach(r => {
+    const st  = s(r, hm, 'Status').toLowerCase();
+    const pm  = s(r, hm, 'Payment').toLowerCase();
+    const od  = s(r, hm, 'Order Date');
+    const odD = pd(od);
+    const isMon = odD && odD.getFullYear() === year && odD.getMonth() === month;
+    const isCodPP = pm.includes('cod pp') || pm.includes('codpp');
+    const isCod   = pm.includes('cod') && !isCodPP;
+    const ordered = s(r, hm, 'Ordered') || s(r, hm, 'Name') || 'Unknown';
+    saleCount[ordered] = (saleCount[ordered] || 0) + 1;
+    if (isMon) {
       counts.total++;
-      if(isCodPP){
-        counts.codPP++;
-        if(st.includes('pend')) counts.booking++;
-      }
-      if(isCod) counts.cod++;
+      if (isCodPP) { counts.codPP++; if (st.includes('pend')) counts.booking++; }
+      if (isCod)   counts.cod++;
     }
-    if(st.includes('complet')||st.includes('deliver')) delivered++;
-    if(st.includes('complet')) rev += parseFloat(s(r,hm,'Total Paid').replace(/[^0-9.]/g,''))||0;
-    const k=st||'pending'; sCnt[k]=(sCnt[k]||0)+1;
+    if (st.includes('complet') || st.includes('deliver')) delivered++;
+    const k = st || 'pending'; sCnt[k] = (sCnt[k] || 0) + 1;
   });
-
-  const topSale = Object.entries(saleCount).sort((a,b)=>b[1]-a[1])[0]||['—',0];
-  document.getElementById('dash-summary').innerHTML = `
-    <div class="mc indigo"><div class="mc-val">${e(topSale[0])}</div><div class="mc-lbl">Top sale item (${topSale[1]} orders)</div></div>
-    <div class="mc green"><div class="mc-val">${delivered}</div><div class="mc-lbl">Total Delivered</div></div>
-    <div class="mc amber"><div class="mc-val">${srcCount.FB}</div><div class="mc-lbl">FB Orders</div></div>
-    <div class="mc teal"><div class="mc-val">${srcCount['Web APP']}</div><div class="mc-lbl">Web APP</div></div>
-    <div class="mc indigo"><div class="mc-val">${srcCount.MGMT}</div><div class="mc-lbl">MGMT Orders</div></div>
-  `;
-
+  const topSale = Object.entries(saleCount).sort((a, b) => b[1] - a[1])[0] || ['—', 0];
+  document.getElementById('dash-summary').innerHTML =
+    `<div class="mc indigo"><div class="mc-val">${e(topSale[0])}</div><div class="mc-lbl">Top sale (${topSale[1]} orders)</div></div>
+     <div class="mc green"><div class="mc-val">${delivered}</div><div class="mc-lbl">Total Delivered</div></div>`;
   document.getElementById('dash-m').innerHTML = [
-    {cl:'blue', ico:'M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z', v:counts.total, l:'Total Orders'},
-    {cl:'green', ico:'M12 4a8 8 0 1 0 8 8 8 8 0 0 0-8-8zm3 11H9v-2h6zm0-4H9V9h6zm0-4H9V5h6z', v:counts.codPP, l:'COD PP'},
-    {cl:'amber', ico:'M12 2C8.13 2 5 5.13 5 9c0 1.2.35 2.32.95 3.25L5 20l3.75-1.02A8.96 8.96 0 0 0 12 20c3.87 0 7-3.13 7-7s-3.13-7-7-7z', v:counts.cod, l:'COD'},
-    {cl:'teal', ico:'M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V8h14v11zm-7-9h-4v4h4v-4z', v:counts.booking, l:'Booking'},
-  ].map(m=>`<div class="mc ${m.cl}"><div class="mc-ico"><svg viewBox="0 0 24 24"><path d="${m.ico}"/></svg></div><div class="mc-val">${m.v}</div><div class="mc-lbl">${m.l}</div></div>`).join('');
+    { cl:'blue',   ico:'M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z', v:counts.total,   l:'Total Orders' },
+    { cl:'green',  ico:'M12 4a8 8 0 1 0 8 8 8 8 0 0 0-8-8zm3 11H9v-2h6zm0-4H9V9h6zm0-4H9V5h6z',                                                  v:counts.codPP,   l:'COD PP' },
+    { cl:'amber',  ico:'M12 2C8.13 2 5 5.13 5 9c0 1.2.35 2.32.95 3.25L5 20l3.75-1.02A8.96 8.96 0 0 0 12 20c3.87 0 7-3.13 7-7s-3.13-7-7-7z',    v:counts.cod,     l:'COD' },
+    { cl:'teal',   ico:'M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V8h14v11z',           v:counts.booking, l:'Booking' },
+  ].map(m => `<div class="mc ${m.cl}"><div class="mc-ico"><svg viewBox="0 0 24 24"><path d="${m.ico}"/></svg></div><div class="mc-val">${m.v}</div><div class="mc-lbl">${m.l}</div></div>`).join('');
 
-  // Undelivered orders (approved or pending, no delivery date)
-  const undel = data.filter(r=>{
-    const st=s(r,hm,'Status').toLowerCase();
-    const dd=s(r,hm,'Delivery Date');
-    return (st.includes('approv')||st.includes('pend')) && !dd;
-  }).slice(0,8);
+  const undel = data.filter(r => {
+    const st = s(r, hm, 'Status').toLowerCase();
+    const dd = s(r, hm, 'Delivery Date');
+    return (st.includes('approv') || st.includes('pend')) && !dd;
+  }).slice(0, 8);
   document.getElementById('dash-undelivered').innerHTML = undel.length
     ? `<table class="tbl"><thead><tr><th>Name</th><th>Phone</th><th>Ordered</th><th>Pricing</th><th>Payment</th><th>Status</th></tr></thead><tbody>${
-        undel.map(r=>`<tr><td>${t(s(r,hm,'Name'),16)}</td><td>${s(r,hm,'Phone Number')||'—'}</td><td title="${e(s(r,hm,'Ordered'))}">${t(s(r,hm,'Ordered'),20)}</td><td class="num">${s(r,hm,'Pricing')||'—'}</td><td>${pBdg(s(r,hm,'Payment'))}</td><td>${sBdg(s(r,hm,'Status'))}</td></tr>`).join('')
+        undel.map(r => `<tr><td>${t(s(r,hm,'Name'),16)}</td><td>${s(r,hm,'Phone Number')||'—'}</td><td>${t(s(r,hm,'Ordered'),20)}</td><td class="num">${s(r,hm,'Pricing')||'—'}</td><td>${pBdg(s(r,hm,'Payment'))}</td><td>${sBdg(s(r,hm,'Status'))}</td></tr>`).join('')
       }</tbody></table>`
     : '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No pending orders 🎉</div>';
 
-  // Low stock graph panel
-  const pr=D.prod.raw; const sec=document.getElementById('dash-alerts-sec');
-  if(!pr||pr.length<=1){
-    if(sec) sec.style.display='none';
-  } else {
-    const ph=cm(pr[0]);
-    const low=pr.slice(1).filter(r=>{const ss=s(r,ph,'Stock Status').toLowerCase();return ss.includes('low')||ss.includes('out');});
-    if(low.length){
-      sec.style.display='block';
-      const mxQty = Math.max(...low.map(r=>parseInt(s(r,ph,'Quantity'))||0),1);
-      document.getElementById('dash-alerts-b').innerHTML=low.map(r=>{
-        const name = e(s(r,ph,'Item Name')||s(r,ph,'Code'));
-        const qty = parseInt(s(r,ph,'Quantity'))||0;
-        const pct = Math.round(qty/mxQty*100);
-        const code = e(s(r,ph,'Code')||name);
-        return `
-          <div class="alert-row" style="align-items:center;gap:12px">
-            <div style="flex:1">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-                <span style="font-weight:600">${name}</span>
-                <span style="font-size:12px;color:var(--muted)">${sstBdg(s(r,ph,'Stock Status'))}</span>
-              </div>
-              <div class="ch-row" style="margin:8px 0 0">
-                <div class="ch-lbl" style="width:70px;text-align:left">Qty ${qty}</div>
-                <div class="ch-track" style="height:10px;border-radius:4px;background:var(--bg)"><div class="ch-fill" style="width:${pct}%;background:var(--amber);height:100%"></div></div>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <button class="rb d" onclick="delProdConfirm(${JSON.stringify(code)})" title="Delete item" style="height:28px;width:28px">×</button>
-            </div>
-          </div>`;
-      }).join('');
-    } else sec.style.display='none';
-  }
+  const pr = D.prod.raw; const sec = document.getElementById('dash-alerts-sec');
+  if (!pr || pr.length <= 1) { if (sec) sec.style.display = 'none'; return; }
+  const ph2 = cm(pr[0]);
+  const low = pr.slice(1).filter(r => { const ss2 = s(r, ph2, 'Stock Status').toLowerCase(); return ss2.includes('low') || ss2.includes('out'); });
+  if (low.length) {
+    sec.style.display = 'block';
+    const mxQ = Math.max(...low.map(r => parseInt(s(r, ph2, 'Quantity')) || 0), 1);
+    document.getElementById('dash-alerts-b').innerHTML = low.map(r => {
+      const name = e(s(r, ph2, 'Item Name') || s(r, ph2, 'Code'));
+      const qty  = parseInt(s(r, ph2, 'Quantity')) || 0;
+      const pct  = Math.round(qty / mxQ * 100);
+      return `<div class="alert-row" style="align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F5F6F7">
+        <div style="flex:1"><div style="display:flex;justify-content:space-between"><span style="font-weight:600">${name}</span><span>${sstBdg(s(r,ph2,'Stock Status'))}</span></div>
+        <div class="ch-row" style="margin:6px 0 0"><div class="ch-lbl" style="width:60px;text-align:left">Qty ${qty}</div><div class="ch-track" style="height:8px"><div class="ch-fill" style="width:${pct}%;background:var(--amber);height:100%"></div></div></div></div></div>`;
+    }).join('');
+  } else sec.style.display = 'none';
 }
 
 // ═══════════════════════════════════════════════════════════
 // CUSTOMERS — infinite scroll
 // ═══════════════════════════════════════════════════════════
-let custIO; // IntersectionObserver
+let custIO;
+function debounceCust() { clearTimeout(D.debTimer); D.debTimer = setTimeout(renderCust, 280); }
+function gSearch(v) { if (!v) return; if (D.page !== 'customers') go('customers'); document.getElementById('c-s')?.value && (document.getElementById('c-s').value = v); renderCust(); }
 
-function debounceCust(){ clearTimeout(D.debTimer); D.debTimer=setTimeout(renderCust, 280); }
-function gSearch(v){ if(!v) return; if(D.page!=='customers') go('customers'); document.getElementById('c-s').value=v; renderCust(); }
-
-function renderCust(){
-  const rows=D.cust.raw;
-  if(D.cust.loading){ document.getElementById('c-tbl').innerHTML='<div class="empty-row" style="padding:40px 0"><div class="load-more-spin" style="display:inline-block;margin:0 auto"></div></div>'; return; }
-  if(!rows||rows.length<2){ document.getElementById('c-tbl').innerHTML='<div class="empty-row">No data</div>'; return; }
-  const hm=cm(rows[0]);
-  const data=rows.slice(1).filter(r=>{
-    return s(r,hm,'Profile ID')||s(r,hm,'Phone Number');
-  });
-
-  const srch=(document.getElementById('c-s')?.value||'').toLowerCase();
-  const pm=(document.getElementById('c-pm')?.value||'').toLowerCase();
-  const df=document.getElementById('c-df')?.value;
-  const dt=document.getElementById('c-dt')?.value;
-
-  D.cust.filtered = data.filter(r=>{
-    if(srch&&![s(r,hm,'Name'),s(r,hm,'Phone Number'),s(r,hm,'Ordered'),s(r,hm,'Location')].some(v=>v.toLowerCase().includes(srch))) return false;
-    if(pm==='paid' && !s(r,hm,'Payment').toLowerCase().includes('paid')) return false;
-    if(pm==='unpaid' && s(r,hm,'Payment').toLowerCase().includes('paid')) return false;
-    if(pm==='cod' && !s(r,hm,'Payment').toLowerCase().includes('cod')) return false;
-    const od=s(r,hm,'Order Date'); if(df&&od&&pd(od)<new Date(df)) return false;
-    if(dt&&od&&pd(od)>new Date(dt+'T23:59:59')) return false;
+function renderCust() {
+  const rows = D.cust.raw;
+  if (D.cust.loading) { document.getElementById('c-tbl').innerHTML = '<div class="empty-row" style="padding:40px 0"><div class="load-more-spin" style="display:inline-block;margin:0 auto"></div></div>'; return; }
+  if (!rows || rows.length < 2) { document.getElementById('c-tbl').innerHTML = '<div class="empty-row">No data — check API connection</div>'; return; }
+  const hm    = cm(rows[0]);
+  const data  = rows.slice(1).filter(r => s(r, hm, 'Profile ID') || s(r, hm, 'Phone Number'));
+  const srch  = (document.getElementById('c-s')?.value || '').toLowerCase();
+  const pm    = (document.getElementById('c-pm')?.value || '').toLowerCase();
+  const df    = document.getElementById('c-df')?.value;
+  const dt    = document.getElementById('c-dt')?.value;
+  D.cust.filtered = data.filter(r => {
+    if (srch && ![s(r,hm,'Name'),s(r,hm,'Phone Number'),s(r,hm,'Ordered'),s(r,hm,'Location')].some(v => v.toLowerCase().includes(srch))) return false;
+    if (pm === 'paid'   && !s(r,hm,'Payment').toLowerCase().includes('paid'))  return false;
+    if (pm === 'unpaid' && s(r,hm,'Payment').toLowerCase().includes('paid'))   return false;
+    if (pm === 'cod'    && !s(r,hm,'Payment').toLowerCase().includes('cod'))   return false;
+    const od = s(r, hm, 'Order Date');
+    if (df && od && pd(od) < new Date(df)) return false;
+    if (dt && od && pd(od) > new Date(dt + 'T23:59:59')) return false;
     return true;
   });
-
-  const sC=D.cust.sortC, sD=D.cust.sortD;
-  D.cust.filtered.sort((a,b)=>{
-    const cols=['Name','Phone Number','Ordered','Pricing','Location','Payment','Order Date','Shipper Phone','Delivery Date','Delivery Fee','Receive Date','Total Paid','Status'];
-    const av=s(a,hm,cols[sC]||'');
-    const bv=s(b,hm,cols[sC]||'');
-    return av.localeCompare(bv,undefined,{numeric:true})*sD;
+  const sC = D.cust.sortC, sD = D.cust.sortD;
+  D.cust.filtered.sort((a, b) => {
+    const cols = ['Name','Phone Number','Ordered','Pricing','Location','Payment','Order Date','Shipper Phone','Delivery Date','Delivery Fee','Receive Date','Total Paid','Status'];
+    return s(a, hm, cols[sC] || '').localeCompare(s(b, hm, cols[sC] || ''), undefined, { numeric:true }) * sD;
   });
-
-  document.getElementById('c-cnt').textContent=D.cust.filtered.length+' records';
-  document.getElementById('c-sub').textContent=D.cust.filtered.length+' records';
-
-  D.cust.offset=0;
-  if(D.cust.filtered.length===0){
-    document.getElementById('c-tbl').innerHTML='<div class="empty-row">No records found</div>';
-    return;
-  }
-  document.getElementById('c-tbl').innerHTML=buildCustTable(D.cust.filtered.slice(0, D.cust.chunk), rows[0]);
-  D.cust.offset=Math.min(D.cust.chunk, D.cust.filtered.length);
+  document.getElementById('c-cnt').textContent = D.cust.filtered.length + ' records';
+  document.getElementById('c-sub').textContent = D.cust.filtered.length + ' records';
+  D.cust.offset = 0;
+  if (!D.cust.filtered.length) { document.getElementById('c-tbl').innerHTML = '<div class="empty-row">No records found</div>'; return; }
+  document.getElementById('c-tbl').innerHTML = buildCustTable(D.cust.filtered.slice(0, D.cust.chunk), rows[0]);
+  D.cust.offset = Math.min(D.cust.chunk, D.cust.filtered.length);
   setupCustIO();
 }
 
-function buildCustTable(rows, headers){
-  const hm=cm(headers);
-  const cols=['Name','Phone Number','Ordered','Pricing','Location','Payment','Order Date','Shipper Phone','Delivery Date','Delivery Fee','Receive Date','Total Paid','Status'];
-  const th=cols.map((c,i)=>`<th class="${D.cust.sortC===i?(D.cust.sortD===1?'sorted-a':'sorted-d'):''}" onclick="sortCust(${i})">${c}<i class="si"></i></th>`).join('');
-  const tb=rows.map(r=>{
-    const pid=s(r,hm,'Profile ID');
-    const cells=cols.map(c=>{
-      const v=s(r,hm,c);
-      if(c==='Payment') return `<td>${pBdg(v)}</td>`;
-      if(c==='Status')  return `<td>${sBdg(v)}</td>`;
-      if(c==='Pricing'||c==='Delivery Fee'||c==='Total Paid') return `<td class="num">${v||'—'}</td>`;
-      if(c==='Name') return `<td><div style="display:flex;align-items:center;gap:4px">
-        <button class="rb p" onclick='printLabel(${JSON.stringify(pid)})' title="Print label" style="font-size:11px"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button>
-        <span title="${e(v)}">${t(v,18)||'—'}</span></div></td>`;
-      if(c==='Phone Number') return `<td><a href="javascript:void(0)" onclick='printInvoiceA5(${JSON.stringify(pid)});return false;' style="color:var(--p);font-weight:500" title="Print invoice">${v||'—'}</a></td>`;
+function buildCustTable(rows, headers) {
+  const hm   = cm(headers);
+  const cols = ['Name','Phone Number','Ordered','Pricing','Location','Payment','Order Date','Shipper Phone','Delivery Date','Delivery Fee','Receive Date','Total Paid','Status'];
+  const th   = cols.map((c, i) => `<th class="${D.cust.sortC===i?(D.cust.sortD===1?'sorted-a':'sorted-d'):''}" onclick="sortCust(${i})">${c}<i class="si"></i></th>`).join('');
+  const tb   = rows.map(r => {
+    const pid   = s(r, hm, 'Profile ID');
+    const cells = cols.map(c => {
+      const v = s(r, hm, c);
+      if (c === 'Payment') return `<td>${pBdg(v)}</td>`;
+      if (c === 'Status')  return `<td>${sBdg(v)}</td>`;
+      if (c === 'Pricing' || c === 'Delivery Fee' || c === 'Total Paid') return `<td class="num">${v||'—'}</td>`;
+      if (c === 'Name')         return `<td><div style="display:flex;align-items:center;gap:4px"><button class="rb p" onclick='printLabel(${JSON.stringify(pid)})' title="Print label"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button><span title="${e(v)}">${t(v,18)||'—'}</span></div></td>`;
+      if (c === 'Phone Number') return `<td><a href="javascript:void(0)" onclick='printInvoiceA5(${JSON.stringify(pid)});return false;' style="color:var(--p);font-weight:500">${v||'—'}</a></td>`;
       return `<td title="${e(v)}">${t(v,22)||'—'}</td>`;
     }).join('');
-    return `<tr>${cells}<td><div class="ra">
-      <button class="rb e" onclick='editCust(${JSON.stringify(pid)})' title="Edit"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
-      <button class="rb d" onclick='delCustConfirm(${JSON.stringify(pid)})' title="Delete"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
-    </div></td></tr>`;
+    return `<tr>${cells}<td><div class="ra"><button class="rb e" onclick='editCust(${JSON.stringify(pid)})' title="Edit"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button><button class="rb d" onclick='delCustConfirm(${JSON.stringify(pid)})' title="Delete"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></td></tr>`;
   }).join('');
   return `<table class="tbl"><thead><tr>${th}<th></th></tr></thead><tbody>${tb}</tbody></table>`;
 }
 
-function setupCustIO(){
-  if(custIO) custIO.disconnect();
-  const sentinel=document.getElementById('cust-sentinel');
-  if(!sentinel) return;
-  custIO=new IntersectionObserver(entries=>{
-    if(!entries[0].isIntersecting) return;
-    if(D.cust.offset>=D.cust.filtered.length) return;
-    const spin=document.getElementById('c-spin');
-    if(spin) spin.style.display='inline-block';
-    setTimeout(()=>{
-      const more=D.cust.filtered.slice(D.cust.offset, D.cust.offset+D.cust.chunk);
-      if(!more.length) return;
-      const tbody=document.querySelector('#c-tbl .tbl tbody');
-      if(tbody){
-        const hm=cm(D.cust.raw[0]);
-        const cols=['Name','Phone Number','Ordered','Pricing','Location','Payment','Order Date','Shipper Phone','Delivery Date','Delivery Fee','Receive Date','Total Paid','Status'];
-        more.forEach(r=>{
-          const pid=s(r,hm,'Profile ID');
-          const cells=cols.map(c=>{
-            const v=s(r,hm,c);
-            if(c==='Payment') return `<td>${pBdg(v)}</td>`;
-            if(c==='Status')  return `<td>${sBdg(v)}</td>`;
-            if(c==='Name') return `<td><div style="display:flex;align-items:center;gap:4px"><button class="rb p" onclick='printLabel(${JSON.stringify(pid)})' title="Print label" style="font-size:11px"><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button><span>${t(v,18)||'—'}</span></div></td>`;
-            if(c==='Phone Number') return `<td><a href="javascript:void(0)" onclick='printInvoiceA5(${JSON.stringify(pid)});return false;' style="color:var(--p);font-weight:500" title="Print invoice">${v||'—'}</a></td>`;
-            if(c==='Pricing'||c==='Delivery Fee'||c==='Total Paid') return `<td class="num">${v||'—'}</td>`;
+function setupCustIO() {
+  if (custIO) custIO.disconnect();
+  const sentinel = document.getElementById('cust-sentinel'); if (!sentinel) return;
+  custIO = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    if (D.cust.offset >= D.cust.filtered.length) return;
+    const spin = document.getElementById('c-spin'); if (spin) spin.style.display = 'inline-block';
+    setTimeout(() => {
+      const more  = D.cust.filtered.slice(D.cust.offset, D.cust.offset + D.cust.chunk);
+      const tbody = document.querySelector('#c-tbl .tbl tbody');
+      if (tbody && more.length) {
+        const hm   = cm(D.cust.raw[0]);
+        const cols = ['Name','Phone Number','Ordered','Pricing','Location','Payment','Order Date','Shipper Phone','Delivery Date','Delivery Fee','Receive Date','Total Paid','Status'];
+        more.forEach(r => {
+          const pid = s(r, hm, 'Profile ID');
+          const tr  = document.createElement('tr');
+          const cells = cols.map(c => {
+            const v = s(r, hm, c);
+            if (c === 'Payment') return `<td>${pBdg(v)}</td>`;
+            if (c === 'Status')  return `<td>${sBdg(v)}</td>`;
+            if (c === 'Name')    return `<td><div style="display:flex;align-items:center;gap:4px"><button class="rb p" onclick='printLabel(${JSON.stringify(pid)})'><svg viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></button><span>${t(v,18)||'—'}</span></div></td>`;
+            if (c === 'Phone Number') return `<td><a href="javascript:void(0)" onclick='printInvoiceA5(${JSON.stringify(pid)});return false;' style="color:var(--p);font-weight:500">${v||'—'}</a></td>`;
+            if (c === 'Pricing' || c === 'Delivery Fee' || c === 'Total Paid') return `<td class="num">${v||'—'}</td>`;
             return `<td>${t(v,22)||'—'}</td>`;
           }).join('');
-          const tr=document.createElement('tr');
-          tr.innerHTML=`${cells}<td><div class="ra"><button class="rb e" onclick='editCust(${JSON.stringify(pid)})'><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button><button class="rb d" onclick='delCustConfirm(${JSON.stringify(pid)})'><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></td>`;
+          tr.innerHTML = `${cells}<td><div class="ra"><button class="rb e" onclick='editCust(${JSON.stringify(pid)})'><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button><button class="rb d" onclick='delCustConfirm(${JSON.stringify(pid)})'><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></td>`;
           tbody.appendChild(tr);
         });
       }
-      D.cust.offset+=D.cust.chunk;
-      if(spin) spin.style.display='none';
+      D.cust.offset += D.cust.chunk;
+      if (spin) spin.style.display = 'none';
     }, 200);
   });
   custIO.observe(sentinel);
 }
 
-function sortCust(col){
-  if(D.cust.sortC===col) D.cust.sortD*=-1; else{ D.cust.sortC=col; D.cust.sortD=1; }
-  renderCust();
-}
-function clearCF(){ document.getElementById('c-s').value=''; document.getElementById('c-pm').value='cod'; document.getElementById('c-df').value=''; document.getElementById('c-dt').value=''; renderCust(); }
+function sortCust(col) { if (D.cust.sortC === col) D.cust.sortD *= -1; else { D.cust.sortC = col; D.cust.sortD = 1; } renderCust(); }
+function clearCF() { document.getElementById('c-pm').value = 'cod'; document.getElementById('c-df').value = ''; document.getElementById('c-dt').value = ''; renderCust(); }
 
 // ═══════════════════════════════════════════════════════════
 // PRODUCTS — infinite scroll
 // ═══════════════════════════════════════════════════════════
 let prodIO;
-
-function renderProd(){
-  const rows=D.prod.raw; if(!rows||rows.length<2){ document.getElementById('p-tbl').innerHTML='<div class="empty-row">No products</div>'; return; }
-  const hm=cm(rows[0]);
-  const srch=(document.getElementById('p-s')?.value||'').toLowerCase();
-  const ss_f=(document.getElementById('p-ss')?.value||'').toLowerCase();
-
-  D.prod.filtered=rows.slice(1).filter(r=>{
-    const code=s(r,hm,'Code').toLowerCase(), name=s(r,hm,'Item Name').toLowerCase(), cat=s(r,hm,'Category').toLowerCase();
-    if(srch&&!code.includes(srch)&&!name.includes(srch)&&!cat.includes(srch)) return false;
-    const st=s(r,hm,'Stock Status').toLowerCase();
-    if(ss_f==='in'&&!st.includes('in stock')) return false;
-    if(ss_f==='low'&&!st.includes('low')) return false;
-    if(ss_f==='out'&&!st.includes('out')) return false;
+function renderProd() {
+  const rows = D.prod.raw; if (!rows || rows.length < 2) { document.getElementById('p-tbl').innerHTML = '<div class="empty-row">No products</div>'; return; }
+  const hm   = cm(rows[0]);
+  const srch = (document.getElementById('p-s')?.value || '').toLowerCase();
+  const ssf  = (document.getElementById('p-ss')?.value || '').toLowerCase();
+  D.prod.filtered = rows.slice(1).filter(r => {
+    const code = s(r,hm,'Code').toLowerCase(), name = s(r,hm,'Item Name').toLowerCase(), cat = s(r,hm,'Category').toLowerCase();
+    if (srch && !code.includes(srch) && !name.includes(srch) && !cat.includes(srch)) return false;
+    const st = s(r,hm,'Stock Status').toLowerCase();
+    if (ssf === 'in'  && !st.includes('in stock')) return false;
+    if (ssf === 'low' && !st.includes('low'))       return false;
+    if (ssf === 'out' && !st.includes('out'))       return false;
     return true;
   });
-
-  document.getElementById('p-cnt').textContent=D.prod.filtered.length+' products';
-  document.getElementById('p-sub').textContent=D.prod.filtered.length+' products';
-
-  D.prod.offset=0;
-  if(!D.prod.filtered.length){ document.getElementById('p-tbl').innerHTML='<div class="empty-row">No products found</div>'; return; }
-  document.getElementById('p-tbl').innerHTML=buildProdTable(D.prod.filtered.slice(0,D.prod.chunk), rows[0]);
-  D.prod.offset=Math.min(D.prod.chunk, D.prod.filtered.length);
+  document.getElementById('p-cnt').textContent = D.prod.filtered.length + ' products';
+  document.getElementById('p-sub').textContent = D.prod.filtered.length + ' products';
+  D.prod.offset = 0;
+  if (!D.prod.filtered.length) { document.getElementById('p-tbl').innerHTML = '<div class="empty-row">No products found</div>'; return; }
+  document.getElementById('p-tbl').innerHTML = buildProdTable(D.prod.filtered.slice(0, D.prod.chunk), rows[0]);
+  D.prod.offset = Math.min(D.prod.chunk, D.prod.filtered.length);
   setupProdIO();
 }
 
-function buildProdTable(rows, headers){
-  const hm=cm(headers);
-  const cols=['Code','Item Name','Category','Quantity','Retail Price','Stock Status'];
-  const th=cols.map((c,i)=>`<th class="${D.prod.sortC===i?(D.prod.sortD===1?'sorted-a':'sorted-d'):''}" onclick="sortProd(${i})">${c}<i class="si"></i></th>`).join('');
-  const tb=rows.map(r=>{
-    const code=s(r,hm,'Code');
-    const qty=parseInt(s(r,hm,'Quantity').replace(/[^0-9]/g,''))||0;
-    const maxQ=20; const pct=Math.min(100,Math.round(qty/maxQ*100));
-    const st=s(r,hm,'Stock Status').toLowerCase();
-    const bc=st.includes('out')?'var(--red)':st.includes('low')?'var(--amber)':'var(--green)';
-    const cells=cols.map(c=>{
-      const v=s(r,hm,c);
-      if(c==='Stock Status') return `<td>${sstBdg(v)}</td>`;
-      if(c==='Quantity') return `<td class="num">${qty}<div class="stk-bar"><div class="stk-fill" style="width:${pct}%;background:${bc}"></div></div></td>`;
-      if(c==='Retail Price') return `<td class="num">${v||'—'}</td>`;
+function buildProdTable(rows, headers) {
+  const hm   = cm(headers);
+  const cols = ['Code','Item Name','Category','Quantity','Retail Price','Stock Status'];
+  const th   = cols.map((c, i) => `<th class="${D.prod.sortC===i?(D.prod.sortD===1?'sorted-a':'sorted-d'):''}" onclick="sortProd(${i})">${c}<i class="si"></i></th>`).join('');
+  const tb   = rows.map(r => {
+    const code = s(r, hm, 'Code');
+    const qty  = parseInt(s(r,hm,'Quantity').replace(/[^0-9]/g,'')) || 0;
+    const pct  = Math.min(100, Math.round(qty/20*100));
+    const stl  = s(r,hm,'Stock Status').toLowerCase();
+    const bc   = stl.includes('out')?'var(--red)':stl.includes('low')?'var(--amber)':'var(--green)';
+    const cells = cols.map(c => {
+      const v = s(r,hm,c);
+      if (c === 'Stock Status') return `<td>${sstBdg(v)}</td>`;
+      if (c === 'Quantity')     return `<td class="num">${qty}<div class="stk-bar"><div class="stk-fill" style="width:${pct}%;background:${bc}"></div></div></td>`;
+      if (c === 'Retail Price') return `<td class="num">${v||'—'}</td>`;
       return `<td title="${e(v)}">${t(v,24)||'—'}</td>`;
     }).join('');
-    return `<tr>${cells}<td><div class="ra">
-      <button class="rb e" onclick="editProd(${JSON.stringify(code)})" title="Edit"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
-      <button class="rb d" onclick="delProdConfirm(${JSON.stringify(code)})" title="Delete"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
-    </div></td></tr>`;
+    return `<tr>${cells}<td><div class="ra"><button class="rb e" onclick="editProd(${JSON.stringify(code)})"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button><button class="rb d" onclick="delProdConfirm(${JSON.stringify(code)})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></td></tr>`;
   }).join('');
   return `<table class="tbl"><thead><tr>${th}<th></th></tr></thead><tbody>${tb}</tbody></table>`;
 }
 
-function setupProdIO(){
-  if(prodIO) prodIO.disconnect();
-  const sentinel=document.getElementById('prod-sentinel');
-  if(!sentinel) return;
-  prodIO=new IntersectionObserver(entries=>{
-    if(!entries[0].isIntersecting) return;
-    if(D.prod.offset>=D.prod.filtered.length) return;
-    const spin=document.getElementById('p-spin'); if(spin) spin.style.display='inline-block';
-    setTimeout(()=>{
-      const more=D.prod.filtered.slice(D.prod.offset, D.prod.offset+D.prod.chunk);
-      const tbody=document.querySelector('#p-tbl .tbl tbody');
-      if(tbody && more.length){
-        const hm=cm(D.prod.raw[0]); const cols=['Code','Item Name','Category','Quantity','Retail Price','Stock Status'];
-        more.forEach(r=>{
-          const tr=document.createElement('tr');
-          const code=s(r,hm,'Code');
-          const cells=cols.map(c=>{ const v=s(r,hm,c); if(c==='Stock Status') return `<td>${sstBdg(v)}</td>`; return `<td>${t(v,24)||'—'}</td>`; }).join('');
-          tr.innerHTML=`${cells}<td><div class="ra"><button class="rb e" onclick="editProd(${JSON.stringify(code)})"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button><button class="rb d" onclick="delProdConfirm(${JSON.stringify(code)})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></td>`;
+function setupProdIO() {
+  if (prodIO) prodIO.disconnect();
+  const sentinel = document.getElementById('prod-sentinel'); if (!sentinel) return;
+  prodIO = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    if (D.prod.offset >= D.prod.filtered.length) return;
+    const spin = document.getElementById('p-spin'); if (spin) spin.style.display = 'inline-block';
+    setTimeout(() => {
+      const more  = D.prod.filtered.slice(D.prod.offset, D.prod.offset + D.prod.chunk);
+      const tbody = document.querySelector('#p-tbl .tbl tbody');
+      if (tbody && more.length) {
+        const hm   = cm(D.prod.raw[0]);
+        const cols = ['Code','Item Name','Category','Quantity','Retail Price','Stock Status'];
+        more.forEach(r => {
+          const tr   = document.createElement('tr');
+          const code = s(r, hm, 'Code');
+          const cells = cols.map(c => { const v = s(r,hm,c); if (c==='Stock Status') return `<td>${sstBdg(v)}</td>`; return `<td>${t(v,24)||'—'}</td>`; }).join('');
+          tr.innerHTML = `${cells}<td><div class="ra"><button class="rb e" onclick="editProd(${JSON.stringify(code)})"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button><button class="rb d" onclick="delProdConfirm(${JSON.stringify(code)})"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button></div></td>`;
           tbody.appendChild(tr);
         });
       }
-      D.prod.offset+=D.prod.chunk;
-      if(spin) spin.style.display='none';
+      D.prod.offset += D.prod.chunk;
+      if (spin) spin.style.display = 'none';
     }, 200);
   });
   prodIO.observe(sentinel);
 }
 
-function sortProd(col){ if(D.prod.sortC===col) D.prod.sortD*=-1; else{D.prod.sortC=col;D.prod.sortD=1;} renderProd(); }
+function sortProd(col) { if (D.prod.sortC === col) D.prod.sortD *= -1; else { D.prod.sortC = col; D.prod.sortD = 1; } renderProd(); }
 
 // ═══════════════════════════════════════════════════════════
 // CUSTOMERS CRUD
 // ═══════════════════════════════════════════════════════════
-function openAddCustomer(){
-  D.modal={type:'add-cust',id:''};
-  openMdl('Add Customer', custForm(null),`
-    <button class="btn btn-o" onclick="closeMdl()">Cancel</button>
-    <button class="btn btn-p" onclick="saveCust()"><svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>Save</button>`);
+function openAddCustomer() {
+  D.modal = { type:'add-cust', id:'' };
+  openMdl('Add Customer', custForm(null),
+    `<button class="btn btn-o" onclick="closeMdl()">Cancel</button>
+     <button class="btn btn-p" onclick="saveCust()"><svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>Save</button>`);
   populateItemDrop();
 }
 
-function editCust(pid){
-  const rows=D.cust.raw; if(!rows.length) return;
-  const hm=cm(rows[0]);
-  const row=rows.slice(1).find(r=>s(r,hm,'Profile ID')===pid);
-  if(!row){ toast('Not found','error'); return; }
-  const dat={}; rows[0].forEach((h,i)=>{dat[h.trim()]=String(row[i]||'').trim();});
-  D.modal={type:'edit-cust',id:pid};
-  openMdl('Edit: '+(dat['Name']||pid), custForm(dat), `
-    <button class="btn btn-o" onclick="closeMdl()">Cancel</button>
-    <button class="btn btn-p" onclick="saveCust()"><svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>Update</button>`);
+function editCust(pid) {
+  const rows = D.cust.raw; if (!rows.length) return;
+  const hm   = cm(rows[0]);
+  const row  = rows.slice(1).find(r => s(r, hm, 'Profile ID') === pid);
+  if (!row) { toast('Not found', 'error'); return; }
+  const dat = {}; rows[0].forEach((h, i) => { dat[h.trim()] = String(row[i] || '').trim(); });
+  D.modal = { type:'edit-cust', id:pid };
+  openMdl('Edit: ' + (dat['Name'] || pid), custForm(dat),
+    `<button class="btn btn-o" onclick="closeMdl()">Cancel</button>
+     <button class="btn btn-p" onclick="saveCust()"><svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>Update</button>`);
   populateItemDrop(dat['Code']);
 }
 
-function custForm(d){
-  const v=(k,fb='')=>e(d?d[k]||'':fb);
+function custForm(d) {
+  const v = (k, fb='') => e(d ? d[k]||'' : fb);
   return `<div class="fg">
     <div class="fld s2"><label>Full Name *</label><input id="f-name" value="${v('Name')}" placeholder="Customer name"></div>
     <div class="fld s2"><label>Phone *</label><input id="f-phone" value="${v('Phone Number')}" placeholder="0xx xxx xxxx"></div>
@@ -1187,7 +1124,7 @@ function custForm(d){
       <select id="f-item" onchange="onItemSel(this)"><option value="">— Select product —</option></select>
       <div class="hint" id="f-stock-info" style="margin-top:6px"></div>
     </div>
-    <div class="fld s2"><label>Ordered / Description</label><textarea id="f-ordered" placeholder="Add details, quantity, color…">${v('Ordered')}</textarea></div>
+    <div class="fld s2"><label>Ordered / Description</label><textarea id="f-ordered" placeholder="Add details…">${v('Ordered')}</textarea></div>
     <div class="fld"><label>Pricing (selling price)</label><input id="f-pricing" value="${v('Pricing')}" placeholder="e.g. $45"></div>
     <div class="fld"><label>Retail Price</label><input id="f-retail" value="${v('Retail Price')}" class="ro" readonly tabindex="-1" placeholder="Auto from product"></div>
     <div class="fld"><label>Payment</label><select id="f-payment"><option value="COD"${v('Payment')==='COD'?' selected':''}>COD</option><option value="Paid"${v('Payment')==='Paid'?' selected':''}>Paid</option><option value="Unpaid"${v('Payment')==='Unpaid'?' selected':''}>Unpaid</option></select></div>
@@ -1201,121 +1138,115 @@ function custForm(d){
   </div>`;
 }
 
-function populateItemDrop(selectedCode){
-  const sel=document.getElementById('f-item'); if(!sel) return;
-  sel.innerHTML='<option value="">— Select product —</option>';
-  const rows=D.prod.raw; if(!rows||rows.length<2) return;
-  const hm=cm(rows[0]);
-  rows.slice(1).forEach(r=>{
-    const name=s(r,hm,'Item Name'), code=s(r,hm,'Code'), retail=s(r,hm,'Retail Price'), ss=s(r,hm,'Stock Status');
-    if(!name) return;
-    const opt=document.createElement('option');
-    opt.value=code; opt.textContent=name;
-    opt.dataset.retail=retail; opt.dataset.stock=ss; opt.dataset.code=code;
-    if(selectedCode&&code===selectedCode) opt.selected=true;
+function populateItemDrop(selectedCode) {
+  const sel = document.getElementById('f-item'); if (!sel) return;
+  sel.innerHTML = '<option value="">— Select product —</option>';
+  const rows = D.prod.raw; if (!rows || rows.length < 2) return;
+  const hm   = cm(rows[0]);
+  rows.slice(1).forEach(r => {
+    const name = s(r,hm,'Item Name'), code = s(r,hm,'Code'), retail = s(r,hm,'Retail Price'), ss2 = s(r,hm,'Stock Status');
+    if (!name) return;
+    const opt = document.createElement('option');
+    opt.value = code; opt.textContent = name; opt.dataset.retail = retail; opt.dataset.stock = ss2; opt.dataset.code = code;
+    if (selectedCode && code === selectedCode) opt.selected = true;
     sel.appendChild(opt);
   });
-  // Trigger display if selected
-  if(selectedCode) onItemSel(sel);
+  if (selectedCode) onItemSel(sel);
 }
 
-function onItemSel(sel){
-  const opt=sel.options[sel.selectedIndex];
-  if(!opt||!opt.value) return;
-  document.getElementById('f-retail').value=opt.dataset.retail||'';
-  document.getElementById('f-code').value=opt.dataset.code||opt.value;
-  const sinfo=document.getElementById('f-stock-info');
-  const ss=opt.dataset.stock||'';
-  const isCls=ss.toLowerCase().includes('out')?'b-r':ss.toLowerCase().includes('low')?'b-a':'b-g';
-  sinfo.innerHTML=ss?`<span class="bdg ${isCls}">${e(ss)}</span>`:'';
+function onItemSel(sel) {
+  const opt = sel.options[sel.selectedIndex]; if (!opt || !opt.value) return;
+  document.getElementById('f-retail').value = opt.dataset.retail || '';
+  document.getElementById('f-code').value   = opt.dataset.code   || opt.value;
+  const sinfo = document.getElementById('f-stock-info');
+  const ss2   = opt.dataset.stock || '';
+  const cls   = ss2.toLowerCase().includes('out')?'b-r':ss2.toLowerCase().includes('low')?'b-a':'b-g';
+  sinfo.innerHTML = ss2 ? `<span class="bdg ${cls}">${e(ss2)}</span>` : '';
 }
 
-async function saveCust(){
-  const name=document.getElementById('f-name')?.value.trim();
-  const phone=document.getElementById('f-phone')?.value.trim();
-  const shipper=document.getElementById('f-shipper')?.value.trim();
-  const loc=document.getElementById('f-loc')?.value.trim();
-  const ordered=document.getElementById('f-ordered')?.value.trim();
-  const pricing=document.getElementById('f-pricing')?.value.trim();
-  const retail=document.getElementById('f-retail')?.value.trim();
-  const payment=document.getElementById('f-payment')?.value.trim()||'COD';
-  const orderDate=document.getElementById('f-order-date')?.value.trim();
-  const deliveryDate=document.getElementById('f-delivery-date')?.value.trim();
-  const receiveDate=document.getElementById('f-receive-date')?.value.trim();
-  const deliveryFee=document.getElementById('f-delivery-fee')?.value.trim();
-  const totalPaid=document.getElementById('f-total-paid')?.value.trim();
-  const status=document.getElementById('f-status')?.value.trim()||'Pending';
-  const code=document.getElementById('f-code')?.value.trim();
-  if(!name||!phone){ toast('Name and Phone required','warning'); return; }
+async function saveCust() {
+  const name         = document.getElementById('f-name')?.value.trim();
+  const phone        = document.getElementById('f-phone')?.value.trim();
+  const shipper      = document.getElementById('f-shipper')?.value.trim();
+  const loc          = document.getElementById('f-loc')?.value.trim();
+  const ordered      = document.getElementById('f-ordered')?.value.trim();
+  const pricing      = document.getElementById('f-pricing')?.value.trim();
+  const retail       = document.getElementById('f-retail')?.value.trim();
+  const payment      = document.getElementById('f-payment')?.value.trim() || 'COD';
+  const orderDate    = document.getElementById('f-order-date')?.value.trim();
+  const deliveryDate = document.getElementById('f-delivery-date')?.value.trim();
+  const receiveDate  = document.getElementById('f-receive-date')?.value.trim();
+  const deliveryFee  = document.getElementById('f-delivery-fee')?.value.trim();
+  const totalPaid    = document.getElementById('f-total-paid')?.value.trim();
+  const status       = document.getElementById('f-status')?.value.trim() || 'Pending';
+  const code         = document.getElementById('f-code')?.value.trim();
+  if (!name || !phone) { toast('Name and Phone required', 'warning'); return; }
   closeMdl();
-  const isAdd=D.modal.type==='add-cust';
-  try{
-    const payload={name,phone,location:loc,ordered,pricing,code,retail,payment,orderDate,deliveryDate,receiveDate,deliveryFee,totalPaid,status,shipperPhone:shipper};
-    if(isAdd) await GS('insertCustomer',payload);
-    else await GS('updateCustomer',{profileId:D.modal.id,...payload});
-    toast(isAdd?'Customer added!':'Customer updated!','success');
+  const isAdd = D.modal.type === 'add-cust';
+  try {
+    const payload = { name, phone, location:loc, ordered, pricing, code, retail, payment, orderDate, deliveryDate, receiveDate, deliveryFee, totalPaid, status, shipperPhone:shipper };
+    if (isAdd) await GS('insertCustomer', payload);
+    else       await GS('updateCustomer', { profileId:D.modal.id, ...payload });
+    toast(isAdd ? 'Customer added!' : 'Customer updated!', 'success');
     loadAll();
-  }catch(err){ toast('Error: '+err.message,'error'); }
+  } catch(err) { toast('Error: ' + err.message, 'error'); }
 }
 
-function delCustConfirm(pid){
-  D.modal={type:'del-cust',id:pid};
-  openMdl('Delete Customer',`<p style="font-size:14px">Delete <strong>${e(pid)}</strong>?<br><span style="color:var(--muted);font-size:12px">Cannot be undone.</span></p>`,`
-    <button class="btn btn-o" onclick="closeMdl()">Cancel</button>
-    <button class="btn btn-r" onclick="delCust()">Delete</button>`);
+function delCustConfirm(pid) {
+  D.modal = { type:'del-cust', id:pid };
+  openMdl('Delete Customer', `<p style="font-size:14px">Delete <strong>${e(pid)}</strong>?<br><span style="color:var(--muted);font-size:12px">Cannot be undone.</span></p>`,
+    `<button class="btn btn-o" onclick="closeMdl()">Cancel</button>
+     <button class="btn btn-r" onclick="delCust()">Delete</button>`);
 }
-async function delCust(){ closeMdl(); try{ await GS('deleteCustomer',D.modal.id); toast('Deleted','success'); loadAll(); }catch(err){toast('Error: '+err.message,'error');} }
+async function delCust() { closeMdl(); try { await GS('deleteCustomer', { profileId:D.modal.id }); toast('Deleted','success'); loadAll(); } catch(err) { toast('Error: '+err.message,'error'); } }
 
 // ═══════════════════════════════════════════════════════════
 // PRODUCTS CRUD
 // ═══════════════════════════════════════════════════════════
-function extractCats(){
-  const rows=D.prod.raw; if(!rows||rows.length<2) return [];
-  const hm=cm(rows[0]);
-  const all=[]; rows.slice(1).forEach(r=>{ const c=s(r,hm,'Category'); if(c&&!all.includes(c)) all.push(c); });
+function extractCats() {
+  const rows = D.prod.raw; if (!rows || rows.length < 2) return [];
+  const hm = cm(rows[0]); const all = [];
+  rows.slice(1).forEach(r => { const c = s(r,hm,'Category'); if (c && !all.includes(c)) all.push(c); });
   return all.sort();
 }
 
-function autoCode(){
-  const rows=D.prod.raw; if(!rows||rows.length<2) return 'N1C1';
-  const hm=cm(rows[0]);
-  const tags=getTags(); const catIdx=D.cats.indexOf(tags[0]||'')+1||1;
-  const n=rows.slice(1).filter(r=>s(r,hm,'Code')).length+1;
-  return `N${n}C${catIdx}`;
+function autoCode() {
+  const rows = D.prod.raw; if (!rows || rows.length < 2) return 'N1C1';
+  const hm = cm(rows[0]); const tags = getTags(); const catIdx = D.cats.indexOf(tags[0]||'')+1||1;
+  return `N${rows.slice(1).filter(r=>s(r,hm,'Code')).length+1}C${catIdx}`;
 }
 
-function openAddProduct(){
-  D.modal={type:'add-prod',id:''};
-  openMdl('Add Product', prodForm(null), `
-    <button class="btn btn-o" onclick="closeMdl()">Cancel</button>
-    <button class="btn btn-p" onclick="saveProd()">Save Product</button>`);
+function openAddProduct() {
+  D.modal = { type:'add-prod', id:'' };
+  openMdl('Add Product', prodForm(null),
+    `<button class="btn btn-o" onclick="closeMdl()">Cancel</button>
+     <button class="btn btn-p" onclick="saveProd()">Save Product</button>`);
   document.getElementById('f-cat-input')?.addEventListener('keydown', catKey);
   updateAutoCode();
 }
 
-function editProd(code){
-  const rows=D.prod.raw; if(!rows.length) return;
-  const hm=cm(rows[0]);
-  const row=rows.slice(1).find(r=>s(r,hm,'Code')===code);
-  if(!row){ toast('Not found','error'); return; }
-  const dat={}; rows[0].forEach((h,i)=>{dat[h.trim()]=String(row[i]||'').trim();});
-  D.modal={type:'edit-prod',id:code};
-  openMdl('Edit: '+(dat['Item Name']||code), prodForm(dat),`
-    <button class="btn btn-o" onclick="closeMdl()">Cancel</button>
-    <button class="btn btn-p" onclick="saveProd()">Update Product</button>`);
-  // Pre-fill category tags
-  const cats=(dat['Category']||'').split(',').map(c=>c.trim()).filter(Boolean);
+function editProd(code) {
+  const rows = D.prod.raw; if (!rows.length) return;
+  const hm   = cm(rows[0]);
+  const row  = rows.slice(1).find(r => s(r,hm,'Code') === code);
+  if (!row) { toast('Not found','error'); return; }
+  const dat = {}; rows[0].forEach((h,i) => { dat[h.trim()] = String(row[i]||'').trim(); });
+  D.modal = { type:'edit-prod', id:code };
+  openMdl('Edit: '+(dat['Item Name']||code), prodForm(dat),
+    `<button class="btn btn-o" onclick="closeMdl()">Cancel</button>
+     <button class="btn btn-p" onclick="saveProd()">Update Product</button>`);
+  const cats = (dat['Category']||'').split(',').map(c=>c.trim()).filter(Boolean);
   cats.forEach(addCatTag);
   document.getElementById('f-cat-input')?.addEventListener('keydown', catKey);
 }
 
-function prodForm(d){
-  const v=(k,fb='')=>e(d?d[k]||'':fb);
+function prodForm(d) {
+  const v = (k,fb='') => e(d ? d[k]||'' : fb);
   return `<div class="fg">
     <div class="fld"><label>Auto Code</label><div class="auto-code" id="f-autocode">N?C?</div></div>
     <div class="fld"><label>Photo URL</label><input id="f-photo" value="${v('Photo')}" placeholder="https://…/photo.jpg"></div>
     <div class="fld s2"><label>Item Name *</label><input id="f-pname" value="${v('Item Name')}" placeholder="Full product name"></div>
-    <div class="fld s2"><label>Category (press Enter to add tag)</label>
+    <div class="fld s2"><label>Category (Enter to add tag)</label>
       <div class="tag-wrap" id="f-cat-wrap" onclick="document.getElementById('f-cat-input').focus()">
         <span id="f-cat-tags"></span>
         <input id="f-cat-input" placeholder="e.g. Audio, Cable…" list="cat-list">
@@ -1331,468 +1262,257 @@ function prodForm(d){
     <div class="fld"><label>Ads ID</label><input id="f-ads" value="${v('Ads ID')}" placeholder="FB Ads ID"></div>
     <div class="fld s2"><label>Remark</label><input id="f-rem" value="${v('Remark')}" placeholder="Notes…"></div>
     <div class="fld"><label>Stock Status</label>
-      <select id="f-pstock">
-        ${['In Stock','Low Stock','Out of Stock'].map(st=>`<option ${(d&&d['Stock Status']===st)?'selected':''}>${st}</option>`).join('')}
-      </select>
+      <select id="f-pstock">${['In Stock','Low Stock','Out of Stock'].map(st=>`<option${(d&&d['Stock Status']===st)?' selected':''}>${st}</option>`).join('')}</select>
     </div>
-    <div class="fld"><label>Stock Keeping Unit (SKU)</label><input id="f-sku" value="${v('SKU')}" placeholder="Auto or manual"></div>
+    <div class="fld"><label>SKU</label><input id="f-sku" value="${v('SKU')}" placeholder="Auto or manual"></div>
   </div>`;
 }
 
-function catKey(e){ if(e.key==='Enter'||e.key===','){ e.preventDefault(); addCatTag(e.target.value.replace(',','').trim()); } }
-function addCatTag(v){ if(!v) return; const wrap=document.getElementById('f-cat-tags'); if(!wrap) return; if([...wrap.querySelectorAll('.tag-chip')].some(c=>c.dataset.v===v)) return; const chip=document.createElement('span'); chip.className='tag-chip'; chip.dataset.v=v; chip.innerHTML=`${e(v)}<button type="button" onclick="this.parentNode.remove();updateAutoCode()">×</button>`; wrap.appendChild(chip); document.getElementById('f-cat-input').value=''; updateAutoCode(); }
-function getTags(){ return [...(document.querySelectorAll('#f-cat-tags .tag-chip')||[])].map(c=>c.dataset.v); }
-function updateAutoCode(){ const el=document.getElementById('f-autocode'); if(el) el.textContent=autoCode(); }
+function catKey(e) { if (e.key==='Enter'||e.key===',') { e.preventDefault(); addCatTag(e.target.value.replace(',','').trim()); } }
+function addCatTag(v) { if (!v) return; const wrap = document.getElementById('f-cat-tags'); if (!wrap) return; if ([...wrap.querySelectorAll('.tag-chip')].some(c=>c.dataset.v===v)) return; const chip = document.createElement('span'); chip.className='tag-chip'; chip.dataset.v=v; chip.innerHTML=`${e(v)}<button type="button" onclick="this.parentNode.remove();updateAutoCode()">×</button>`; wrap.appendChild(chip); document.getElementById('f-cat-input').value=''; updateAutoCode(); }
+function getTags() { return [...(document.querySelectorAll('#f-cat-tags .tag-chip')||[])].map(c=>c.dataset.v); }
+function updateAutoCode() { const el = document.getElementById('f-autocode'); if (el) el.textContent = autoCode(); }
 
-async function saveProd(){
-  const name=document.getElementById('f-pname')?.value.trim();
-  const code=document.getElementById('f-autocode')?.textContent||D.modal.id;
-  const cat=getTags().join(', ');
-  const qty=document.getElementById('f-qty')?.value;
-  const retail=document.getElementById('f-retail2')?.value.trim();
-  const ws=document.getElementById('f-ws')?.value.trim();
-  const pur=document.getElementById('f-pur')?.value.trim();
-  const stock=document.getElementById('f-pstock')?.value;
-  const photo=document.getElementById('f-photo')?.value.trim();
-  const desc=document.getElementById('f-desc')?.value.trim();
-  const ads=document.getElementById('f-ads')?.value.trim();
-  const imp=document.getElementById('f-imp')?.value;
-  const sku=document.getElementById('f-sku')?.value.trim();
-  const rem=document.getElementById('f-rem')?.value.trim();
-  if(!name){ toast('Item Name required','warning'); return; }
+async function saveProd() {
+  const name  = document.getElementById('f-pname')?.value.trim();
+  const code  = document.getElementById('f-autocode')?.textContent || D.modal.id;
+  const cat   = getTags().join(', ');
+  const qty   = document.getElementById('f-qty')?.value;
+  const retail= document.getElementById('f-retail2')?.value.trim();
+  const ws    = document.getElementById('f-ws')?.value.trim();
+  const pur   = document.getElementById('f-pur')?.value.trim();
+  const stock = document.getElementById('f-pstock')?.value;
+  const photo = document.getElementById('f-photo')?.value.trim();
+  const desc  = document.getElementById('f-desc')?.value.trim();
+  const ads   = document.getElementById('f-ads')?.value.trim();
+  const imp   = document.getElementById('f-imp')?.value;
+  const sku   = document.getElementById('f-sku')?.value.trim();
+  const rem   = document.getElementById('f-rem')?.value.trim();
+  if (!name) { toast('Item Name required','warning'); return; }
   closeMdl();
-  try{
-    const data={code:D.modal.type==='edit-prod'?D.modal.id:code, name, category:cat, qty, retail, wholesale:ws, purchase:pur, stock, photo, description:desc, adsId:ads, importDate:imp, sku, remark:rem};
-    if(D.modal.type==='add-prod') await GS('insertProduct', data);
-    else await GS('updateProduct', data);
+  try {
+    const data = { code:D.modal.type==='edit-prod'?D.modal.id:code, name, category:cat, qty, retail, wholesale:ws, purchase:pur, stock, photo, description:desc, adsId:ads, importDate:imp, sku, remark:rem };
+    if (D.modal.type === 'add-prod') await GS('insertProduct', data);
+    else                              await GS('updateProduct', data);
     toast(D.modal.type==='add-prod'?'Product added!':'Updated!','success');
     loadAll();
-  }catch(err){ toast('Error: '+err.message,'error'); }
+  } catch(err) { toast('Error: '+err.message,'error'); }
 }
 
-function delProdConfirm(code){
-  D.modal={type:'del-prod',id:code};
-  openMdl('Delete Product',`<p style="font-size:14px">Delete <strong>${e(code)}</strong>?</p>`,`
-    <button class="btn btn-o" onclick="closeMdl()">Cancel</button>
-    <button class="btn btn-r" onclick="delProd()">Delete</button>`);
+function delProdConfirm(code) {
+  D.modal = { type:'del-prod', id:code };
+  openMdl('Delete Product', `<p style="font-size:14px">Delete <strong>${e(code)}</strong>?</p>`,
+    `<button class="btn btn-o" onclick="closeMdl()">Cancel</button>
+     <button class="btn btn-r" onclick="delProd()">Delete</button>`);
 }
-async function delProd(){ closeMdl(); try{ await GS('deleteProduct',D.modal.id); toast('Deleted','success'); loadAll(); }catch(err){toast('Error: '+err.message,'error');} }
+async function delProd() { closeMdl(); try { await GS('deleteProduct', { code:D.modal.id }); toast('Deleted','success'); loadAll(); } catch(err) { toast('Error: '+err.message,'error'); } }
 
 // ═══════════════════════════════════════════════════════════
 // REPORTS
 // ═══════════════════════════════════════════════════════════
-function dlTab(tab){
-  document.querySelectorAll('.dl-tab').forEach(el=>{
-    const isActive = el.dataset.t === tab;
-    el.classList.toggle('on', isActive);
-    el.style.color = isActive ? 'var(--p)' : 'var(--muted)';
-    el.style.borderBottomColor = isActive ? 'var(--p)' : 'transparent';
+function dlTab(tab) {
+  document.querySelectorAll('.dl-tab').forEach(el => el.classList.toggle('on', el.dataset.t===tab));
+  document.querySelectorAll('.dl-panel').forEach(el => el.classList.toggle('on', el.id==='dl-'+tab));
+  if (tab === 'orders') loadOrderHistory();
+}
+
+async function loadReports() {
+  const rows = D.cust.raw; if (!rows || rows.length < 2) { await loadAll(); return; }
+  const hm   = cm(rows[0]); const data = rows.slice(1).filter(r => s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
+  const rf   = document.getElementById('r-f')?.value, rt = document.getElementById('r-t')?.value;
+  const filt = data.filter(r => {
+    const od = s(r,hm,'Order Date');
+    if (rf && od && pd(od) < new Date(rf)) return false;
+    if (rt && od && pd(od) > new Date(rt+'T23:59:59')) return false;
+    return true;
   });
-  document.querySelectorAll('.dl-panel').forEach(el=>el.classList.toggle('on', el.id==='dl-'+tab));
-  if(tab==='orders') loadOrderHistory();
+  let tot=filt.length, done=0, rev=0, cancel=0; const sCnt={}, pCnt={};
+  filt.forEach(r => {
+    const st=s(r,hm,'Status').toLowerCase(), tp=parseFloat(s(r,hm,'Total Paid').replace(/[^0-9.]/g,''))||0, code=s(r,hm,'Code')||'Other';
+    if (st.includes('complet')){ done++; rev+=tp; }
+    if (st.includes('cancel')) cancel++;
+    sCnt[st]=(sCnt[st]||0)+1; pCnt[code]=(pCnt[code]||0)+1;
+  });
+  document.getElementById('r-m').innerHTML = [
+    {cl:'blue',v:tot,l:'Total'},{cl:'green',v:done,l:'Completed'},{cl:'indigo',v:'$'+rev.toFixed(2),l:'Revenue'},{cl:'red',v:cancel,l:'Cancelled'}
+  ].map(m=>`<div class="mc ${m.cl}"><div class="mc-val">${m.v}</div><div class="mc-lbl">${m.l}</div></div>`).join('');
+  const scData = Object.entries(sCnt).map(([k,v])=>({l:k.charAt(0).toUpperCase()+k.slice(1,12),v,c:k.includes('complet')?'var(--green)':k.includes('approv')?'var(--p)':k.includes('cancel')?'var(--red)':'var(--amber)'})).sort((a,b)=>b.v-a.v);
+  const mx = Math.max(...scData.map(d=>d.v),1);
+  document.getElementById('r-cs').innerHTML = scData.map(d=>`<div class="ch-row"><div class="ch-lbl">${d.l}</div><div class="ch-track"><div class="ch-fill" style="width:${Math.round(d.v/mx*100)}%;background:${d.c}"><span>${d.v}</span></div></div></div>`).join('');
+  const topP = Object.entries(pCnt).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const mx2  = Math.max(...topP.map(d=>d[1]),1);
+  document.getElementById('r-cp').innerHTML = topP.map(([k,v])=>`<div class="ch-row"><div class="ch-lbl">${t(k,12)}</div><div class="ch-track"><div class="ch-fill" style="width:${Math.round(v/mx2*100)}%;background:var(--indigo)"><span>${v}</span></div></div></div>`).join('');
 }
 
-async function loadReports(){
-  const rows=D.cust.raw; if(!rows||rows.length<2){ await loadAll(); return; }
-  const hm=cm(rows[0]); const data=rows.slice(1).filter(r=>s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
-  const rf=document.getElementById('r-f')?.value, rt=document.getElementById('r-t')?.value;
-  const filt=data.filter(r=>{ const od=s(r,hm,'Order Date'); if(rf&&od&&pd(od)<new Date(rf)) return false; if(rt&&od&&pd(od)>new Date(rt+'T23:59:59')) return false; return true; });
-  let tot=filt.length, done=0, rev=0, cancel=0, cod=0; const sCnt={}, pCnt={};
-  filt.forEach(r=>{ const st=s(r,hm,'Status').toLowerCase(), pm=s(r,hm,'Payment').toLowerCase(), tp=parseFloat(s(r,hm,'Total Paid').replace(/[^0-9.]/g,''))||0, code=s(r,hm,'Code')||'Other'; if(st.includes('complet')){done++;rev+=tp;} if(st.includes('cancel'))cancel++; if(pm.includes('cod'))cod++; sCnt[st]=(sCnt[st]||0)+1; pCnt[code]=(pCnt[code]||0)+1; });
-  document.getElementById('r-m').innerHTML=[{cl:'blue',v:tot,l:'Total'},{cl:'green',v:done,l:'Completed'},{cl:'indigo',v:'$'+rev.toFixed(2),l:'Revenue'},{cl:'red',v:cancel,l:'Cancelled'}].map(m=>`<div class="mc ${m.cl}"><div class="mc-val">${m.v}</div><div class="mc-lbl">${m.l}</div></div>`).join('');
-  const scData=Object.entries(sCnt).map(([k,v])=>({l:k.charAt(0).toUpperCase()+k.slice(1,12),v,c:k.includes('complet')?'var(--green)':k.includes('approv')?'var(--p)':k.includes('cancel')?'var(--red)':'var(--amber)'})).sort((a,b)=>b.v-a.v);
-  const mx=Math.max(...scData.map(d=>d.v),1);
-  document.getElementById('r-cs').innerHTML=scData.map(d=>`<div class="ch-row"><div class="ch-lbl">${d.l}</div><div class="ch-track"><div class="ch-fill" style="width:${Math.round(d.v/mx*100)}%;background:${d.c}"><span>${d.v}</span></div></div></div>`).join('');
-  const topP=Object.entries(pCnt).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const mx2=Math.max(...topP.map(d=>d[1]),1);
-  document.getElementById('r-cp').innerHTML=topP.map(([k,v])=>`<div class="ch-row"><div class="ch-lbl">${t(k,12)}</div><div class="ch-track"><div class="ch-fill" style="width:${Math.round(v/mx2*100)}%;background:var(--indigo)"><span>${v}</span></div></div></div>`).join('');
+function loadOrderHistory() {
+  const rows = D.cust.raw; if (!rows||rows.length<2) return;
+  const hm   = cm(rows[0]); const data = rows.slice(1).filter(r=>s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
+  const cols = ['Name','Phone Number','Ordered','Pricing','Payment','Status','Order Date'];
+  const th   = cols.map(c=>`<th>${c}</th>`).join('');
+  const tb   = data.map(r=>cols.map(c=>{const v=s(r,hm,c);if(c==='Payment')return`<td>${pBdg(v)}</td>`;if(c==='Status')return`<td>${sBdg(v)}</td>`;return`<td>${t(v,24)||'—'}</td>`;}).join('')).map(c=>`<tr>${c}</tr>`).join('');
+  document.getElementById('r-tbl-full').innerHTML = `<table class="tbl" style="font-size:12px"><thead><tr>${th}</tr></thead><tbody>${tb||'<tr><td colspan="7" class="empty-row">No records</td></tr>'}</tbody></table>`;
 }
 
-function loadOrderHistory(){
-  const rows=D.cust.raw; if(!rows||rows.length<2) return;
-  const hm=cm(rows[0]); const data=rows.slice(1).filter(r=>s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
-  const cols=['Name','Phone Number','Ordered','Pricing','Total Paid','Payment','Status','Order Date'];
-  const th=cols.map(c=>`<th>${c}</th>`).join('');
-  const tb=data.map(r=>cols.map(c=>{const v=s(r,hm,c);if(c==='Payment')return`<td>${pBdg(v)}</td>`;if(c==='Status')return`<td>${sBdg(v)}</td>`;return`<td>${t(v,24)||'—'}</td>`;}).join('')).map(c=>`<tr>${c}</tr>`).join('');
-  document.getElementById('r-tbl-full').innerHTML=`<table class="tbl" style="font-size:12px"><thead><tr>${th}</tr></thead><tbody>${tb||'<tr><td colspan="8" class="empty-row">No records</td></tr>'}</tbody></table>`;
+function setRange(tp) {
+  const today = new Date();
+  if (tp==='m') { const f=new Date(today.getFullYear(),today.getMonth(),1); document.getElementById('r-f').value=f.toISOString().split('T')[0]; document.getElementById('r-t').value=today.toISOString().split('T')[0]; }
+  else { document.getElementById('r-f').value=''; document.getElementById('r-t').value=''; }
+  loadReports();
 }
-
-function setRange(t){ const today=new Date(); if(t==='m'){ const f=new Date(today.getFullYear(),today.getMonth(),1); document.getElementById('r-f').value=f.toISOString().split('T')[0]; document.getElementById('r-t').value=today.toISOString().split('T')[0]; } else{ document.getElementById('r-f').value=''; document.getElementById('r-t').value=''; } loadReports(); }
 
 // ═══════════════════════════════════════════════════════════
 // SETTINGS
 // ═══════════════════════════════════════════════════════════
-async function loadSettings(){
-  const el=document.getElementById('settings-b');
-  try{
-    const rows=await GS('getSettingsRaw');
-    if(!rows||rows.length<2){ el.innerHTML='<p style="color:var(--muted);font-size:13px">No settings found.</p>'; return; }
-    const masked=['Token','Password','Key','Secret'];
-    el.innerHTML='<div>'+rows[0].map((h,i)=>{
-      const v=String(rows[1][i]||'').trim();
-      const hide=masked.some(m=>String(h).includes(m));
-      const cls=!v||v.startsWith('INSERT')?'no':'ok';
-      const disp=!v||v.startsWith('INSERT')?'Not configured':(hide?'●●●●●●':v);
+async function loadSettings() {
+  const el = document.getElementById('settings-b');
+  try {
+    const rows = await GS('getSettingsRaw');
+    if (!rows||rows.length<2) { el.innerHTML='<p style="color:var(--muted);font-size:13px">No settings found.</p>'; return; }
+    const masked = ['Token','Password','Key','Secret'];
+    el.innerHTML = '<div>' + rows[0].map((h,i) => {
+      const v    = String(rows[1][i]||'').trim();
+      const hide = masked.some(m=>String(h).includes(m));
+      const cls  = (!v||v.startsWith('INSERT'))?'no':'ok';
+      const disp = (!v||v.startsWith('INSERT'))?'Not configured':(hide?'●●●●●●':v);
       return `<div class="srow"><span class="sk">${e(String(h))}</span><span class="sv ${cls}">${e(disp)}</span></div>`;
-    }).join('')+'</div>';
-  }catch(_){ el.innerHTML='<p style="color:var(--muted);font-size:13px">Connect to Google Apps Script to see settings.</p>'; }
+    }).join('') + '</div>';
+  } catch(_) { el.innerHTML='<p style="color:var(--muted);font-size:13px">Connect to Google Apps Script to see settings.</p>'; }
 }
 
 // ═══════════════════════════════════════════════════════════
-// PRINT — Shipping Label + A5 Invoice
+// DEV LOG (static)
 // ═══════════════════════════════════════════════════════════
-function getRow(pid){ const rows=D.cust.raw; if(!rows.length) return null; const hm=cm(rows[0]); const row=rows.slice(1).find(r=>s(r,hm,'Profile ID')===pid); if(!row) return null; const d={}; rows[0].forEach((h,i)=>{d[h.trim()]=String(row[i]||'').trim();}); return d; }
+function loadDevLogStatic() {
+  document.getElementById('dl-changelog-body').innerHTML = `
+    <div class="version-block">
+      <div class="version-head"><span class="version-badge">v6.1</span><span class="version-date">2026-06-09</span></div>
+      <div class="version-items">
+        <div class="version-item"><span class="vi-dot">🔧</span><span>FIX: manages.html GS() now injects Bearer token on every call</span></div>
+        <div class="version-item"><span class="vi-dot">🔧</span><span>FIX: doLogin() migrated to loginStep1 + OTP + loginStep2 flow</span></div>
+        <div class="version-item"><span class="vi-dot">🔧</span><span>FIX: token stored in sessionStorage (not localStorage) — security H3</span></div>
+        <div class="version-item"><span class="vi-dot">🔧</span><span>FIX: chkAuth() verifies token server-side on every load</span></div>
+        <div class="version-item"><span class="vi-dot">🔧</span><span>FIX: doLogout() calls GS logout + clears sessionStorage</span></div>
+        <div class="version-item"><span class="vi-dot">✨</span><span>NEW: OTP step UI inline (no window.prompt)</span></div>
+      </div>
+    </div>`;
+  document.getElementById('dl-bugs-body').innerHTML = `
+    <table class="bug-tbl"><thead><tr><th>ID</th><th>Severity</th><th>Description</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>C1</td><td><span class="err-tag priority-critical">Critical</span></td><td>Plaintext passwords in Users sheet</td><td>Pending — see YB_v6.1_Fix_Report.md</td></tr>
+      <tr><td>C2</td><td><span class="err-tag priority-critical">Critical</span></td><td>XSS in detailRow()</td><td>Pending</td></tr>
+      <tr><td>H1</td><td><span class="err-tag priority-high">High</span></td><td>Math.random() for OTP/token</td><td>Pending</td></tr>
+      <tr><td>H2</td><td><span class="err-tag priority-high">High</span></td><td>No OTP brute-force limit</td><td>Pending</td></tr>
+      <tr><td>H3</td><td><span class="err-tag priority-high">High</span></td><td>Token in localStorage</td><td>✅ Fixed — sessionStorage</td></tr>
+      <tr><td>AUTH</td><td><span class="err-tag priority-critical">Critical</span></td><td>GS() not passing Bearer token</td><td>✅ Fixed — v6.1</td></tr>
+    </tbody></table>`;
+  document.getElementById('dl-payway-body').innerHTML = `
+    <div class="sec-b" style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn btn-p" href="https://developer.payway.com.kh" target="_blank">Developer Portal</a>
+      <a class="btn btn-o" href="https://sandbox.payway.com.kh/register-sandbox/" target="_blank">Register Sandbox</a>
+    </div>`;
+}
 
-function printLabel(pid){
-  const d=getRow(pid); if(!d){ toast('Not found','error'); return; }
-  const store=D.cfg.storeName||'YIN BORAN';
-  document.getElementById('pz').innerHTML=`<div class="lbl-sm">
-    <div class="lbl-h">${e(store)}</div>
-    <div class="lbl-row">📦 <strong>${e(d['Ordered']||'—')}</strong></div>
-    <div class="lbl-row">👤 ${e(d['Name']||'—')}</div>
-    <div class="lbl-row">📱 ${e(d['Phone Number']||'—')}</div>
-    <div class="lbl-row">📍 ${e(d['Location']||'—')}</div>
-    <div class="lbl-row">💵 ${e(d['Pricing']||'—')}</div>
-    <div class="lbl-row" style="font-size:11px;margin-top:8px;border-top:1px solid #ddd;padding-top:6px">${e(d['Order Date']||'')} · ${e(d['Profile ID']||'')}</div>
-  </div>`;
+// ═══════════════════════════════════════════════════════════
+// PRINT
+// ═══════════════════════════════════════════════════════════
+function getRow(pid) { const rows=D.cust.raw; if (!rows.length) return null; const hm=cm(rows[0]); const row=rows.slice(1).find(r=>s(r,hm,'Profile ID')===pid); if (!row) return null; const d={}; rows[0].forEach((h,i)=>{d[h.trim()]=String(row[i]||'').trim();}); return d; }
+
+function printLabel(pid) {
+  const d = getRow(pid); if (!d){ toast('Not found','error'); return; }
+  const store = D.cfg.storeName||'YIN BORAN';
+  document.getElementById('pz').innerHTML = `<div class="lbl-sm"><div class="lbl-h">${e(store)}</div><div class="lbl-row">📦 <strong>${e(d['Ordered']||'—')}</strong></div><div class="lbl-row">👤 ${e(d['Name']||'—')}</div><div class="lbl-row">📱 ${e(d['Phone Number']||'—')}</div><div class="lbl-row">📍 ${e(d['Location']||'—')}</div><div class="lbl-row">💵 ${e(d['Pricing']||'—')}</div><div class="lbl-row" style="font-size:11px;margin-top:8px;border-top:1px solid #ddd;padding-top:6px">${e(d['Order Date']||'')} · ${e(d['Profile ID']||'')}</div></div>`;
   window.print();
 }
 
-function printInvoiceA5(pid){
-  const d=getRow(pid);
-  if(!d){ toast('Not found','error'); return; }
-  const store=D.cfg.storeName||'YIN BORAN';
-  const logoH=D.cfg.logoUrl&&!D.cfg.logoUrl.includes('INSERT')?`<img src="${e(D.cfg.logoUrl)}" style="height:40px;object-fit:contain">`:`<strong style="font-size:22px">${e(D.cfg.initials)}</strong>`;
-  const pr=parseFloat((d['Pricing']||'0').replace(/[^0-9.]/g,''))||0;
-  const rt=parseFloat((d['Retail Price']||'0').replace(/[^0-9.]/g,''))||0;
-  const disc=parseFloat((d['Discount']||'0').replace(/[^0-9.]/g,''))||(rt>pr&&rt>0?rt-pr:0);
-  document.getElementById('pz').innerHTML=`<div class="inv-a5">
-    <div class="inv-h">
-      <div>${logoH}<div style="font-size:12px;color:#555;margin-top:4px">${e(store)}</div></div>
-      <div class="inv-meta"><p style="font-size:18px;font-weight:900">INVOICE</p><p>Order: ${e(pid)}</p><p>Date: ${e(d['Order Date']||new Date().toLocaleDateString())}</p>${d['APV Codes']?`<p>APV: ${e(d['APV Codes'])}</p>`:''}</div>
-    </div>
-    <h4>Customer</h4>
-    <p><strong>${e(d['Name']||'—')}</strong></p>
-    <p>📱 ${e(d['Phone Number']||'—')}</p>
-    <p>📍 ${e(d['Location']||'—')}</p>
-    <h4>Order Details</h4>
-    <p>Status: ${e(d['Status']||'—')} | Payment: ${e(d['Payment']||'Pending')}</p>
-    ${d['Delivery Date']?`<p>Delivery: ${e(d['Delivery Date'])}</p>`:''}
-    ${d['Receive Date']?`<p>Received: ${e(d['Receive Date'])}</p>`:''}
-    <table><thead><tr><th>Description</th><th>Code</th><th>Retail</th><th>Discount</th><th>Price</th></tr></thead><tbody>
-    <tr><td>${e(d['Ordered']||'—')}</td><td>${e(d['Code']||'—')}</td><td>${rt>0?'$'+rt.toFixed(2):'—'}</td><td>${disc>0?'-$'+disc.toFixed(2):'—'}</td><td class="total-row">${pr>0?'$'+pr.toFixed(2):(d['Pricing']||'—')}</td></tr>
-    </tbody></table>
-    <p style="text-align:right;font-size:15px;font-weight:900;margin-top:8px">Total: ${e(d['Pricing']||'—')}</p>
-    ${d['Total Paid']?`<p style="text-align:right;font-size:12px;color:#555">Paid: $${e(d['Total Paid'])}</p>`:''}
-    <p style="text-align:center;font-size:10px;color:#888;margin-top:20px;border-top:1px solid #ddd;padding-top:8px">${e(store)} · Thank you for your purchase!</p>
-  </div>`;
+function printInvoiceA5(pid) {
+  const d = getRow(pid); if (!d){ toast('Not found','error'); return; }
+  const store = D.cfg.storeName||'YIN BORAN';
+  const pr  = parseFloat((d['Pricing']||'0').replace(/[^0-9.]/g,''))||0;
+  const rt  = parseFloat((d['Retail Price']||'0').replace(/[^0-9.]/g,''))||0;
+  const disc = parseFloat((d['Discount']||'0').replace(/[^0-9.]/g,''))||(rt>pr&&rt>0?rt-pr:0);
+  document.getElementById('pz').innerHTML = `<div class="inv-a5"><div class="inv-h"><div><strong class="inv-logo">${e(store)}</strong></div><div class="inv-meta"><p style="font-size:18px;font-weight:900">INVOICE</p><p>Order: ${e(pid)}</p><p>Date: ${e(d['Order Date']||new Date().toLocaleDateString())}</p></div></div><h4>Customer</h4><p><strong>${e(d['Name']||'—')}</strong></p><p>📱 ${e(d['Phone Number']||'—')}</p><p>📍 ${e(d['Location']||'—')}</p><h4>Order</h4><p>Status: ${e(d['Status']||'—')} | Payment: ${e(d['Payment']||'COD')}</p><table><thead><tr><th>Item</th><th>Retail</th><th>Discount</th><th>Price</th></tr></thead><tbody><tr><td>${e(d['Ordered']||'—')}</td><td>${rt>0?'$'+rt.toFixed(2):'—'}</td><td>${disc>0?'-$'+disc.toFixed(2):'—'}</td><td class="total-row">${pr>0?'$'+pr.toFixed(2):(d['Pricing']||'—')}</td></tr></tbody></table><p style="text-align:right;font-size:15px;font-weight:900;margin-top:8px">Total: ${e(d['Pricing']||'—')}</p><p style="text-align:center;font-size:10px;color:#888;margin-top:20px;border-top:1px solid #ddd;padding-top:8px">${e(store)} · Thank you!</p></div>`;
   window.print();
 }
 
-function printDashboardA4(){
-  const rows=D.cust.raw; if(!rows || rows.length<2){ toast('No data','warning'); return; }
-  const hm=cm(rows[0]); const data=rows.slice(1).filter(r=>s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
-  const cols=['Name','Phone Number','Ordered','Pricing','Payment','Status','Order Date','Delivery Date'];
-  const th=cols.map(c=>`<th>${c}</th>`).join('');
-  const tb=data.map(r=>cols.map(c=>{
-    const v=s(r,hm,c);
-    if(c==='Payment')return`<td>${e(v||'—')}</td>`;
-    if(c==='Status')return`<td>${e(v||'—')}</td>`;
-    return`<td>${e(v||'—')}</td>`;
-  }).join('')).map(c=>`<tr>${c}</tr>`).join('');
-  const store=D.cfg.storeName||'YIN BORAN';
-  document.getElementById('pz').innerHTML=`<div style="font-family:var(--font);padding:10mm;page-break-after:always"><div style="text-align:center;margin-bottom:16px"><h1 style="margin:0;font-size:18px">${e(store)}</h1><p style="margin:4px 0;font-size:12px;color:#555">Order Report — ${new Date().toLocaleDateString()}</p></div><table style="width:100%;border-collapse:collapse;font-size:11px"><thead style="background:#f5f5f5"><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
+function printDashboardA4() {
+  const rows = D.cust.raw; if (!rows||rows.length<2){ toast('No data','warning'); return; }
+  const hm   = cm(rows[0]); const data = rows.slice(1).filter(r=>s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
+  const cols = ['Name','Phone Number','Ordered','Pricing','Payment','Status','Order Date','Delivery Date'];
+  const th   = cols.map(c=>`<th>${c}</th>`).join('');
+  const tb   = data.map(r=>cols.map(c=>`<td>${e(s(r,hm,c)||'—')}</td>`).join('')).map(c=>`<tr>${c}</tr>`).join('');
+  document.getElementById('pz').innerHTML = `<div style="font-family:var(--font);padding:10mm"><div style="text-align:center;margin-bottom:16px"><h1 style="margin:0;font-size:18px">${e(D.cfg.storeName||'YIN BORAN')}</h1><p style="margin:4px 0;font-size:12px;color:#555">Order Report — ${new Date().toLocaleDateString()}</p></div><table style="width:100%;border-collapse:collapse;font-size:11px"><thead style="background:#f5f5f5"><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
   window.print();
 }
 
-function printOrdersReport(){
-  const rows=D.cust.raw; if(!rows || rows.length<2){ toast('No data','warning'); return; }
-  const hm=cm(rows[0]); const data=rows.slice(1).filter(r=>s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
-  const cols=['Name','Phone Number','Ordered','Pricing','Payment','Status','Order Date'];
-  const th=cols.map(c=>`<th>${c}</th>`).join('');
-  const tb=data.map(r=>cols.map(c=>{
-    const v=s(r,hm,c); return`<td>${e(v||'—')}</td>`;
-  }).join('')).map(c=>`<tr>${c}</tr>`).join('');
-  const store=D.cfg.storeName||'YIN BORAN';
-  document.getElementById('pz').innerHTML=`<div style="font-family:var(--font);padding:10mm"><div style="text-align:center;margin-bottom:12px"><h2 style="margin:0;font-size:16px">${e(store)}</h2><p style="margin:4px 0;font-size:11px;color:#666">Complete Order History</p><p style="margin:2px 0;font-size:10px;color:#999">Generated: ${new Date().toLocaleString()}</p></div><table style="width:100%;border-collapse:collapse;font-size:11px"><thead style="background:#f5f5f5;border:1px solid #ddd"><tr>${th}</tr></thead><tbody style="border:1px solid #ddd">${tb}</tbody></table><p style="font-size:10px;color:#999;margin-top:16px;text-align:center">End of Report</p></div>`;
+function printOrdersReport() {
+  const rows = D.cust.raw; if (!rows||rows.length<2){ toast('No data','warning'); return; }
+  const hm   = cm(rows[0]); const data = rows.slice(1).filter(r=>s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
+  const cols = ['Name','Phone Number','Ordered','Pricing','Payment','Status','Order Date'];
+  const th   = cols.map(c=>`<th>${c}</th>`).join('');
+  const tb   = data.map(r=>cols.map(c=>`<td>${e(s(r,hm,c)||'—')}</td>`).join('')).map(c=>`<tr>${c}</tr>`).join('');
+  document.getElementById('pz').innerHTML = `<div style="font-family:var(--font);padding:10mm"><h2 style="margin:0 0 12px;font-size:16px">${e(D.cfg.storeName||'YIN BORAN')}</h2><table style="width:100%;border-collapse:collapse;font-size:11px"><thead style="background:#f5f5f5"><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
   window.print();
 }
 
-function exportPDF(type){
-  if(type==='customers'){
-    const rows=D.cust.filtered||[]; if(!rows.length){ toast('No data','warning'); return; }
-    const hm=cm(D.cust.raw[0]); const cols=['Name','Phone Number','Location','Ordered','Pricing','Payment','Status','Order Date'];
-    const th=cols.map(c=>`<th>${c}</th>`).join('');
-    const tb=rows.map(r=>cols.map(c=>`<td>${e(s(r,hm,c)||'—')}</td>`).join('')).map(c=>`<tr>${c}</tr>`).join('');
-    document.getElementById('pz').innerHTML=`<div style="font-family:var(--font);padding:20mm"><h2 style="margin-bottom:12px">${e(D.cfg.storeName)} — Customers Report</h2><p style="font-size:12px;color:#555;margin-bottom:16px">Printed: ${new Date().toLocaleDateString()}</p><table style="width:100%;border-collapse:collapse;font-size:11px"><thead style="background:#f5f5f5"><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
+function exportPDF(type) {
+  if (type==='customers') {
+    const rows = D.cust.filtered||[]; if (!rows.length){ toast('No data','warning'); return; }
+    const hm   = cm(D.cust.raw[0]); const cols = ['Name','Phone Number','Location','Ordered','Pricing','Payment','Status','Order Date'];
+    const th   = cols.map(c=>`<th>${c}</th>`).join('');
+    const tb   = rows.map(r=>cols.map(c=>`<td>${e(s(r,hm,c)||'—')}</td>`).join('')).map(c=>`<tr>${c}</tr>`).join('');
+    document.getElementById('pz').innerHTML = `<div style="font-family:var(--font);padding:20mm"><h2>${e(D.cfg.storeName)} — Customers Report</h2><table style="width:100%;border-collapse:collapse;font-size:11px"><thead style="background:#f5f5f5"><tr>${th}</tr></thead><tbody>${tb}</tbody></table></div>`;
     window.print();
   }
-}
-
-function printCustomerInvoiceHorizontal(){
-  const rows=D.cust.raw; if(!rows || rows.length<2){ toast('No data','warning'); return; }
-  const hm=cm(rows[0]); const data=rows.slice(1).filter(r=>s(r,hm,'Profile ID')||s(r,hm,'Phone Number'));
-  if(!data.length){ toast('No customers','warning'); return; }
-  const cols=['Name','Phone Number','Ordered','Pricing','Location','Payment','Order Date','Shipper Phone','Delivery Date','Delivery Fee','Receive Date','Total Paid','Status'];
-  const th=cols.map(c=>`<th>${c}</th>`).join('');
-  const tb=data.map(r=>cols.map(c=>{const v=s(r,hm,c);return`<td>${e(v||'—')}</td>`;}).join('')).map(c=>`<tr>${c}</tr>`).join('');
-  const store=D.cfg.storeName||'YIN BORAN';
-  document.getElementById('pz').innerHTML=`<div style="font-family:var(--font);padding:3.8mm;page-break-after:always;width:100%;overflow-x:auto\"><h2 style="margin:0 0 8px;font-size:16px;text-align:center\">${e(store)} - Customer Invoice Report</h2><p style=\"margin:0 0 12px;font-size:10px;color:#666;text-align:center\">Generated: ${new Date().toLocaleString()}</p><table style=\"width:100%;border-collapse:collapse;font-size:10px;border:1px solid #ddd\"><thead style=\"background:#f5f5f5;border:1px solid #ddd\"><tr>${th}</tr></thead><tbody style=\"border:1px solid #ddd\">${tb}</tbody></table></div>`;
-  window.print();
 }
 
 // ═══════════════════════════════════════════════════════════
 // MODAL
 // ═══════════════════════════════════════════════════════════
-function openMdl(title, body, footer){
-  document.getElementById('mdl-t').textContent=title;
-  document.getElementById('mdl-b').innerHTML=body;
-  document.getElementById('mdl-f').innerHTML=footer||'';
+function openMdl(title, body, footer) {
+  document.getElementById('mdl-t').textContent = title;
+  document.getElementById('mdl-b').innerHTML   = body;
+  document.getElementById('mdl-f').innerHTML   = footer || '';
   document.getElementById('ovl').classList.add('on');
   document.getElementById('mdl').classList.add('on');
   document.body.classList.add('modal-open');
-  setTimeout(()=>document.querySelector('#mdl input,#mdl select,#mdl textarea')?.focus(),150);
+  setTimeout(() => document.querySelector('#mdl input,#mdl select,#mdl textarea')?.focus(), 150);
 }
-function closeMdl(){
+function closeMdl() {
   document.getElementById('ovl').classList.remove('on');
   document.getElementById('mdl').classList.remove('on');
   document.body.classList.remove('modal-open');
 }
-document.addEventListener('keydown', ev=>{ if(ev.key==='Escape') closeMdl(); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeMdl(); });
 
 // ═══════════════════════════════════════════════════════════
 // TOASTS
 // ═══════════════════════════════════════════════════════════
-const ICONS={success:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',error:'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',warning:'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z',info:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'};
-function toast(msg,type='info',dur=3000){ const w=document.getElementById('toasts'); const el=document.createElement('div'); el.className=`toast ${type}`; el.innerHTML=`<svg viewBox="0 0 24 24"><path d="${ICONS[type]||ICONS.info}"/></svg>${e(msg)}`; w.appendChild(el); setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),250); },dur); }
+const ICONS = { success:'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z', error:'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z', warning:'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z', info:'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z' };
+function toast(msg, type='info', dur=3000) {
+  const w = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<svg viewBox="0 0 24 24"><path d="${ICONS[type]||ICONS.info}"/></svg>${e(msg)}`;
+  w.appendChild(el);
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 250); }, dur);
+}
 
 // ═══════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════
-function cm(h){ const m={}; h.forEach((k,i)=>m[String(k).trim()]=i); return m; }
-function s(r,hm,col){ const i=hm[col]; return i!==undefined?String(r[i]||'').trim():''; }
-function e(v){ return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function t(v,n){ v=String(v||''); return v.length>n?v.slice(0,n)+'…':v; }
-function pd(v){ if(!v) return null; if(v instanceof Date) return v; const m=String(v).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); if(m) return new Date(+m[3],+m[2]-1,+m[1]); return new Date(v); }
-
-function sBdg(v){ const t=String(v||'').toLowerCase(); if(t.includes('complet')) return `<span class="bdg b-g">${v}</span>`; if(t.includes('approv')) return `<span class="bdg b-b">${v}</span>`; if(t.includes('cancel')) return `<span class="bdg b-r">${v}</span>`; return `<span class="bdg b-a">${v||'Pending'}</span>`; }
-function pBdg(v){ const t=String(v||'').toLowerCase(); if(t.includes('paid')&&!t.includes('⚠')) return `<span class="bdg b-g">Paid</span>`; if(t.includes('⚠')) return `<span class="bdg b-a">Partial</span>`; if(t.includes('cod')) return `<span class="bdg b-i">${v}</span>`; return `<span class="bdg b-x">${t(v,14)||'—'}</span>`; }
-function sstBdg(v){ const t=String(v||'').toLowerCase(); if(t.includes('out')) return `<span class="bdg b-r">Out of Stock</span>`; if(t.includes('low')) return `<span class="bdg b-a">Low Stock</span>`; if(t.includes('in')) return `<span class="bdg b-g">In Stock</span>`; return `<span class="bdg b-x">${v||'—'}</span>`; }
-
-// ═══════════════════════════════════════════════════════════
-// DEV LOG
-// ═══════════════════════════════════════════════════════════
-const NAV_MAP_EXT = { devlog:'Dev Log' };
-
-async function loadDevLog(){
-  try{
-    const data = []; // DevLog removed
-    if(data){ renderChangelog(data.changelog); renderBugs(data.bugs); renderPayway(data.payway); renderFeatures(data.features); renderRoadmap(data.roadmap); renderAIPrompt(data.aiPrompt); }
-  }catch(_){
-    // Fallback: render static content
-    renderChangelogStatic(); renderBugsStatic(); renderPaywayStatic();
-  }
-}
-
-function dlTab(tab){
-  document.querySelectorAll('.dl-tab').forEach(el=>el.classList.toggle('on', el.dataset.t===tab));
-  document.querySelectorAll('.dl-panel').forEach(el=>el.classList.toggle('on', el.id==='dl-'+tab));
-}
-
-function renderChangelog(changelog){
-  if(!changelog) return;
-  document.getElementById('dl-changelog-body').innerHTML = changelog.map(v=>`
-    <div class="version-block">
-      <div class="version-head">
-        <span class="version-badge">v${e(v.version)}</span>
-        <span class="version-date">${e(v.date)}</span>
-      </div>
-      <div class="version-items">${v.items.map(item=>{
-        const icon = item.startsWith('FIX')?'🔧':item.startsWith('NEW')?'✨':'📝';
-        return `<div class="version-item"><span class="vi-dot">${icon}</span><span>${e(item)}</span></div>`;
-      }).join('')}</div>
-    </div>`).join('');
-}
-
-function renderBugs(bugs){
-  if(!bugs) return;
-  const pCls = p=>p.includes('Critical')?'priority-critical':p.includes('High')?'priority-high':p.includes('Medium')?'priority-medium':'priority-low';
-  document.getElementById('dl-bugs-body').innerHTML = `
-    <div class="sec" style="margin-bottom:20px">
-      <div class="sec-h"><span class="sec-t">✅ Fixed Bugs</span><span class="bdg b-g">${bugs.fixed.length} fixed</span></div>
-      <div style="overflow-x:auto">
-        <table class="bug-tbl"><thead><tr><th>ID</th><th>Priority</th><th>Description</th><th>Root Cause</th><th>File</th><th>Fix</th></tr></thead>
-        <tbody>${bugs.fixed.map(b=>`<tr>
-          <td><code style="font-size:11px">${e(b.id)}</code></td>
-          <td><span class="err-tag ${pCls(b.priority)}">${e(b.priority)}</span></td>
-          <td>${e(b.desc)}</td><td style="color:var(--muted);font-size:11px">${e(b.cause)}</td>
-          <td><code style="font-size:11px;color:var(--p)">${e(b.file)}</code></td>
-          <td style="font-size:11px">${e(b.fix)}</td>
-        </tr>`).join('')}</tbody></table>
-      </div>
-    </div>
-    <div class="sec">
-      <div class="sec-h"><span class="sec-t">🟡 Known Issues</span><span class="bdg b-a">${bugs.known.length} pending</span></div>
-      <div style="overflow-x:auto">
-        <table class="bug-tbl"><thead><tr><th>ID</th><th>Priority</th><th>Description</th><th>File</th><th>Status</th></tr></thead>
-        <tbody>${bugs.known.map(b=>`<tr>
-          <td><code style="font-size:11px">${e(b.id)}</code></td>
-          <td><span class="err-tag ${pCls(b.priority)}">${e(b.priority)}</span></td>
-          <td>${e(b.desc)}</td>
-          <td><code style="font-size:11px;color:var(--p)">${e(b.file)}</code></td>
-          <td style="font-size:11px;color:var(--muted)">${e(b.status)}</td>
-        </tr>`).join('')}</tbody></table>
-      </div>
-    </div>`;
-}
-
-function renderPayway(pw){
-  if(!pw) return;
-  document.getElementById('dl-payway-body').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px">
-      <div class="phase-card green"><strong>Phase 1 — CURRENT</strong><br><span style="font-size:12px">${e(pw.currentPhase)}</span></div>
-      <div class="phase-card amber"><strong>Phase 2 — NEXT</strong><br><span style="font-size:12px">${e(pw.nextPhase)}</span></div>
-    </div>
-    <div class="sec" style="margin-bottom:16px">
-      <div class="sec-h"><span class="sec-t">🔗 Developer Resources</span></div>
-      <div class="sec-b" style="display:flex;gap:10px;flex-wrap:wrap">
-        <a class="btn btn-o" href="${e(pw.portalUrl)}" target="_blank">📖 Developer Portal</a>
-        <a class="btn btn-o" href="${e(pw.registerUrl)}" target="_blank">📝 Register Sandbox</a>
-      </div>
-    </div>
-    <div class="sec" style="margin-bottom:16px">
-      <div class="sec-h"><span class="sec-t">API Endpoints (for our use case)</span></div>
-      <div style="padding:4px">
-        ${pw.endpoints.map(ep=>`
-        <div class="api-card">
-          <div class="api-head">
-            <span class="api-method">${e(ep.method)}</span>
-            <span class="api-path">${e(ep.path)}</span>
-            <span style="font-size:13px;font-weight:600;margin-left:4px">${e(ep.name)}</span>
-          </div>
-          <div class="api-body"><span style="font-size:12px;color:var(--muted)">${e(ep.note)}</span></div>
-        </div>`).join('')}
-      </div>
-    </div>
-    <div class="sec">
-      <div class="sec-h"><span class="sec-t">Apps Script: Check Transaction Example</span></div>
-      <div class="api-body">
-        <div class="code-block"><span class="cmt">// Call /check-transaction-2 from Apps Script</span>
-<span class="kw">function</span> <span class="fn">checkPayWayTransaction</span>(tranId) {
-  <span class="kw">const</span> cfg     = SheetsModule.getSettings();
-  <span class="kw">const</span> reqTime = Utilities.formatDate(<span class="kw">new</span> Date(), <span class="str">'GMT+7'</span>, <span class="str">'yyyyMMddHHmmss'</span>);
-  <span class="kw">const</span> params  = {
-    req_time:    reqTime,
-    merchant_id: cfg.payWayMerchantID,
-    tran_id:     tranId,
-    hash:        <span class="str">''</span> <span class="cmt">// computed below</span>
-  };
-  params.hash = computePayWayHash(params, cfg.payWayApiKey);
-  
-  <span class="kw">const</span> url  = <span class="str">'https://checkout.payway.com.kh/api/payment-gateway/v1/payments/check-transaction-2'</span>;
-  <span class="kw">const</span> resp = UrlFetchApp.fetch(url, {
-    method: <span class="str">'post'</span>,
-    contentType: <span class="str">'application/json'</span>,
-    payload: JSON.stringify(params),
-    muteHttpExceptions: <span class="kw">true</span>
-  });
-  <span class="kw">const</span> data = JSON.parse(resp.getContentText());
-  <span class="cmt">// data.data.payment_status === 'APPROVED'</span>
-  <span class="cmt">// data.data.apv  ← use for Payment_Ledger</span>
-  <span class="cmt">// data.data.total_amount ← verify amount</span>
-  <span class="kw">return</span> data;
-}</div>
-      </div>
-    </div>`;
-}
-
-function renderFeatures(features){
-  if(!features) return;
-  document.getElementById('dl-features-body').innerHTML = `
-    <div class="sec">
-      <div class="sec-h"><span class="sec-t">Feature Log</span><span style="font-size:12px;color:var(--muted)">${features.filter(f=>f.status.includes('✅')).length} done / ${features.length} total</span></div>
-      <div style="overflow-x:auto">
-        <table class="bug-tbl"><thead><tr><th>Version</th><th>Feature</th><th>File</th><th>Status</th></tr></thead>
-        <tbody>${features.map(f=>`<tr>
-          <td><span class="version-badge" style="font-size:10px">${e(f.version)}</span></td>
-          <td>${e(f.feature)}</td>
-          <td><code style="font-size:11px;color:var(--p)">${e(f.file)}</code></td>
-          <td>${f.status.includes('✅')?`<span class="bdg b-g">${e(f.status)}</span>`:f.status.includes('🔄')?`<span class="bdg b-a">${e(f.status)}</span>`:`<span class="bdg b-x">${e(f.status)}</span>`}</td>
-        </tr>`).join('')}</tbody></table>
-      </div>
-    </div>`;
-}
-
-function renderRoadmap(roadmap){
-  if(!roadmap) return;
-  document.getElementById('dl-roadmap-body').innerHTML = roadmap.map(r=>`
-    <div class="roadmap-week">
-      <div class="rw-head">
-        <span class="rw-badge">Week ${e(r.week)}</span>
-        <span>${e(r.title)}</span>
-      </div>
-      <div class="rw-body">${r.tasks.map(t=>`
-        <div class="rw-task">
-          <span style="flex-shrink:0">${t.startsWith('✅')?'✅':t.startsWith('🔄')?'🔄':'⬜'}</span>
-          <span style="font-size:13px">${e(t.replace(/^[✅🔄⬜]\s*/,''))}</span>
-        </div>`).join('')}
-      </div>
-    </div>`).join('');
-}
-
-function renderAIPrompt(prompt){
-  if(!prompt) return;
-  document.getElementById('dl-ai-body').innerHTML = `
-    <div class="sec">
-      <div class="sec-h">
-        <span class="sec-t">🤖 AI Continuation Prompt</span>
-        <button class="btn btn-o" onclick="copyAIPrompt()" style="height:28px;font-size:12px">📋 Copy</button>
-      </div>
-      <div class="sec-b">
-        <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Paste this at the start of any new AI session to continue development without re-explaining the system.</p>
-        <div class="ai-prompt" id="ai-prompt-txt">${e(prompt)}</div>
-      </div>
-    </div>`;
-}
-
-function copyAIPrompt(){
-  const el = document.getElementById('ai-prompt-txt');
-  if(!el) return;
-  navigator.clipboard.writeText(el.textContent).then(()=>toast('Prompt copied!','success')).catch(()=>{ const ta=document.createElement('textarea'); ta.value=el.textContent; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('Prompt copied!','success'); });
-}
-
-async function saveDevLog(){
-  const btn=document.getElementById('btn-save-doc');
-  if(btn){ btn.disabled=true; btn.textContent='Saving…'; }
-  try{
-    const result = { success: false, message: 'DevLog removed' };
-    if(result && result.success){ toast('✅ Saved to Google Doc!','success'); }
-    else{ toast('⚠️ Save failed: '+(result&&result.message||'Check Apps Script logs'),'error'); }
-  }catch(err){ toast('Error: '+err.message,'error'); }
-  finally{ if(btn){ btn.disabled=false; btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>Save to Google Doc'; } }
-}
-
-// Fallback static renders when not connected to GAS
-function renderChangelogStatic(){ document.getElementById('dl-changelog-body').innerHTML='<div class="sec"><div class="sec-b"><p style="color:var(--muted);font-size:13px">Connect to Google Apps Script to load changelog from DevLog.gs</p></div></div>'; }
-function renderBugsStatic(){ document.getElementById('dl-bugs-body').innerHTML='<div class="sec"><div class="sec-b"><p style="color:var(--muted);font-size:13px">Connect to Google Apps Script to load bug registry from DevLog.gs</p></div></div>'; }
-function renderPaywayStatic(){
-  document.getElementById('dl-payway-body').innerHTML=`
-    <div class="sec">
-      <div class="sec-h"><span class="sec-t">ABA PayWay Developer Resources</span></div>
-      <div class="sec-b" style="display:flex;gap:10px;flex-wrap:wrap">
-        <a class="btn btn-p" href="https://developer.payway.com.kh" target="_blank">📖 Developer Portal</a>
-        <a class="btn btn-o" href="https://sandbox.payway.com.kh/register-sandbox/" target="_blank">📝 Register Sandbox</a>
-        <a class="btn btn-o" href="https://developer.payway.com.kh/check-transaction-14530826e0" target="_blank">Check Transaction API</a>
-        <a class="btn btn-o" href="https://developer.payway.com.kh/qr-api-14530840e0" target="_blank">QR API</a>
-        <a class="btn btn-o" href="https://developer.payway.com.kh/payment-link-3158157f0" target="_blank">Payment Link API</a>
-      </div>
-    </div>`;
-}
+function cm(h) { const m={}; h.forEach((k,i)=>m[String(k).trim()]=i); return m; }
+function s(r,hm,col) { const i=hm[col]; return i!==undefined?String(r[i]||'').trim():''; }
+function e(v) { return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function t(v,n) { v=String(v||''); return v.length>n?v.slice(0,n)+'…':v; }
+function pd(v) { if (!v) return null; if (v instanceof Date) return v; const m=String(v).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/); if (m) return new Date(+m[3],+m[2]-1,+m[1]); return new Date(v); }
+function sBdg(v) { const tl=String(v||'').toLowerCase(); if(tl.includes('complet'))return`<span class="bdg b-g">${v}</span>`;if(tl.includes('approv'))return`<span class="bdg b-b">${v}</span>`;if(tl.includes('cancel'))return`<span class="bdg b-r">${v}</span>`;return`<span class="bdg b-a">${v||'Pending'}</span>`; }
+function pBdg(v) { const tl=String(v||'').toLowerCase(); if(tl.includes('paid')&&!tl.includes('⚠'))return`<span class="bdg b-g">Paid</span>`;if(tl.includes('⚠'))return`<span class="bdg b-a">Partial</span>`;if(tl.includes('cod'))return`<span class="bdg b-i">${v}</span>`;return`<span class="bdg b-x">${t(v,14)||'—'}</span>`; }
+function sstBdg(v) { const tl=String(v||'').toLowerCase(); if(tl.includes('out'))return`<span class="bdg b-r">Out of Stock</span>`;if(tl.includes('low'))return`<span class="bdg b-a">Low Stock</span>`;if(tl.includes('in'))return`<span class="bdg b-g">In Stock</span>`;return`<span class="bdg b-x">${v||'—'}</span>`; }
 
 // ═══════════════════════════════════════════════════════════
-// BOOT — wait for DOM before checking auth to prevent blank screen
+// BOOT
 // ═══════════════════════════════════════════════════════════
-if(document.readyState==='loading'){
+if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', chkAuth);
 } else {
   chkAuth();
