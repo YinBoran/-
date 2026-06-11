@@ -1023,9 +1023,10 @@ function pushNotif(title,body){
 function doLogout(){
   stopPoll();clearSession();
   shipperData=null;allOrders=[];orders=[];lastCount=-1;_pwVisible=false;
-  document.getElementById('hdr-actions').style.display='none';
-  document.getElementById('pending-count').textContent='0';
-  closeProfile();showPhoneLogin();
+  const ha=document.getElementById('hdr-actions');if(ha)ha.style.display='none';
+  const pc=document.getElementById('pending-count');if(pc)pc.textContent='0';
+  _view='main';
+  showPhoneLogin();
 }
 
 async function loadOrders(){
@@ -1596,8 +1597,15 @@ function openExternalLink(url){
 }
 
 function showAlert(msg){
-  document.getElementById('new-alert-txt').textContent=sanitizeStr(msg);
-  document.getElementById('new-alert').classList.remove('hidden');
+  const alertTxt=document.getElementById('new-alert-txt');
+  const alertEl=document.getElementById('new-alert');
+  if(!alertTxt||!alertEl){
+    // new-alert lives inside renderMain(); if we're on another view, just show a toast
+    showToast('🔔 '+sanitizeStr(msg));
+    return;
+  }
+  alertTxt.textContent=sanitizeStr(msg);
+  alertEl.classList.remove('hidden');
   try{
     const ctx=new AudioContext();const osc=ctx.createOscillator();const gain=ctx.createGain();
     osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=520;
@@ -2286,10 +2294,12 @@ function openOrderSteps(profileId){
   _saveStepState();
 }
 function closeStepSheet(){
-  document.getElementById('step-overlay').classList.remove('on');
+  const ov=document.getElementById('step-overlay');
+  if(ov)ov.classList.remove('on');
   document.body.style.overflow='';
   document.body.style.touchAction='';
   _clearStepState();
+  if(_view==='order-detail')setView('main');
 }
 function closeStepBg(ev){}
 
