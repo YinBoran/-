@@ -1,8 +1,8 @@
 # Create shop/manifest.json:
 {
-  "name": "YB Shop",
+  "name": "Srok Khmer",
   "short_name": "YB",
-  "start_url": "/shop/",
+  "start_url": "/fullscreen/",
   "display": "standalone",
   "background_color": "#0f0f0f",
   "theme_color": "#0f0f0f",
