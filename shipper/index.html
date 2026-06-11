@@ -2900,8 +2900,11 @@ async function openKHQRPopup(bankId){
   const qa=document.getElementById('khqr-qr-area');
   const localQR=KHQR_IMGS[bankId]||'';
   if(localQR&&qa){
-    qa.innerHTML='<img src="'+localQR+'" style="width:100%;height:100%;object-fit:contain;border-radius:9px" '
-      +'onerror="this.parentElement.innerHTML='<span style=font-size:56px>🔳</span>'">';
+    const _img=new Image();
+    _img.style.cssText='width:100%;height:100%;object-fit:contain;border-radius:9px';
+    _img.onload=()=>{qa.innerHTML='';qa.appendChild(_img);};
+    _img.onerror=()=>{qa.innerHTML='<span style="font-size:56px">🔳</span>';};
+    _img.src=localQR;
   }
 
   // ── Notify backend (PayWay group) in background ─────────────
