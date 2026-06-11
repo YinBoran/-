@@ -1146,7 +1146,10 @@ function getLocalPhoto(){try{return localStorage.getItem('yb_shipper_photo')||''
 // ── BOOT ──────────────────────────────────────────────────
 const saved=loadSession();
 if(tgId){
-  gs('handleShipperLogin',tgId)
+  Promise.race([
+    gs('handleShipperLogin',tgId),
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000))
+  ])
     .then(d=>{if(d.error){saved?bootWithData(saved):showPhoneLogin();}else{saveSession(d);bootWithData(d);}})
     .catch(()=>{saved?bootWithData(saved):showPhoneLogin();});
 }else{saved?bootWithData(saved):showPhoneLogin();}
@@ -1236,7 +1239,10 @@ async function loadOrders(){
   document.getElementById('root').innerHTML=
     '<div class="loading"><div class="spinner"></div>កំពុងផ្ទើកទិន្ន័យ...</div>';
   try{
-    const r=await gs('handleShipperOrders',shipperData?.phone||'');
+    const r=await Promise.race([
+      gs('handleShipperOrders',shipperData?.phone||''),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout — សូម retry')),12000))
+    ]);
     if(!Array.isArray(r)){if(r&&r.error)throw new Error(r.error);throw new Error('Invalid response');}
     allOrders=r;visibleCount=CHUNK;applyFilter();startPoll();
   }catch(err){showError('Load failed: '+sanitizeStr(err.message));}
