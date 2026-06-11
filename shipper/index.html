@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
-<title>YB Shipper</title>
+<title>YB Shop</title>
 <style>
 :root {
   --bg:#0f0f0f; --surface:#1a1a1a; --card:#222; --border:#333;
@@ -665,6 +665,33 @@ body{
 .alert-msg{font-size:17px;font-weight:700;color:var(--text);line-height:1.4;margin:10px 0 18px}
 .alert-ok{padding:12px 36px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer}
 
+
+/* ── TikTok media grid ─────────────────────────────────────── */
+.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.media-cell{aspect-ratio:1/1;background:var(--card);overflow:hidden;
+  position:relative;cursor:pointer}
+.media-cell img,.media-cell video{width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity .3s}
+.media-cell img.loaded,.media-cell video.loaded{opacity:1}
+.media-cell-play{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-size:22px;background:rgba(0,0,0,.25);
+  opacity:0;transition:opacity .2s}
+.media-cell:active .media-cell-play{opacity:1}
+.media-cell-views{position:absolute;bottom:4px;left:5px;font-size:10px;
+  font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+/* ── Media fullscreen viewer ───────────────────────────────── */
+.media-viewer{position:fixed;inset:0;background:#000;z-index:600;
+  display:flex;flex-direction:column;opacity:0;pointer-events:none;
+  transition:opacity .2s}
+.media-viewer.on{opacity:1;pointer-events:all}
+.media-viewer-hd{position:absolute;top:0;left:0;right:0;padding:max(env(safe-area-inset-top,16px),16px) 16px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(rgba(0,0,0,.5),transparent);z-index:1}
+.media-viewer-close{color:#fff;font-size:22px;background:none;border:none;cursor:pointer;
+  width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+.media-viewer-content{flex:1;display:flex;align-items:center;justify-content:center}
+.media-viewer-content img{max-width:100%;max-height:100%;object-fit:contain}
+
 /* ── Skeleton shimmer loader ────────────────────────────── */
 @keyframes shimmer{from{background-position:-400px 0}to{background-position:400px 0}}
 .skel{background:linear-gradient(90deg,var(--card) 25%,var(--surface) 50%,var(--card) 75%);
@@ -735,10 +762,10 @@ body.light-mode{
 .lc .spinner{width:36px;height:36px;border:3px solid var(--border);
   border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 /* ── Nav menu (bottom sheet) ─────────────────────────────────── */
-.nav-ov{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.6);
+.nav-ov{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);
   opacity:0;pointer-events:none;transition:opacity .22s}
 .nav-ov.on{opacity:1;pointer-events:all}
-.nav-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--surface);
+.nav-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--surface);z-index:10000;
   border-radius:22px 22px 0 0;padding:0 0 max(env(safe-area-inset-bottom,16px),16px);
   transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:501}
 .nav-ov.on .nav-sheet{transform:none}
@@ -937,6 +964,10 @@ body.light-mode{
   </div>
 </div>
 <script>
+
+// ── App URLs ─────────────────────────────────────────────────
+const APP_URL     = 'https://yinboran.github.io/shop/';
+const CATALOG_URL = 'https://yinboran.github.io/s/'+(typeof STORE!=='undefined'?STORE:'yb9999');
 // ── Safe Telegram init (works in TG WebApp + iPhone Safari) ──
 const tg = window.Telegram?.WebApp ?? {
   expand:()=>{}, setHeaderColor:()=>{}, setBackgroundColor:()=>{},
@@ -1099,7 +1130,7 @@ function showPhoneLogin(){
   document.getElementById('root').innerHTML=`
     <div style="height:100dvh;background:#0f0f0f;display:flex;align-items:center;justify-content:center;padding:20px;padding-top:env(safe-area-inset-top)">
       <div class="login-box">
-        <h3>🚚 YB Shipper Login</h3>
+        <h3>🚚 YB Shop Login</h3>
         <p>Phone + Password</p>
         <input id="phone-inp" class="login-input" type="tel"
           placeholder="Ex: 0769999380" maxlength="${PH_MAX}" autocomplete="tel"
@@ -1205,7 +1236,7 @@ function startPoll(){
       const newP=fresh.filter(o=>!isCompleted(o)).length;
       if(lastCount>=0&&newP>lastCount){
         showAlert(`មានការដឹកថ្មី +${newP-lastCount}`);
-        pushNotif('🚚 YB Shipper',`មានការដឹកថ្មី +${newP-lastCount}`);
+        pushNotif('🚚 YB Shop',`មានការដឹកថ្មី +${newP-lastCount}`);
         try{tg.HapticFeedback.notificationOccurred('warning');}catch(_){}
       }
       lastCount=newP;allOrders=fresh;applyFilter();
@@ -1304,7 +1335,7 @@ function renderList(list){
         <div class="card-icon">📦</div>
         <div class="card-body">
           <span class="card-name">${e(o.name||'FB User')}</span>
-          <div class="card-phone" onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" style="cursor:pointer">📞 ${e(o.phone||'—')}</div>
+          <div class="card-phone">📞 <span onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" style="cursor:pointer;text-decoration:underline;text-underline-offset:2px">${e(o.phone||'—')}</span></div>
           <div class="card-loc">📍 ${e(o.location||'—')}</div>
           <div class="card-item">🏷️ ${e((o.ordered||'—').substring(0,42))}${(o.ordered||'').length>42?'…':''}</div>
         </div>
@@ -1317,7 +1348,7 @@ function renderList(list){
           <div class="card-date">${fmtDate(o.orderDate)}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
-          <button class="btn-call" onclick="event.stopPropagation();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" >📞</button>
+          <button class="btn-call" onclick="event.stopPropagation();event.preventDefault();callPhone('${e((o.phone||'').replace(/\D/g,''))}')" >📞</button>
           ${done
             ?`<div class="btn-done">✅ ${e(o.receiveDate||'ដឹកដល់')}</div>`
             :`<button class="btn-deliver"
@@ -1655,11 +1686,22 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
 </div>
 <script>document.fonts?document.fonts.ready.then(()=>setTimeout(window.print,350)):setTimeout(window.print,900);<\/script>
 
+
+<!-- MEDIA FULLSCREEN VIEWER -->
+<div class="media-viewer" id="media-viewer">
+  <div class="media-viewer-hd">
+    <button class="media-viewer-close" onclick="closeMediaViewer()">✕</button>
+    <div style="color:#fff;font-size:13px;font-weight:600" id="media-viewer-title"></div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="media-viewer-content" id="media-viewer-content"></div>
+</div>
+
 <!-- NAV MENU -->
 <div class="nav-ov" id="nav-ov" onclick="if(event.target===this)closeNavMenu()">
   <div class="nav-sheet" id="nav-sheet">
     <div class="nav-handle"></div>
-    <div class="nav-title">YB Shipper</div>
+    <div class="nav-title">YB Shop</div>
     <div class="nav-item" onclick="closeNavMenu();setView('profile')">
       <div class="nav-item-ico" style="background:rgba(240,165,0,.15)">👤</div>
       <div><div class="nav-item-lbl">Account</div><div class="nav-item-sub" id="nav-user-name">—</div></div>
@@ -1737,30 +1779,23 @@ async function _openProfileOLD(){
         <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.total)||0}</div><div class="pp-stat-lbl">📦 សរុប</div></div>
       </div>
       <div class="pp-divider"></div>
-      <button class="pp-logout" onclick="doLogout()">🚪 Logout</button>`;
   }catch(_){
     const ini=(shipperData?.name||'S').charAt(0).toUpperCase();
     const lp=getLocalPhoto();
-    el.innerHTML=`
-      <div class="pp-avatar-wrap" onclick="triggerPhotoUpload()">
-        <div class="pp-avatar">
-          ${lp?`<img src="${lp}">`:`<span>${ini}</span>`}
-          <div class="pp-avatar-cam">📷</div>
-        </div>
-        <div class="pp-change-photo">Change photo</div>
-      </div>
-      <input type="file" id="photo-file-inp" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-      <div class="pp-info">
-        <div class="pp-name">${e(shipperData?.name||'Shipper')}</div>
-        <div class="pp-username">${e(shipperData?.phone||'')}</div>
-      </div>
-      <div class="pp-stats">
-        <div class="pp-stat"><div class="pp-stat-num">—</div><div class="pp-stat-lbl">✅ ដឹកបាន</div></div>
-        <div class="pp-stat"><div class="pp-stat-num">—</div><div class="pp-stat-lbl">🚚 កំពុងដឹក</div></div>
-        <div class="pp-stat"><div class="pp-stat-num">—</div><div class="pp-stat-lbl">📦 សរុប</div></div>
-      </div>
-      <div class="pp-divider"></div>
-      <button class="pp-logout" onclick="doLogout()">🚪 Logout</button>`;
+    const avHtml=lp?('<img src="'+lp+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">')
+                   :('<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:38px;font-weight:700;color:#000">'+ini+'</span>');
+    el.innerHTML='<div class="pp-avatar-wrap" onclick="triggerPhotoUpload()">'+
+      '<div class="pp-avatar" style="position:relative">'+avHtml+
+      '<div class="pp-avatar-cam" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:5px;font-size:16px;color:#fff">📷</div>'+
+      '</div><div class="pp-change">Change photo</div></div>'+
+      '<input type="file" id="photo-file-inp" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">'+
+      '<div class="pp-info"><div class="pp-name">'+e(shipperData?.name||'Shipper')+'</div>'+
+      '<div class="pp-username">'+e(shipperData?.phone||'')+'</div></div>'+
+      '<div class="pp-stats">'+
+      '<div class="pp-stat"><div class="pp-stat-num">0</div><div class="pp-stat-lbl">✅ ដឹកបាន</div></div>'+
+      '<div class="pp-stat"><div class="pp-stat-num">0</div><div class="pp-stat-lbl">🚚 កំពុងដឹក</div></div>'+
+      '<div class="pp-stat"><div class="pp-stat-num">'+allOrders.length+'</div><div class="pp-stat-lbl">📦 សរុប</div></div>'+
+      '</div><div class="pp-divider"></div>';
   }
 }
 function triggerPhotoUpload(){document.getElementById('photo-file-inp')?.click();}
@@ -1775,7 +1810,7 @@ function handlePhotoUpload(ev){
     const avImg=document.getElementById('pp-av-img');if(avImg){avImg.src=durl;avImg.style.display='';}
     const avIni=document.getElementById('pp-av-ini');if(avIni)avIni.style.display='none';
     const miniAv=document.getElementById('mini-av');
-    if(miniAv)miniAv.innerHTML=`<img src="${durl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    if(miniAv)miniAv.innerHTML='<img src="'+durl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">';
     showToast('✅ Photo updated!');
   };
   r.readAsDataURL(file);
@@ -1802,7 +1837,7 @@ function showAlert(msg){
     gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.6);
     osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.6);
   }catch(_){}
-  pushNotif('🚚 YB Shipper',sanitizeStr(msg));
+  pushNotif('🚚 YB Shop',sanitizeStr(msg));
 }
 function dismissAlert(){
   document.getElementById('new-alert').classList.add('hidden');
@@ -2365,8 +2400,16 @@ function renderMain() {
   // ── Smart update: if header already exists, only swap orders list ──
   // This preserves search input focus (Fix #5)
   if(document.getElementById('main-hdr')) {
+    // Update badge
     const pc = document.getElementById('pending-count');
     if(pc) pc.textContent = pending.length;
+    // Update tab active state
+    document.querySelectorAll('.tab').forEach(t=>{
+      const txt=t.textContent||'';
+      if(txt.includes('រង់ចាំ'))   t.className='tab'+(activeTab==='pending'  ?' active':'');
+      if(txt.includes('ដឹកដល់'))   t.className='tab'+(activeTab==='completed'?' active':'');
+    });
+    // Update list only
     const ol = document.getElementById('orders-list');
     if(ol) { ol.innerHTML = renderList(listToRender); return; }
   }
@@ -2396,8 +2439,8 @@ function renderMain() {
 function _buildMainHeader(){
   return `<div class="hdr" id="main-hdr">
     <div class="hdr-logo" onclick="openNavMenu()">YB</div>
-    <div class="hdr-info" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <h1>YB Shipper</h1><p id="hdr-sub"></p>
+    <div class="hdr-info" onclick="_searchAll?clearSearch():window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer">
+      <h1>YB Shop</h1><p id="hdr-sub"></p>
     </div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px" id="hdr-actions">
       <input class="hdr-search" id="hdr-search-inp" placeholder="🔍 ស្វែងរក..."
@@ -2511,10 +2554,9 @@ async function _loadProfileContent(){
         <div class="pp-stat"><div class="pp-stat-num">${parseInt(p.stats?.total)||0}</div><div class="pp-stat-lbl">📦 សរុប</div></div>
       </div>
       <div class="pp-section-ttl">📷 Photos & Videos</div>
-      <div class="pp-grid" id="pp-grid"></div>
-      <div class="pp-sentinel" id="pp-sentinel">⏳</div>
+      <div id="pp-grid"></div>
+      <div class="pp-sentinel" id="pp-sentinel"></div>
       <div style="height:1px;background:var(--border);margin:16px 0 0"></div>
-      <button class="pp-logout" onclick="doLogout()">🚪 Logout</button>`;
     _ppPhotoOffset = 0;
     _loadProfilePhotos();
   } catch(_) {
@@ -2534,22 +2576,10 @@ async function _loadProfilePhotos() {
     const sentinel = document.getElementById('pp-sentinel');
     if(!grid) return;
     if(photos.length) {
-      photos.forEach(ph => {
-        const item = document.createElement('div');
-        item.className = 'pp-grid-item';
-        if(ph.url) {
-          const img = document.createElement('img');
-          img.src = ph.url;
-          img.onload = () => img.classList.add('loaded');
-          img.onerror = () => { item.innerHTML = ph.emoji||'📷'; };
-          item.appendChild(img);
-        } else {
-          item.innerHTML = ph.emoji||'📷';
-        }
-        grid.appendChild(item);
-      });
+      _mediaItems = photos;
+      grid.innerHTML = buildMediaGrid(photos);
       _ppPhotoOffset += photos.length;
-      if(sentinel && photos.length < 6) { sentinel.textContent = '— ចប់ —'; return; }
+      if(sentinel && photos.length < 6) { sentinel.textContent = ''; return; }
     } else {
       if(sentinel) sentinel.textContent = '';
       return;
@@ -2657,7 +2687,7 @@ function _renderCatalogGrid(){
       <div class="cat-prod-img">${hasImg?`<img src="${e(p.image_url)}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.style.display='none'">`:'<span>📦</span>'}</div>
       <div class="cat-prod-info">
         <div class="cat-prod-name">${e(p.name||'—')}</div>
-        <div class="cat-prod-price">${fmtPrice(p.price)}</div>
+        <div class="cat-prod-price" style="background:linear-gradient(135deg,#f0a500,#e05c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-size:18px;font-weight:800">${fmtPrice(p.price)}</div>
         <div class="cat-prod-stock">✓ ${inStock?'មានស្ថុក':'អស់'}</div>
         <button class="cat-add-btn" onclick="event.stopPropagation();_catAddToCart(${JSON.stringify(JSON.stringify(p))})">
           + ដាក់ក្នុងត្រន
@@ -2682,11 +2712,62 @@ function bindCatalogScroll(){}
 function shareCatalogLink() {
   const slug = typeof STORE!=='undefined'?STORE:'yb9999';
   const url  = 'https://yinboran.github.io/s/'+slug;
-  try { navigator.clipboard.writeText(url).then(()=>showToast('✅ Link copied!')); }
-  catch(_) { showToast(url); }
+  // Use native share sheet if available (mobile)
+  if(navigator.share){
+    navigator.share({
+      title: 'YB Shop Catalog',
+      text : 'ចូលមើលផលិតផលរបស់ YB Shop 🛍️',
+      url  : url
+    }).catch(()=>{});
+    return;
+  }
+  // Fallback: copy to clipboard
+  try {
+    navigator.clipboard.writeText(url).then(()=>showToast('✅ Link copied: '+url));
+  } catch(_) {
+    showToast(url);
+  }
 }
 // ════════════════════════════════════════════════════════════
 // END VIEW SYSTEM
+
+// ── Media grid builder (TikTok style) ────────────────────────
+function buildMediaGrid(items){
+  if(!items||!items.length) return '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">គ្មានរូប/វីដេអូ</div>';
+  return '<div class="media-grid">'+items.map((item,i)=>{
+    const isVideo=item.type==='video'||String(item.url||'').match(/\.(mp4|mov|webm)/i);
+    return `<div class="media-cell" onclick="openMediaViewer(${i})">
+      ${isVideo
+        ?`<video src="${e(item.url)}" muted playsinline preload="none"
+           onloadeddata="this.classList.add('loaded')"></video>
+           <div class="media-cell-play">▶</div>`
+        :`<img src="${e(item.url)}" loading="lazy" onload="this.classList.add('loaded')">`}
+      ${item.views?`<div class="media-cell-views">▶ ${item.views}</div>`:''}
+    </div>`;
+  }).join('')+'</div>';
+}
+let _mediaItems=[];
+function openMediaViewer(idx){
+  const item=_mediaItems[idx];if(!item)return;
+  const viewer=document.getElementById('media-viewer');
+  const content=document.getElementById('media-viewer-content');
+  const title=document.getElementById('media-viewer-title');
+  if(!viewer||!content)return;
+  const isVideo=item.type==='video'||String(item.url||'').match(/\.(mp4|mov|webm)/i);
+  content.innerHTML=isVideo
+    ?`<video src="${e(item.url)}" controls autoplay playsinline
+       style="max-width:100%;max-height:90vh"></video>`
+    :`<img src="${e(item.url)}" style="max-width:100%;max-height:90vh;object-fit:contain">`;
+  if(title) title.textContent=(item.name||'')+'  '+(idx+1)+'/'+_mediaItems.length;
+  viewer.classList.add('on');
+  try{tg.HapticFeedback.impactOccurred('light');}catch(_){}
+}
+function closeMediaViewer(){
+  document.getElementById('media-viewer')?.classList.remove('on');
+  // Stop any playing video
+  document.querySelector('#media-viewer-content video')?.pause();
+}
+
 
 // ── Nav Menu ─────────────────────────────────────────────────
 let _isDark = true;
