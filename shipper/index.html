@@ -17,26 +17,25 @@
   --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
   --text:#f0f0f0; --muted:#888;
   --font:'Segoe UI',system-ui,sans-serif;
-  --hdr-h:64px;
-  --sat:env(safe-area-inset-top,0px);
+  --hdr-h:56px;
+  /* --sat: resolved at runtime — DO NOT hard-code here.
+     Use env(safe-area-inset-top) directly in every calc() below. */
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-/* FIX 1: body padding-top ត្រឹមត្រូវ */
 body{
   background:var(--bg);color:var(--text);font-family:var(--font);
   min-height:100vh;padding-bottom:80px;
-  padding-top:calc(var(--hdr-h) + var(--sat));
+  padding-top:calc(var(--hdr-h) + env(safe-area-inset-top,0px));
 }
 
-/* FIX 1: header — extends behind Dynamic Island */
 .hdr{
   background:#0f0f0f;border-bottom:1px solid var(--border);
   padding:12px 16px;
   display:flex;align-items:center;gap:10px;
   position:fixed;top:0;left:0;right:0;z-index:50;
-  height:calc(var(--hdr-h) + var(--sat));
-  padding-top:calc(12px + var(--sat));
+  height:calc(var(--hdr-h) + env(safe-area-inset-top,0px));
+  padding-top:calc(12px + env(safe-area-inset-top,0px));
   transition:transform .28s ease;will-change:transform;
 }
 .hdr.hdr-hidden{transform:translateY(-100%)}
@@ -131,7 +130,7 @@ body{
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:fixed;inset:0;top:calc(var(--hdr-h) + var(--sat));
+  position:fixed;inset:0;
   gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
 .loading-sm{position:relative;inset:auto;min-height:180px;background:transparent;z-index:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}
@@ -518,11 +517,11 @@ body{
    ==================================================== */
 .step-overlay{position:fixed;inset:0;z-index:160;background:transparent;pointer-events:none;transition:background .3s}
 .step-overlay.on{background:rgba(0,0,0,.82);pointer-events:all}
-.step-sht{position:fixed;top:var(--sat);left:0;right:0;bottom:0;background:var(--bg);border-radius:16px 16px 0 0;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .38s cubic-bezier(0.32,0.72,0,1);z-index:161}
+.step-sht{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);border-radius:0;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .38s cubic-bezier(0.32,0.72,0,1);z-index:161}
 .step-overlay.on .step-sht{transform:none}
 .step-handle{width:36px;height:5px;background:var(--border);border-radius:3px;margin:10px auto 0;flex-shrink:0;touch-action:none;cursor:grab}
-/* indicator */
-.step-ind{display:flex;align-items:center;justify-content:center;padding:11px 20px 2px}
+/* step indicator safe area when fullscreen */
+.step-ind{display:flex;align-items:center;justify-content:center;padding:calc(max(env(safe-area-inset-top,11px),11px)) 20px 2px}
 .si-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .25s;flex-shrink:0}
 .si-dot.active{width:24px;border-radius:4px;background:var(--accent)}
 .si-dot.done{background:var(--green)}
@@ -676,7 +675,7 @@ body{
 .cat-hdr{position:sticky;top:0;z-index:15;
   background:linear-gradient(180deg,rgba(15,15,15,.97),rgba(15,15,15,.85));
   backdrop-filter:blur(8px);
-  padding:calc(10px + var(--sat)) 16px 12px;
+  padding:12px 16px 12px;
   border-bottom:1px solid var(--border);transition:transform .25s ease}
 .cat-hdr.hidden{transform:translateY(-100%)}
 .cat-hdr-row{display:flex;align-items:center;gap:10px}
@@ -722,6 +721,11 @@ body{
 
 <div id="root">
   <div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>
+</div>
+
+<!-- Global alert — persists across all views, outside #root -->
+<div id="global-alert" class="new-order-alert hidden" style="position:fixed;top:0;left:0;right:0;z-index:200;padding-top:calc(10px + var(--sat))" onclick="dismissAlert()">
+  🔔 <span id="global-alert-txt">មានការដឹកថ្មី!</span> — ចុចដើម្បីមើល
 </div>
 
 <div class="toast" id="toast"></div>
@@ -856,8 +860,8 @@ let activeTab    = "pending";
 let codOnly      = false;
 let lastCount    = -1;
 let pollTimer    = null;
-let visibleCount = 9;
-const CHUNK      = 9;
+let visibleCount = 8;
+const CHUNK      = 8;
 let _searchAll   = '';
 let _searchTimer = null;
 let _currentInvId = null;
@@ -919,8 +923,19 @@ function fmtDate(v){
 function callPhone(phone){
   const clean=String(phone||'').replace(/\D/g,'');
   if(!clean)return;
-  try{ tg.openLink('tel:'+clean); }
-  catch(_){ window.location.href='tel:'+clean; }
+  // Try to open in Telegram (opens chat by phone number)
+  try{
+    if(tg&&tg.openTelegramLink){
+      // TG deep link by phone: https://t.me/+PHONENUMBER (international)
+      // Khmer numbers start with 0 → strip leading 0, add 855
+      let intl=clean;
+      if(intl.startsWith('0'))intl='855'+intl.slice(1);
+      tg.openTelegramLink('https://t.me/+'+intl);
+      return;
+    }
+  }catch(_){}
+  // Fallback: tel: link
+  try{window.location.href='tel:'+clean;}catch(_){}
 }
 
 function gs(fn,arg){
@@ -1016,8 +1031,34 @@ function bootWithData(data){
 }
 
 function pushNotif(title,body){
-  if(!('Notification' in window))return;
-  try{if(Notification.permission==='granted')new Notification(title,{body});}catch(_){}
+  // 1. Telegram native notification (works inside TG WebApp on all platforms)
+  try{
+    if(tg&&typeof tg.showPopup==='function'){
+      tg.showPopup({title,message:body,buttons:[{type:'close'}]},()=>{});
+      return;
+    }
+  }catch(_){}
+  // 2. Web Notification API (Safari/Chrome PWA — needs permission)
+  try{
+    if('Notification' in window){
+      if(Notification.permission==='granted'){
+        new Notification(title,{body,icon:'../icon-192.png'});
+      } else if(Notification.permission!=='denied'){
+        Notification.requestPermission().then(p=>{
+          if(p==='granted') new Notification(title,{body,icon:'../icon-192.png'});
+        });
+      }
+    }
+  }catch(_){}
+}
+
+// Request notification permission early (after user gesture — done on boot)
+function _requestNotifPermission(){
+  try{
+    if('Notification' in window && Notification.permission==='default'){
+      Notification.requestPermission();
+    }
+  }catch(_){}
 }
 
 function doLogout(){
@@ -1597,15 +1638,22 @@ function openExternalLink(url){
 }
 
 function showAlert(msg){
-  const alertTxt=document.getElementById('new-alert-txt');
-  const alertEl=document.getElementById('new-alert');
-  if(!alertTxt||!alertEl){
-    // new-alert lives inside renderMain(); if we're on another view, just show a toast
-    showToast('🔔 '+sanitizeStr(msg));
-    return;
+  const safe=sanitizeStr(msg);
+  // Always show in-app alert bar (it lives outside #root — always present)
+  const alertEl=document.getElementById('global-alert');
+  const alertTxt=document.getElementById('global-alert-txt');
+  if(alertEl&&alertTxt){
+    alertTxt.textContent=safe;
+    alertEl.classList.remove('hidden');
+    // Auto-dismiss after 8s if user doesn't tap
+    clearTimeout(alertEl._timer);
+    alertEl._timer=setTimeout(()=>alertEl.classList.add('hidden'),8000);
   }
-  alertTxt.textContent=sanitizeStr(msg);
-  alertEl.classList.remove('hidden');
+  // Also update in-main-view alert if present
+  const inlineEl=document.getElementById('new-alert');
+  const inlineTxt=document.getElementById('new-alert-txt');
+  if(inlineEl&&inlineTxt){inlineTxt.textContent=safe;inlineEl.classList.remove('hidden');}
+  // Sound
   try{
     const ctx=new AudioContext();const osc=ctx.createOscillator();const gain=ctx.createGain();
     osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=520;
@@ -1613,10 +1661,16 @@ function showAlert(msg){
     gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.6);
     osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.6);
   }catch(_){}
-  pushNotif('🚚 YB Shipper',sanitizeStr(msg));
+  // Haptic
+  try{tg.HapticFeedback.notificationOccurred('warning');}catch(_){}
+  // Push notification
+  pushNotif('🚚 YB Shipper',safe);
 }
 function dismissAlert(){
-  document.getElementById('new-alert').classList.add('hidden');
+  const alertEl=document.getElementById('global-alert');
+  if(alertEl)alertEl.classList.add('hidden');
+  const inlineEl=document.getElementById('new-alert');
+  if(inlineEl)inlineEl.classList.add('hidden');
   activeTab='pending';visibleCount=CHUNK;renderAll();
 }
 
@@ -1718,119 +1772,201 @@ async function _loadStk(forceRefresh=false){
 }
 
 // ── Render products grid ──────────────────────────────────
+let _stkTab='all'; // all | low | out
 function _renderStk(){
   const body=document.getElementById('sht-body');
-  const q=_stkSearch.toLowerCase().trim();
-  const list=q?_stk.filter(p=>(p.name||'').toLowerCase().includes(q)):_stk;
-
+  if(!body)return;
   const total=_stk.length;
   const totalQty=_stk.reduce((s,p)=>s+parseInt(p.stock_qty||0),0);
-  const lowCount=_stk.filter(p=>{
-    const qty=parseInt(p.stock_qty||0);
-    const mn=parseInt(p.min_stock||0);
-    return mn>0&&qty<=mn;
-  }).length;
+  const lowList=_stk.filter(p=>{const qty=parseInt(p.stock_qty||0);const mn=parseInt(p.min_stock||0);return mn>0&&qty<=mn&&qty>0;});
+  const outList=_stk.filter(p=>parseInt(p.stock_qty||0)===0);
+  const lowCount=lowList.length+outList.length;
 
-  // gradient pool for no-image cards
+  // Pending orders list
+  const pending=allOrders.filter(o=>!isCompleted(o)).slice(0,10);
+  const linkedHtml=pending.length?`
+    <div class="stk-orders-section">
+      <div class="stk-orders-ttl">📋 Orders រង់ចាំ (${pending.length})</div>
+      ${pending.map(o=>{const isCod=(o.payment||'').toLowerCase().includes('cod');
+        return`<div class="stk-order-row">
+          <div class="stk-order-dot" style="background:${isCod?'var(--accent)':'var(--green)'}"></div>
+          <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;margin-bottom:1px">${e(o.name||'—')}</div>
+          <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🏷️ ${e((o.ordered||'—').substring(0,40))}${(o.ordered||'').length>40?'…':''}</div></div>
+          <div style="text-align:right;flex-shrink:0;padding-left:8px">
+            <div style="font-size:13px;font-weight:700;color:var(--accent)">$${e(o.pricing||o.retail||'—')}</div>
+            <span class="card-badge ${isCod?'badge-cod':'badge-paid'}" style="font-size:10px;display:inline-block;margin-top:2px">${e(o.payment||'COD')}</span>
+          </div>
+        </div>`;}).join('')}
+    </div>`:''
+
+  body.innerHTML=`
+    <div class="stk-stats">
+      <div class="stk-stat"><div class="stk-stat-n">${total}</div><div class="stk-stat-l">ប្រភេទ</div></div>
+      <div class="stk-stat"><div class="stk-stat-n ok">${totalQty}</div><div class="stk-stat-l">ចំនួនសរុប</div></div>
+      <div class="stk-stat"><div class="stk-stat-n ${lowCount>0?'danger':'ok'}">${lowCount}</div><div class="stk-stat-l">⚠️ ជិតអស់</div></div>
+    </div>
+    <!-- Tabs: All / Low / Out -->
+    <div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface)">
+      <div onclick="_setStkTab('all')" style="flex:1;padding:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid ${_stkTab==='all'?'var(--accent)':'transparent'};color:${_stkTab==='all'?'var(--accent)':'var(--muted)'}">📦 ទាំងអស់ (${total})</div>
+      <div onclick="_setStkTab('low')" style="flex:1;padding:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid ${_stkTab==='low'?'#f97316':'transparent'};color:${_stkTab==='low'?'#f97316':'var(--muted)'}">⚠️ ជិតអស់ (${lowList.length})</div>
+      <div onclick="_setStkTab('out')" style="flex:1;padding:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid ${_stkTab==='out'?'var(--red)':'transparent'};color:${_stkTab==='out'?'var(--red)':'var(--muted)'}">🚫 អស់ (${outList.length})</div>
+    </div>
+    <!-- Search bar — stable, never re-rendered by search -->
+    <div class="stk-search-bar">
+      <input class="stk-search-inp" id="stk-search" type="search"
+        placeholder="🔍 ស្វែងរកទំនិញ..."
+        value="${e(_stkSearch)}"
+        oninput="_stkFilter(this.value)"
+        onsearch="_stkFilter(this.value)">
+      <span id="stk-count-badge" style="font-size:11px;color:var(--muted);flex-shrink:0;padding:0 4px"></span>
+      <button class="stk-add-btn" onclick="openAddProduct()" title="បន្ថែមទំនិញ">＋</button>
+      <button onclick="_loadStk(true)" title="Refresh" style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:16px;cursor:pointer;flex-shrink:0">⟳</button>
+    </div>
+    <!-- Grid area — updated by _renderStkGrid without touching search -->
+    <div id="stk-prod-grid"></div>
+    ${linkedHtml}`;
+
+  // Render grid now
+  _renderStkGrid();
+}
+function _setStkTab(t){
+  _stkTab=t;_stkSearch='';
+  const inp=document.getElementById('stk-search');if(inp)inp.value='';
+  // Rebuild tabs highlight only — re-render full stk
+  _renderStk();
+}
+
+// ── Add product popup ─────────────────────────────────────
+function openAddProduct(){
+  // Remove existing popup if any
+  const existing=document.getElementById('add-prod-popup-ov');
+  if(existing)existing.remove();
+  const ov=document.createElement('div');
+  ov.id='add-prod-popup-ov';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:flex;align-items:flex-end;justify-content:center;';
+  ov.innerHTML=`
+    <div style="width:100%;background:var(--surface);border-radius:22px 22px 0 0;padding:0 0 max(env(safe-area-inset-bottom,16px),16px);max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+      <div style="width:36px;height:5px;background:var(--border);border-radius:3px;margin:10px auto 0"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)">
+        <span style="font-size:15px;font-weight:700">➕ បន្ថែមទំនិញថ្មី</span>
+        <button onclick="document.getElementById('add-prod-popup-ov').remove()" style="width:30px;height:30px;background:var(--border);border:none;border-radius:50%;cursor:pointer;color:var(--text);font-size:15px">✕</button>
+      </div>
+      <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">ឈ្មោះទំនិញ <span style="color:var(--red)">*</span></div>
+          <input id="ap-name" class="mv-inp" type="text" placeholder="ឧ. iPhone 15 Pro" maxlength="128">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">ប្រភេទ</div>
+            <input id="ap-cat" class="mv-inp" type="text" placeholder="Electronics">
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">តម្លៃ ($)</div>
+            <input id="ap-price" class="mv-inp" type="number" step="0.01" placeholder="0.00" inputmode="decimal">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">ចំនួន</div>
+            <input id="ap-qty" class="mv-inp" type="number" min="0" placeholder="0" inputmode="numeric">
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Min Stock</div>
+            <input id="ap-min" class="mv-inp" type="number" min="0" placeholder="0" inputmode="numeric">
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Photo URL</div>
+          <input id="ap-img" class="mv-inp" type="url" placeholder="https://...">
+        </div>
+        <button id="ap-submit-btn" onclick="_submitAddProduct()" style="width:100%;padding:15px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px">✅ រក្សាទុក</button>
+      </div>
+    </div>`;
+  ov.addEventListener('click',ev=>{if(ev.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  setTimeout(()=>document.getElementById('ap-name')?.focus(),300);
+}
+
+async function _submitAddProduct(){
+  const name=document.getElementById('ap-name')?.value.trim()||'';
+  if(!name){showToast('❌ ចាំបាច់ត្រូវមានឈ្មោះ',true);return;}
+  const btn=document.getElementById('ap-submit-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ កំពុងរក្សាទុក...';}
+  try{
+    const res=await gs('insertProduct',{
+      name,
+      category:document.getElementById('ap-cat')?.value.trim()||'',
+      retail:document.getElementById('ap-price')?.value||'0',
+      qty:parseInt(document.getElementById('ap-qty')?.value||0),
+      lowStockAlert:document.getElementById('ap-min')?.value||'0',
+      photo:document.getElementById('ap-img')?.value.trim()||'',
+    });
+    if(res&&res.error)throw new Error(res.error);
+    showToast('✅ បានបន្ថែម: '+name);
+    document.getElementById('add-prod-popup-ov')?.remove();
+    _stkCacheTs=0;_loadStk(true);
+  }catch(err){
+    showToast('❌ '+sanitizeStr(err.message),true);
+    if(btn){btn.disabled=false;btn.textContent='✅ រក្សាទុក';}
+  }
+}
+
+function _stkFilter(v){
+  _stkSearch=v||'';
+  clearTimeout(_stkFilterTimer);
+  _stkFilterTimer=setTimeout(_renderStkGrid,160);
+}
+let _stkFilterTimer=null;
+
+// Renders ONLY the grid area below the search bar (avoids destroying the input)
+function _renderStkGrid(){
+  const q=_stkSearch.toLowerCase().trim();
+  // First filter by tab
+  let base=_stk;
+  if(_stkTab==='low') base=_stk.filter(p=>{const qty=parseInt(p.stock_qty||0);const mn=parseInt(p.min_stock||0);return mn>0&&qty<=mn&&qty>0;});
+  else if(_stkTab==='out') base=_stk.filter(p=>parseInt(p.stock_qty||0)===0);
+  // Then filter by search
+  const list=q?base.filter(p=>(p.name||'').toLowerCase().includes(q)):base;
   const grd=['linear-gradient(135deg,#f0a50028,#e05c0028)',
              'linear-gradient(135deg,#3b82f628,#1d4ed828)',
              'linear-gradient(135deg,#22c55e28,#16a34a28)',
              'linear-gradient(135deg,#8b5cf628,#6d28d928)',
              'linear-gradient(135deg,#f4372728,#dc262628)'];
-
   const cards=list.map(p=>{
     const qty=parseInt(p.stock_qty||0);
     const mn=parseInt(p.min_stock||0);
-    const isLow=mn>0&&qty<=mn;
-    const isOut=qty===0;
-    const pid=e(p.product_id||p.id||'');
-    const pname=e(p.name||'—');
+    const isLow=mn>0&&qty<=mn;const isOut=qty===0;
+    const pid=e(p.product_id||p.id||'');const pname=e(p.name||'—');
     const barW=mn>0?Math.min(100,Math.round(qty/mn*100)):100;
     const barClr=isOut?'var(--red)':isLow?'#f97316':'var(--green)';
     const gi=(p.name||'').charCodeAt(0)%grd.length;
     const qtyClr=isOut?'out':isLow?'low':'ok';
     return`<div class="prod-card ${isOut?'out':isLow?'low':''}"
       onclick="openMv('${pid}','${pname}',${qty},${mn})">
-      ${isOut?`<span class="prod-out-tag">🚫 អស់</span>`
-             :isLow?`<span class="prod-low-tag">⚠️ ជិតអស់</span>`:''}
+      ${isOut?`<span class="prod-out-tag">🚫 អស់</span>`:isLow?`<span class="prod-low-tag">⚠️ ជិតអស់</span>`:''}
       <button class="prod-add" onclick="event.stopPropagation();openMv('${pid}','${pname}',${qty},${mn})">+</button>
       <div class="prod-img" style="background:${p.image_url?'var(--surface)':grd[gi]}">
-        ${p.image_url
-          ?`<img src="${e(p.image_url)}" loading="lazy" onerror="this.style.display='none'">`
-          :`<span style="position:relative;z-index:1">📦</span>`}
+        ${p.image_url?`<img src="${e(p.image_url)}" loading="lazy" onerror="this.style.display='none'">`:`<span style="position:relative;z-index:1">📦</span>`}
       </div>
       <div class="prod-info">
         <div class="prod-name">${pname}</div>
         <div class="prod-price">$${e(p.price||'—')}</div>
-        <div class="prod-qty-row">
-          <span class="prod-qty ${qtyClr}">${qty}</span>
-          ${mn>0?`<span class="prod-min">/ min ${mn}</span>`:''}
-        </div>
-        <div class="prod-bar-wrap">
-          <div class="prod-bar" style="width:${barW}%;background:${barClr}"></div>
-        </div>
+        <div class="prod-qty-row"><span class="prod-qty ${qtyClr}">${qty}</span>${mn>0?`<span class="prod-min">/ min ${mn}</span>`:''}</div>
+        <div class="prod-bar-wrap"><div class="prod-bar" style="width:${barW}%;background:${barClr}"></div></div>
       </div>
     </div>`;
   }).join('');
-
-  // Pending orders list at bottom
-  const pending=allOrders.filter(o=>!isCompleted(o)).slice(0,10);
-  const linkedHtml=pending.length?`
-    <div class="stk-orders-section">
-      <div class="stk-orders-ttl">📋 Orders រង់ចាំ (${pending.length})</div>
-      ${pending.map(o=>{
-        const isCod=(o.payment||'').toLowerCase().includes('cod');
-        return`<div class="stk-order-row">
-          <div class="stk-order-dot" style="background:${isCod?'var(--accent)':'var(--green)'}"></div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;margin-bottom:1px">${e(o.name||'—')}</div>
-            <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-              🏷️ ${e((o.ordered||'—').substring(0,40))}${(o.ordered||'').length>40?'…':''}
-            </div>
-          </div>
-          <div style="text-align:right;flex-shrink:0;padding-left:8px">
-            <div style="font-size:13px;font-weight:700;color:var(--accent)">$${e(o.pricing||o.retail||'—')}</div>
-            <span class="card-badge ${isCod?'badge-cod':'badge-paid'}" style="font-size:10px;display:inline-block;margin-top:2px">
-              ${e(o.payment||'COD')}</span>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`:''
-
-  body.innerHTML=`
-    <div class="stk-stats">
-      <div class="stk-stat">
-        <div class="stk-stat-n">${total}</div>
-        <div class="stk-stat-l">ប្រភេទ</div>
-      </div>
-      <div class="stk-stat">
-        <div class="stk-stat-n ok">${totalQty}</div>
-        <div class="stk-stat-l">ចំនួនសរុប</div>
-      </div>
-      <div class="stk-stat">
-        <div class="stk-stat-n ${lowCount>0?'danger':'ok'}">${lowCount}</div>
-        <div class="stk-stat-l">⚠️ ជិតអស់</div>
-      </div>
-    </div>
-    <div class="stk-search-bar">
-      <input class="stk-search-inp" id="stk-search" type="search"
-        placeholder="🔍 ស្វែងរកទំនិញ..." value="${e(_stkSearch)}"
-        oninput="_stkFilter(this.value)">
-      <button class="stk-add-btn" onclick="openAddProduct()" title="បន្ថែមទំនិញ" style="margin-right:6px">＋</button><button onclick="_loadStk(true)" title="Refresh" style="width:36px;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:16px;cursor:pointer">⟳</button>
-    </div>
-    ${list.length
-      ?`<div class="prod-grid">${cards}</div>${linkedHtml}`
-      :`<div class="empty">
-          <div class="empty-icon">${q?'🔍':'📦'}</div>
-          <h3>${q?'គ្មានលទ្ធផល':'គ្មានទំនិញ'}</h3>
-          <p>${q?'ព្យាយាម keyword ផ្សេង':'ចុច + ខាងលើ ដើម្បីបន្ថែម'}</p>
-        </div>`}`;
-}
-
-function _stkFilter(v){
-  _stkSearch=v||'';
-  clearTimeout(_stk._ft);
-  _stk._ft=setTimeout(_renderStk,180);
+  const gridEl=document.getElementById('stk-prod-grid');
+  if(!gridEl)return;
+  if(!list.length){
+    gridEl.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">${q?'🔍':'📦'}</div><h3>${q?'គ្មានលទ្ធផល':'គ្មានទំនិញ'}</h3><p>${q?'ព្យាយាម keyword ផ្សេង':'ចុច + ខាងលើ ដើម្បីបន្ថែម'}</p></div>`;
+  }else{
+    gridEl.innerHTML=`<div class="prod-grid">${cards}</div>`;
+  }
+  // Update count badge in search
+  const badge=document.getElementById('stk-count-badge');
+  if(badge)badge.textContent=list.length+'/'+_stk.length;
 }
 
 // ── Movement form ─────────────────────────────────────────
@@ -1925,10 +2061,7 @@ async function submitMv(){
   }
 }
 
-// ── Add product (placeholder — extend later) ──────────────
-function openAddProduct(){
-  showToast('ℹ️ Coming soon: Create Product',false);
-}
+// ── Add product — handled above with popup
 // ============================================================
 // END STOCK MODULE
 // ============================================================
