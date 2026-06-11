@@ -1,23 +1,10 @@
+# Create shop/manifest.json:
 {
-  "name": "Yin Boran",
-  "short_name": "App",
-  "start_url": "../index.html",
+  "name": "YB Shop",
+  "short_name": "YB",
+  "start_url": "/shop/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-
-  "icons": [
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "icons": []
 }
