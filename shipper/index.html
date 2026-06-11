@@ -21,26 +21,27 @@ if(typeof STORE==='undefined') window.STORE = 'yb9999';
   --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
   --text:#f0f0f0; --muted:#888;
   --font:'Segoe UI',system-ui,sans-serif;
-  --hdr-h:64px;
-  --sat:env(safe-area-inset-top,0px);
+  --hdr-h:56px;
+  /* safe-area: CSS env() works natively on iPhone Safari + TG fullscreen.
+     Never override via JS unless TG reports a LARGER value. */
+  --sat: env(safe-area-inset-top, 0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-/* FIX 1: body padding-top ត្រឹមត្រូវ */
 body{
   background:var(--bg);color:var(--text);font-family:var(--font);
   min-height:100vh;padding-bottom:80px;
-  padding-top:calc(var(--hdr-h) + var(--sat));
+  /* Always use env() directly so it updates on rotation/fullscreen */
+  padding-top:calc(var(--hdr-h) + env(safe-area-inset-top,0px));
 }
 
-/* FIX 1: header — extends behind Dynamic Island */
 .hdr{
   background:#0f0f0f;border-bottom:1px solid var(--border);
   padding:12px 16px;
   display:flex;align-items:center;gap:10px;
   position:fixed;top:0;left:0;right:0;z-index:50;
-  height:calc(var(--hdr-h) + var(--sat));
-  padding-top:calc(12px + var(--sat));
+  height:calc(var(--hdr-h) + env(safe-area-inset-top,0px));
+  padding-top:calc(12px + env(safe-area-inset-top,0px));
   transition:transform .28s ease;will-change:transform;
 }
 .hdr.hdr-hidden{transform:translateY(-100%)}
@@ -135,7 +136,7 @@ body{
 .empty h3{font-size:16px;margin-bottom:6px;color:var(--text)}
 .empty p{font-size:13px;line-height:1.5}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:fixed;inset:0;top:calc(var(--hdr-h) + var(--sat));
+  position:fixed;inset:0;
   gap:14px;color:var(--muted);font-size:14px;
   background:var(--bg);z-index:10;pointer-events:none}
 .loading-sm{position:relative;inset:auto;min-height:180px;background:transparent;z-index:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%}
@@ -901,6 +902,14 @@ body.light-mode{
   <div class="loading"><div class="spinner"></div>កំពុងផ្ទុក...</div>
 </div>
 
+<!-- ── Persistent notification bar — always in DOM, fixed position ── -->
+<div id="global-alert-bar" class="new-order-alert hidden"
+  style="position:fixed;top:0;left:0;right:0;z-index:9998;
+         padding-top:calc(10px + env(safe-area-inset-top,0px))"
+  onclick="dismissAlert()">
+  🔔 <span id="global-alert-txt">មានការដឹកថ្មី!</span> — ចុចដើម្បីមើល
+</div>
+
 <div class="toast" id="toast"></div>
 <div class="hold-ring" id="hold-ring"><div class="hold-ring-inner">🧾</div></div>
 
@@ -1011,17 +1020,23 @@ try { tg.expand(); tg.setHeaderColor('#0f0f0f'); tg.setBackgroundColor('#0f0f0f'
 try { if(typeof tg.requestFullscreen==='function') tg.requestFullscreen(); } catch(_) {}
 
 // ── Safe area sync ────────────────────────────────────────────
+// RULE: only override --sat when TG fullscreen gives MORE space than native CSS env().
+// On iPhone Safari (no TG), env(safe-area-inset-top) in CSS is already correct — leave it alone.
 function _syncSat() {
   try {
-    // 1. Telegram fullscreen safe area
-    const tgTop = tg.safeAreaInset?.top;
-    if (tgTop > 0) {
-      document.documentElement.style.setProperty('--sat', tgTop + 'px');
-      return;
+    const tgTop = tg?.safeAreaInset?.top;
+    if(typeof tgTop === 'number' && tgTop > 0){
+      // Read what CSS env() currently resolves to
+      const cssEnv = parseInt(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--sat') || '0'
+      ) || 0;
+      // Only override if TG reports MORE (e.g. fullscreen pushed status bar)
+      if(tgTop > cssEnv){
+        document.documentElement.style.setProperty('--sat', tgTop + 'px');
+      }
     }
   } catch(_) {}
-  // 2. iPhone Safari — env(safe-area-inset-top) via CSS (already default)
-  // --sat is set in :root as env(safe-area-inset-top,0px) — no JS needed
 }
 try { tg.onEvent('fullscreenChanged', _syncSat); tg.onEvent('safeAreaChanged', _syncSat); } catch(_) {}
 setTimeout(_syncSat, 400);
@@ -1049,7 +1064,10 @@ window.addEventListener('scroll', () => {
   const y   = window.scrollY;
   const hdr = document.getElementById('main-hdr');
   if (!hdr) return;
-  if (y > _lastScrollY + 6 && y > 60) {
+  // Always show at very top (covers Dynamic Island rubber-band overscroll)
+  if (y < 10) {
+    hdr.classList.remove('hdr-hidden');
+  } else if (y > _lastScrollY + 6 && y > 60) {
     hdr.classList.add('hdr-hidden');
   } else if (y < _lastScrollY - 6) {
     hdr.classList.remove('hdr-hidden');
@@ -1100,22 +1118,23 @@ function fmtDate(v){
 function callPhone(phone){
   const clean=String(phone||'').replace(/\D/g,'');
   if(!clean)return;
-  // Open Telegram contact externally (+855 format)
   const intl=clean.startsWith('0')?'855'+clean.substring(1):clean;
-  try{
-    tg.openLink('https://t.me/+'+intl);
-  }catch(_){
-    window.open('https://t.me/+'+intl,'_blank');
+  const isTGContext = !!(tg?.initData || tgId);
+  if(isTGContext){
+    // Inside Telegram WebApp — open TG contact by phone
+    try{ tg.openLink('https://t.me/+'+intl); return; }catch(_){}
+    try{ window.open('https://t.me/+'+intl,'_blank'); return; }catch(_){}
   }
+  // iPhone Safari / PWA — native phone call
+  try{ window.location.href='tel:'+clean; }catch(_){}
 }
 function openTGContact(phone){
+  // Always TG-specific (username link or phone lookup)
   const clean=String(phone||'').replace(/\D/g,'');
   if(!clean)return;
   const intl=clean.startsWith('0')?'855'+clean.substring(1):clean;
-  // Open Telegram contact externally
-  try{
-    tg.openLink('https://t.me/+'+intl,{try_browser:true});
-  }catch(_){window.open('https://t.me/+'+intl,'_blank');}
+  try{ tg.openLink('https://t.me/+'+intl,{try_browser:true}); }
+  catch(_){ try{window.open('https://t.me/+'+intl,'_blank');}catch(_){} }
 }
 
 function gs(fn,arg){
@@ -1215,15 +1234,24 @@ function bootWithData(data){
   loadOrders();
 }
 
-// Request notification permission on first load
+// Request notification permission on first load (after brief delay = user gesture)
 (function(){
   if('Notification' in window && Notification.permission === 'default') {
     setTimeout(()=>Notification.requestPermission(), 3000);
   }
 })();
 function pushNotif(title,body){
-  if(!('Notification' in window))return;
-  try{if(Notification.permission==='granted')new Notification(title,{body});}catch(_){}
+  // 1. Telegram native popup — works in TG WebApp on ALL platforms incl. iOS
+  try{
+    if(tg && typeof tg.showPopup === 'function'){
+      tg.showPopup({title, message: body, buttons:[{type:'close'}]}, ()=>{});
+      return; // TG handled it
+    }
+  }catch(_){}
+  // 2. Web Notification API fallback (PWA / Safari)
+  if('Notification' in window && Notification.permission==='granted'){
+    try{ new Notification(title, {body, icon:'../icons/icon-192x192.png'}); }catch(_){}
+  }
 }
 
 function doLogout(){
@@ -1855,28 +1883,46 @@ function openExternalLink(url){
 }
 
 function showAlert(msg){
-  const alertTxt=document.getElementById('new-alert-txt');
-  const alertEl=document.getElementById('new-alert');
-  if(!alertTxt||!alertEl){
-    // new-alert lives inside renderMain(); if we're on another view, just show a toast
-    showToast('🔔 '+sanitizeStr(msg));
-    return;
+  const safe = sanitizeStr(msg);
+
+  // ── 1. Persistent fixed banner (always in DOM, outside #root) ──
+  const gb = document.getElementById('global-alert-bar');
+  const gt = document.getElementById('global-alert-txt');
+  if(gb && gt){
+    gt.textContent = safe;
+    gb.classList.remove('hidden');
+    clearTimeout(gb._t);
+    gb._t = setTimeout(()=>gb.classList.add('hidden'), 8000);
   }
-  alertTxt.textContent=sanitizeStr(msg);
-  alertEl.classList.remove('hidden');
+
+  // ── 2. Inline alert inside main view (if currently showing) ──
+  const alertEl  = document.getElementById('new-alert');
+  const alertTxt = document.getElementById('new-alert-txt');
+  if(alertTxt && alertEl){ alertTxt.textContent=safe; alertEl.classList.remove('hidden'); }
+
+  // ── 3. Sound (Web Audio) ──
   try{
-    const ctx=new AudioContext();const osc=ctx.createOscillator();const gain=ctx.createGain();
-    osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=520;
+    const ctx=new AudioContext();
+    const osc=ctx.createOscillator(); const gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value=520;
     gain.gain.setValueAtTime(.3,ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.6);
-    osc.start(ctx.currentTime);osc.stop(ctx.currentTime+.6);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+.6);
   }catch(_){}
-  pushNotif('🚚 YB Shop',sanitizeStr(msg));
+
+  // ── 4. Haptic ──
+  try{tg.HapticFeedback.notificationOccurred('warning');}catch(_){}
+
+  // ── 5. Push notification ──
+  pushNotif('🚚 YB Shop', safe);
 }
 function dismissAlert(){
-  document.getElementById('new-alert').classList.add('hidden');
-  // Preserve current activeTab — only switch to pending if no explicit tab chosen
-  visibleCount=CHUNK;renderAll();
+  const gb=document.getElementById('global-alert-bar');
+  if(gb)gb.classList.add('hidden');
+  const alertEl=document.getElementById('new-alert');
+  if(alertEl)alertEl.classList.add('hidden');
+  visibleCount=CHUNK; renderAll();
 }
 
 function showError(msg){
@@ -3841,17 +3887,16 @@ function handleRcpt(ev){
   const file=ev.target.files[0];if(!file)return;
   if(!file.type.startsWith('image/')){showToast('❌ Images only',true);return;}
   if(file.size>5*1024*1024){showToast('❌ Max 5MB',true);return;}
-  _compressImg(f).then(re=>{
-    re={target:{result:re||''}};
-    {
-    _s3.receiptImg=re.target.result;
+  _compressImg(file).then(dataUrl=>{
+    if(!dataUrl)return;
+    _s3.receiptImg=dataUrl;
     const uz=document.querySelector('.upload-zone');
     if(uz){uz.classList.add('has-img');uz.innerHTML=
       `<input type="file" id="rcpt-inp" accept="image/*" style="display:none" onchange="handleRcpt(event)">
        <img src="${_s3.receiptImg}" class="upload-preview">
        <div class="upload-change-lbl">ចុចដើម្បីផ្លាស់ប្តូរ</div>`;}
     _updateConfirmBtn();
-  }});
+  });
 }
 
 
