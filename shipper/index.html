@@ -1927,8 +1927,7 @@ function dismissAlert(){
 
 function showError(msg){
   if(msg){
-  document.getElementById('root').innerHTML=`<div class="empty"><div class="empty-icon">⚠️</div><h3>Error</h3><p>${e(msg)}</p><button onclick="loadOrders()"style="margin-top:16px;padding:11px 22px;background:var(--accent);color:#000; border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:15px">Retry</button></div>`;
-  }
+  el.innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><p></p></div>`;
 }
 function showToast(msg,isErr){
   const t=document.getElementById('toast');
