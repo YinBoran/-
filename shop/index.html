@@ -211,6 +211,63 @@ body{
   border-radius:12px;font-size:14px;font-weight:700;cursor:pointer}
 .smart-char-count{font-size:11px;color:#aeaeb2;text-align:right;padding:4px 16px;flex-shrink:0}
 
+
+/* ── Media upload zone ──────────────────────────────────────── */
+.media-upload-zone{
+  border:2px dashed var(--border);border-radius:12px;
+  padding:20px;text-align:center;cursor:pointer;
+  transition:all .2s;margin-bottom:12px;background:var(--surface)}
+.media-upload-zone:active{border-color:var(--accent);background:rgba(240,165,0,.05)}
+.media-upload-zone.has-media{
+  border:1.5px solid rgba(34,197,94,.4);
+  background:rgba(34,197,94,.05);padding:8px}
+.media-upload-zone img,.media-upload-zone video{
+  width:100%;max-height:160px;object-fit:cover;border-radius:8px}
+.media-upload-ico{font-size:32px;margin-bottom:6px}
+.media-upload-txt{font-size:13px;color:var(--muted);font-weight:600}
+.media-upload-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.upload-progress{height:4px;background:var(--border);border-radius:2px;
+  margin-top:8px;overflow:hidden}
+.upload-progress-bar{height:100%;background:var(--accent);
+  border-radius:2px;width:0%;transition:width .3s}
+
+
+/* ── Product variants ───────────────────────────────────────── */
+.prod-gallery{width:100%;aspect-ratio:1/1;position:relative;
+  background:var(--card);overflow:hidden}
+.prod-gallery-img{width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity .3s;position:absolute;inset:0}
+.prod-gallery-img.active{opacity:1}
+.prod-gallery-dots{position:absolute;bottom:10px;left:0;right:0;
+  display:flex;justify-content:center;gap:5px}
+.prod-gallery-dot{width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.5);cursor:pointer}
+.prod-gallery-dot.active{background:#fff;width:16px;border-radius:3px}
+.prod-thumbs{display:flex;gap:6px;padding:8px 16px;overflow-x:auto}
+.prod-thumb{width:56px;height:56px;border-radius:8px;
+  object-fit:cover;border:2px solid transparent;cursor:pointer;flex-shrink:0}
+.prod-thumb.active{border-color:var(--accent)}
+/* Option chips */
+.variant-group{margin-bottom:14px}
+.variant-group-label{font-size:12px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:7px}
+.variant-chips{display:flex;flex-wrap:wrap;gap:7px}
+.variant-chip{padding:7px 14px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;
+  transition:all .15s;background:var(--surface)}
+.variant-chip.selected{border-color:var(--accent);
+  background:rgba(240,165,0,.12);color:var(--accent)}
+.variant-chip.out{opacity:.4;cursor:not-allowed;
+  text-decoration:line-through}
+/* Price display */
+.prod-price-row{display:flex;align-items:baseline;gap:10px;margin:12px 0}
+.prod-price{font-size:26px;font-weight:800;color:var(--accent)}
+.prod-compare-price{font-size:16px;color:var(--muted);
+  text-decoration:line-through}
+.prod-discount-badge{background:var(--red);color:#fff;
+  font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .toast{position:fixed;bottom:24px;left:50%;
@@ -2795,6 +2852,8 @@ function _stkFilter(v){
   },160);
 }
 let _stkFilterTimer=null;
+let _npImgUrl="";
+let _npImgUploading=false;
 
 function _renderStkGrid(gridEl){
   if(!gridEl){_renderStk();return;}
@@ -2844,6 +2903,254 @@ function _renderStkGrid(gridEl){
 }
 
 
+
+
+// ══════════════════════════════════════════════════════════════
+// PRODUCT VARIANTS SYSTEM
+// ══════════════════════════════════════════════════════════════
+let _curVariants   = [];   // all variants for current product
+let _selVariant    = null; // selected variant object
+let _curImages     = [];   // product images
+let _curImgIdx     = 0;    // current gallery image
+
+// ── Open product with variants ────────────────────────────────
+async function openProductWithVariants(productId){
+  const root = document.getElementById('root');
+  if(!root) return;
+  document.body.style.paddingTop='0';
+  root.innerHTML = loadingHTML('កំពុងផ្ទុក...');
+
+  try{
+    // Load product + variants in parallel
+    const [pRes, vRes, iRes] = await Promise.all([
+      gs('getProduct',       {id: productId}),
+      gs('getProductVariants',{product_id: productId}),
+      gs('getProductImages',  {product_id: productId}),
+    ]);
+
+    const product  = pRes?.data || pRes || {};
+    _curVariants   = Array.isArray(vRes) ? vRes : (vRes?.data||[]);
+    _curImages     = Array.isArray(iRes) ? iRes : (iRes?.data||[]);
+    _selVariant    = _curVariants.find(v=>v.is_default) || _curVariants[0] || null;
+    _curImgIdx     = 0;
+
+    _renderProductDetail(product);
+  }catch(err){
+    root.innerHTML = `<div style="padding:20px;color:var(--red)">${e(err.message)}</div>`;
+  }
+}
+
+function _renderProductDetail(p){
+  const root = document.getElementById('root');
+  if(!root) return;
+
+  // Build images array (product images + variant images)
+  const imgs = _curImages.length ? _curImages :
+    (p.image_url ? [{url:p.image_url,sort_order:0}] : []);
+
+  // Group options
+  const opt1 = [...new Set(_curVariants.map(v=>v.option1_value).filter(Boolean))];
+  const opt2 = [...new Set(_curVariants.map(v=>v.option2_value).filter(Boolean))];
+  const opt1Name = _curVariants[0]?.option1_name || '';
+  const opt2Name = _curVariants[0]?.option2_name || '';
+
+  const price       = _selVariant ? parseFloat(_selVariant.price||0) : 0;
+  const comparePrice= _selVariant ? parseFloat(_selVariant.compare_price||0) : 0;
+  const discount    = comparePrice>0 ? Math.round((1-price/comparePrice)*100) : 0;
+  const inStock     = _selVariant ? (_selVariant.stock_qty||0) > 0 : false;
+
+  root.innerHTML = `
+    <div style="padding-bottom:120px">
+      ${_buildBackHeader(e(p.name||p.item_name||'Product'), "setView('catalog')")}
+
+      <!-- Image Gallery -->
+      <div class="prod-gallery" id="prod-gallery">
+        ${imgs.map((img,i)=>`
+          <img class="prod-gallery-img ${i===0?'active':''}"
+            src="${e(img.url)}" loading="${i===0?'eager':'lazy'}"
+            onload="this.style.opacity=1" id="gimg-${i}">`).join('')}
+        ${imgs.length<2?'':`
+          <div class="prod-gallery-dots">
+            ${imgs.map((_,i)=>`<div class="prod-gallery-dot ${i===0?'active':''}"
+              onclick="switchGalleryImg(${i})" id="gdot-${i}"></div>`).join('')}
+          </div>`}
+        <!-- Video badge -->
+        ${p.video_url?`<div onclick="_openVideoViewer('${e(p.video_url)}')"
+          style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);
+          color:#fff;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer">
+          ▶ Video</div>`:''}
+      </div>
+
+      <!-- Thumbnail strip -->
+      ${imgs.length>1?`<div class="prod-thumbs" id="prod-thumbs">
+        ${imgs.map((img,i)=>`<img class="prod-thumb ${i===0?'active':''}"
+          src="${e(img.url)}" loading="lazy" id="gthumb-${i}"
+          onclick="switchGalleryImg(${i})">`).join('')}
+      </div>`:''}
+
+      <div style="padding:16px">
+        <!-- Category + Name -->
+        <div style="font-size:11px;color:var(--accent);font-weight:700;
+          text-transform:uppercase;letter-spacing:.5px">${e(p.category||'')}</div>
+        <div style="font-size:20px;font-weight:800;margin:4px 0 2px">${e(p.name||p.item_name||'—')}</div>
+
+        <!-- Price -->
+        <div class="prod-price-row">
+          <span class="prod-price" id="vr-price">$${price.toFixed(2)}</span>
+          ${comparePrice>price?`
+            <span class="prod-compare-price">$${comparePrice.toFixed(2)}</span>
+            <span class="prod-discount-badge">-${discount}%</span>`:''}
+        </div>
+
+        <!-- Stock status -->
+        <div id="vr-stock" style="font-size:13px;font-weight:600;margin-bottom:16px;
+          color:${inStock?'var(--green)':'var(--red)'}">
+          ${inStock?`✓ មានស្ថុក (${_selVariant?.stock_qty||0})`:'✗ អស់ស្ថុក'}
+        </div>
+
+        <!-- Option 1 (e.g. Color) -->
+        ${opt1.length?`
+          <div class="variant-group">
+            <div class="variant-group-label">${e(opt1Name||'Option')}</div>
+            <div class="variant-chips">
+              ${opt1.map(val=>{
+                const v=_curVariants.find(x=>x.option1_value===val);
+                const sel=_selVariant?.option1_value===val;
+                const out=(v?.stock_qty||0)===0;
+                return`<div class="variant-chip ${sel?'selected':''} ${out?'out':''}"
+                  onclick="${out?'':'_selectOption(1,this.dataset.val)'}" data-val="${e(val)}">
+                  ${e(val)}${v?.image_url?` 🎨`:''}
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`:''}
+
+        <!-- Option 2 (e.g. Size) -->
+        ${opt2.length?`
+          <div class="variant-group">
+            <div class="variant-group-label">${e(opt2Name||'Variant')}</div>
+            <div class="variant-chips">
+              ${opt2.map(val=>{
+                const sel=_selVariant?.option2_value===val;
+                const v=_curVariants.find(x=>x.option2_value===val);
+                const out=(v?.stock_qty||0)===0;
+                return`<div class="variant-chip ${sel?'selected':''} ${out?'out':''}"
+                  onclick="${out?'':'_selectOption(2,this.dataset.val)'}" data-val="${e(val)}">
+                  ${e(val)}
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`:''}
+
+        <!-- Description -->
+        ${p.description?`
+          <div style="font-size:14px;color:var(--muted);line-height:1.7;
+            margin:16px 0">${e(p.description)}</div>`:''}
+
+        <!-- Actions -->
+        <div style="display:flex;gap:10px;position:fixed;bottom:0;left:0;right:0;
+          padding:12px 16px max(env(safe-area-inset-bottom,12px),12px);
+          background:var(--bg);border-top:1px solid var(--border);z-index:10">
+          <button onclick="_addVariantToCart()"
+            style="flex:1;padding:14px;background:var(--card);color:var(--accent);
+            border:2px solid var(--accent);border-radius:12px;font-size:15px;
+            font-weight:700;cursor:pointer">
+            🛒 Cart
+          </button>
+          <button onclick="_buyVariantNow()" ${!inStock?'disabled':''}
+            style="flex:2;padding:14px;background:${inStock?'linear-gradient(135deg,var(--accent),var(--accent2))':'var(--border)'};
+            color:${inStock?'#000':'var(--muted)'};border:none;border-radius:12px;
+            font-size:15px;font-weight:700;cursor:${inStock?'pointer':'not-allowed'}">
+            ${inStock?'🛍️ ទិញឥឡូវ':'😔 អស់ស្ថុក'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Gallery navigation
+function switchGalleryImg(idx){
+  document.querySelectorAll('.prod-gallery-img').forEach((el,i)=>{
+    el.classList.toggle('active', i===idx);
+  });
+  document.querySelectorAll('.prod-gallery-dot').forEach((el,i)=>{
+    el.classList.toggle('active', i===idx);
+  });
+  document.querySelectorAll('.prod-thumb').forEach((el,i)=>{
+    el.classList.toggle('active', i===idx);
+  });
+  _curImgIdx = idx;
+}
+
+// Select variant option
+function _selectOption(optNum, valOrEl){
+  const value = typeof valOrEl==='string' ? valOrEl :
+    (valOrEl?.dataset?.val || valOrEl?.textContent?.trim() || '');
+  const cur1 = _selVariant?.option1_value;
+  const cur2 = _selVariant?.option2_value;
+  const newOpt1 = optNum===1 ? value : cur1;
+  const newOpt2 = optNum===2 ? value : cur2;
+
+  // Find matching variant
+  const match = _curVariants.find(v=>
+    (v.option1_value===newOpt1||!newOpt1) &&
+    (v.option2_value===newOpt2||!newOpt2)
+  ) || _curVariants.find(v=>optNum===1?v.option1_value===value:v.option2_value===value);
+
+  if(!match) return;
+  _selVariant = match;
+
+  // Update price
+  const priceEl = document.getElementById('vr-price');
+  if(priceEl) priceEl.textContent = '$'+parseFloat(match.price||0).toFixed(2);
+
+  // Update stock
+  const stockEl = document.getElementById('vr-stock');
+  if(stockEl){
+    const inStock = (match.stock_qty||0)>0;
+    stockEl.style.color = inStock?'var(--green)':'var(--red)';
+    stockEl.textContent = inStock?`✓ មានស្ថុក (${match.stock_qty})`:'✗ អស់ស្ថុក';
+  }
+
+  // Update chip selection
+  document.querySelectorAll('.variant-chip').forEach(chip=>{
+    chip.classList.toggle('selected',
+      chip.textContent.trim()===value||
+      chip.textContent.trim()===newOpt1||
+      chip.textContent.trim()===newOpt2);
+  });
+
+  // Switch gallery if variant has own image
+  if(match.image_url){
+    const imgs = document.querySelectorAll('.prod-gallery-img');
+    imgs.forEach((el,i)=>{ if(el.src===match.image_url) switchGalleryImg(i); });
+  }
+  try{tg.HapticFeedback.selectionChanged();}catch(_){}
+}
+
+function _addVariantToCart(){
+  if(!_selVariant){showToast('❌ ជ្រើស variant',true);return;}
+  // Use existing cart system
+  _catAddToCart(JSON.stringify({
+    code:      _selVariant.sku || _selVariant.id,
+    name:      document.querySelector('.prod-gallery')?.nextSibling?.textContent||'Product',
+    price:     _selVariant.price,
+    image_url: _selVariant.image_url||'',
+    variant_id:_selVariant.id,
+    option:    [_selVariant.option1_value,_selVariant.option2_value].filter(Boolean).join(' / '),
+  }));
+  showToast('🛒 ដាក់ Cart!');
+}
+
+function _buyVariantNow(){
+  if(!_selVariant){showToast('❌ ជ្រើស variant',true);return;}
+  _addVariantToCart();
+  openCart('list');
+}
+
+function _openVideoViewer(url){
+  openMediaViewer([{url, type:'video', title:'Product Video'}], 0);
+}
 
 // ── Product Detail View ────────────────────────────────────
 let _curProd = null;
@@ -2983,6 +3290,63 @@ function _openStockItemViewer(productId){
   openMediaViewer(items, 0);
 }
 
+
+// ── Product media upload ──────────────────────────────────────
+async function _handleMediaUpload(input, type){
+  const file = input.files[0];
+  if(!file) return;
+
+  const maxMB = type==='image'?5:50;
+  if(file.size > maxMB*1024*1024){
+    showToast(`❌ File too large (max ${maxMB}MB)`,true); return;
+  }
+
+  const zone = document.getElementById('np-img-zone');
+  const prog = document.getElementById('np-img-prog');
+  const bar  = document.getElementById('np-img-bar');
+  if(zone) zone.classList.add('has-media');
+  if(prog) prog.style.display='block';
+  if(bar)  bar.style.width='30%';
+  _npImgUploading=true;
+
+  try{
+    // Compress image client-side
+    const base64 = await _compressImg(file, type==='image'?900:0);
+    if(bar) bar.style.width='60%';
+
+    // Upload to Cloudinary via GAS
+    const tenantId = shipperData?.tenantId || typeof STORE!=='undefined'?STORE:'yb9999';
+    const r = await gs('uploadToCloudinary',{
+      base64,
+      folder: 'yb_products/'+tenantId,
+      publicId: type+'_'+Date.now(),
+      resourceType: type,
+    });
+
+    if(bar) bar.style.width='100%';
+
+    if(r && r.url){
+      _npImgUrl = r.url;
+      // Show preview
+      if(zone){
+        zone.innerHTML = type==='image'
+          ? `<img src="${e(r.url)}" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px">`
+          : `<video src="${e(r.url)}" style="width:100%;max-height:160px" controls></video>`;
+      }
+      showToast('✅ Upload OK!');
+    } else {
+      throw new Error(r?.error||'Upload failed');
+    }
+
+  }catch(err){
+    if(zone){ zone.classList.remove('has-media'); zone.innerHTML='<div class="media-upload-ico">📷</div><div class="media-upload-txt">ចុចដើម្បីជ្រើសរូប</div><div class="media-upload-sub" style="color:var(--red)">❌ '+sanitizeStr(err.message)+'</div>'; }
+    showToast('❌ '+sanitizeStr(err.message),true);
+  }finally{
+    _npImgUploading=false;
+    if(prog) setTimeout(()=>prog.style.display='none',1000);
+  }
+}
+
 function _openProductMediaViewer(pJson){
   try{
     const p=typeof pJson==='string'?JSON.parse(pJson):pJson;
@@ -3043,7 +3407,25 @@ function openAddProduct(){
           </div>
         </div>
         <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px">លេខ Code</div>
-        <input id="np-code" class="mv-inp" placeholder="ឧ. MIC-S53" style="margin-bottom:20px">
+        <input id="np-code" class="mv-inp" placeholder="ឧ. MIC-S53" style="margin-bottom:16px">
+
+        <!-- Photo upload -->
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px">📷 រូបផលិតផល</div>
+        <div class="media-upload-zone" id="np-img-zone" onclick="document.getElementById('np-img-inp').click()">
+          <div class="media-upload-ico">📷</div>
+          <div class="media-upload-txt">ចុចដើម្បីជ្រើសរូប</div>
+          <div class="media-upload-sub">JPG, PNG · max 5MB</div>
+          <div class="upload-progress" id="np-img-prog" style="display:none">
+            <div class="upload-progress-bar" id="np-img-bar"></div>
+          </div>
+        </div>
+        <input type="file" id="np-img-inp" accept="image/*" style="display:none"
+          onchange="_handleMediaUpload(this,'image')">
+
+        <!-- Video upload -->
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:6px">🎬 វីដេអូ (YouTube Shorts URL)</div>
+        <input id="np-video" class="mv-inp" placeholder="https://youtube.com/shorts/..." style="margin-bottom:20px">
+
         <button onclick="_submitAddProduct()"
           style="width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer">
           ➕ បន្ថែមទំនិញ
@@ -3069,7 +3451,15 @@ async function _submitAddProduct(){
   const btn=document.querySelector('[onclick="_submitAddProduct()"]');
   if(btn){btn.disabled=true;btn.textContent='⏳...';}
   try{
-    await gs('insertProduct',{name,category:cat,price,qty,code,remark:'',stock:'In Stock'});
+    if(_npImgUploading){showToast('⏳ រង់ចាំ upload...',true);btn&&(btn.disabled=false,btn.textContent='➕ បន្ថែមទំនិញ');return;}
+    const videoUrl=(document.getElementById('np-video')?.value||'').trim();
+    await gs('insertProduct',{
+      name,category:cat,price,qty,code,
+      remark:'',stock:'In Stock',
+      image_url:_npImgUrl||'',
+      video_url:videoUrl||'',
+    });
+    _npImgUrl='';
     showToast('✅ បន្ថែមបាន: '+name);
     _stkCacheTs=0;
     setView('stock');
