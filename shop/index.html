@@ -498,10 +498,10 @@ body{
 .profile-role{margin-left:auto;font-size:12px;font-weight:700;padding:3px 8px;
   border-radius:6px;background:var(--accent)22;color:var(--accent);border:1px solid var(--accent)44}
 
-.profile-page{position:fixed;inset:0;background:var(--bg);z-index:150;
+.profile-page{pointer-events:none;position:fixed;inset:0;background:var(--bg);z-index:150;
   transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
   overflow-y:auto;padding-bottom:80px}
-.profile-page.on{transform:none}
+.profile-page.on{pointer-events:all;transform:none}
 .pp-back{position:sticky;top:0;background:rgba(15,15,15,.9);backdrop-filter:blur(8px);
   padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:10}
 .pp-back-btn{width:36px;height:36px;background:var(--surface);border:none;
@@ -541,9 +541,9 @@ body{
 .pp-logout:hover{background:var(--red)44}
 .pp-divider{height:1px;background:var(--border);margin:0 16px 16px}
 
-.invoice-overlay{position:fixed;inset:0;background:#fff;color:#000;z-index:700;
+.invoice-overlay{position:fixed;inset:0;background:#fff;color:#000;z-index:700;pointer-events:none;
   overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
-.invoice-overlay.on{display:block}
+.invoice-overlay.on{pointer-events:all;display:block}
 .inv-toolbar{position:sticky;top:0;background:#f5f5f5;
   padding:8px 12px;display:flex;gap:8px;align-items:center;
   border-bottom:1px solid #ddd;z-index:1}
@@ -565,7 +565,7 @@ body{
   transition:background .3s}
 .stock-overlay.on{background:rgba(0,0,0,.72);pointer-events:all}
 
-.stock-sheet{
+.stock-sheet{pointer-events:none;
   position:fixed;
   top:var(--sat);
   left:0;right:0;bottom:0;
@@ -575,7 +575,7 @@ body{
   transform:translateY(105%);
   transition:transform .38s cubic-bezier(0.32,0.72,0,1);
   z-index:131}
-.stock-overlay.on .stock-sheet{transform:none}
+.stock-overlay.on .stock-sheet{pointer-events:all;transform:none}
 
 .sht-handle{
   width:36px;height:5px;background:var(--border);border-radius:3px;
@@ -772,8 +772,8 @@ body{
    ==================================================== */
 .step-overlay{position:fixed;inset:0;z-index:160;background:transparent;pointer-events:none;transition:background .3s}
 .step-overlay.on{background:rgba(0,0,0,.82);pointer-events:all}
-.step-sht{position:fixed;top:var(--sat);left:0;right:0;bottom:0;background:var(--bg);border-radius:16px 16px 0 0;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .38s cubic-bezier(0.32,0.72,0,1);z-index:161}
-.step-overlay.on .step-sht{transform:none}
+.step-sht{pointer-events:none;position:fixed;top:var(--sat);left:0;right:0;bottom:0;background:var(--bg);border-radius:16px 16px 0 0;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .38s cubic-bezier(0.32,0.72,0,1);z-index:161}
+.step-overlay.on .step-sht{pointer-events:all;transform:none}
 .step-handle{width:36px;height:5px;background:var(--border);border-radius:3px;margin:10px auto 0;flex-shrink:0;touch-action:none;cursor:grab}
 /* indicator */
 .step-ind{display:flex;align-items:center;justify-content:center;padding:11px 20px 2px}
@@ -1083,9 +1083,14 @@ body{
 
 /* ── Thermal print layout ────────────────────────────────────── */
 @media print {
-  body > *:not(#thermal-print) {display:none!important}
-  #thermal-print {display:block!important;position:static!important}
-  @page {margin:0;size:80mm auto}
+  body *{visibility:hidden}
+  #thermal-print,#thermal-print *{visibility:visible}
+  #thermal-print{position:fixed;top:0;left:0;width:80mm;
+    background:#fff!important;color:#000!important}
+  .thermal-label{background:#fff!important;color:#000!important}
+  .thermal-key,.thermal-val,.thermal-shop,.thermal-price{color:#000!important}
+  .thermal-cod{background:#000!important;color:#fff!important}
+  @page{margin:0;size:80mm auto}
 }
 .thermal-label{
   width:100%;padding:16px;border-bottom:2px dashed #000;
@@ -1160,7 +1165,8 @@ body{
 /* back-header for sub-views */
 .hdr-back-btn{width:36px;height:36px;background:var(--surface);border:1px solid var(--border);
   border-radius:50%;cursor:pointer;color:var(--text);font-size:20px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  position:relative;z-index:100;pointer-events:all!important}
 
 
 /* ── Dark/Light mode ───────────────────────────────────────── */
@@ -1178,9 +1184,9 @@ body.light-mode{
   opacity:0;pointer-events:none;transition:opacity .22s}
 .nav-ov.on{opacity:1;pointer-events:all}
 .nav-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--surface);z-index:10000;
-  border-radius:22px 22px 0 0;padding:0 0 max(env(safe-area-inset-bottom,16px),16px);
+  border-radius:22px 22px 0 0;pointer-events:none;padding:0 0 max(env(safe-area-inset-bottom,16px),16px);
   transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:501}
-.nav-ov.on .nav-sheet{transform:none}
+.nav-ov.on .nav-sheet{transform:none;pointer-events:all}
 .nav-handle{width:40px;height:5px;background:var(--border);border-radius:3px;margin:10px auto 0}
 .nav-title{font-size:14px;color:var(--muted);text-align:center;padding:8px;font-weight:600}
 .nav-item{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;
@@ -1237,10 +1243,10 @@ body.light-mode{
 .cart-ov{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.5);
   opacity:0;pointer-events:none;transition:opacity .25s}
 .cart-ov.on{opacity:1;pointer-events:all}
-.cart-sheet{position:fixed;bottom:0;left:0;right:0;background:#fff;
+.cart-sheet{pointer-events:none;position:fixed;bottom:0;left:0;right:0;background:#fff;
   border-radius:22px 22px 0 0;max-height:85dvh;display:flex;flex-direction:column;
   transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:401}
-.cart-ov.on .cart-sheet{transform:none}
+.cart-ov.on .cart-sheet{pointer-events:all;transform:none}
 .cart-handle{width:40px;height:5px;background:#e5e5ea;border-radius:3px;margin:10px auto 0;flex-shrink:0}
 .cart-hd{padding:14px 20px;border-bottom:1px solid #e5e5ea;display:flex;
   align-items:center;justify-content:space-between;flex-shrink:0}
@@ -5174,6 +5180,36 @@ function loadingHTML(msg=''){
   },{passive:true});
 })();
 
+
+
+// ── Swipe drag animation (follow finger) ─────────────────────
+(function(){
+  let sx=0,dragging=false;
+  document.addEventListener('touchstart',ev=>{
+    sx=ev.touches[0].clientX;
+    dragging=sx<75; // only left edge
+    if(dragging){
+      const r=document.getElementById('root');
+      if(r) r.style.transition='none';
+    }
+  },{passive:true});
+  document.addEventListener('touchmove',ev=>{
+    if(!dragging) return;
+    const dx=Math.max(0,ev.touches[0].clientX-sx);
+    const r=document.getElementById('root');
+    if(r) r.style.transform='translateX('+Math.min(dx*0.4,100)+'px)';
+  },{passive:true});
+  document.addEventListener('touchend',()=>{
+    if(!dragging) return;
+    dragging=false;
+    const r=document.getElementById('root');
+    if(r){
+      r.style.transition='transform .2s ease';
+      r.style.transform='';
+      setTimeout(()=>{ if(r) r.style.transition=''; },220);
+    }
+  },{passive:true});
+})();
 
 // ── Cart sheet swipe-down to close ───────────────────────────
 (function(){
