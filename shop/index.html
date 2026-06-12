@@ -359,6 +359,38 @@ body{
   border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:18px;cursor:pointer;color:#fff;z-index:2}
 
+
+/* ── Search fullscreen ──────────────────────────────────────── */
+.search-popup{position:fixed;inset:0;z-index:830;
+  background:var(--bg);display:flex;flex-direction:column;
+  pointer-events:none;transform:translateY(-100%);
+  transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.search-popup.open{transform:none;pointer-events:all}
+.search-hdr{padding:calc(env(safe-area-inset-top,0px)+10px) 12px 10px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;flex-shrink:0}
+.search-inp-wrap{flex:1;background:var(--card);border-radius:22px;
+  display:flex;align-items:center;padding:0 14px;gap:8px}
+.search-inp{flex:1;background:transparent;border:none;outline:none;
+  font-size:16px;color:var(--text);padding:10px 0}
+.search-inp::placeholder{color:var(--muted)}
+.search-cancel{font-size:15px;font-weight:600;color:var(--accent);
+  cursor:pointer;flex-shrink:0;padding:6px}
+.search-results{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.search-section{padding:12px 16px 4px;font-size:12px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.search-item{display:flex;align-items:center;gap:12px;padding:12px 16px;
+  cursor:pointer;border-bottom:1px solid var(--border)}
+.search-item:active{background:var(--card)}
+.search-item-img{width:44px;height:44px;border-radius:10px;
+  object-fit:cover;background:var(--card);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden}
+.search-item-info{flex:1;min-width:0}
+.search-item-name{font-size:15px;font-weight:600;color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-item-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.search-item-badge{font-size:13px;font-weight:700;color:var(--accent)}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .toast{position:fixed;bottom:24px;left:50%;
@@ -1410,7 +1442,6 @@ let pollTimer    = null;
 let visibleCount = 9;
 const CHUNK      = 9;
 let _searchAll   = '';
-let _searchTimer = null;
 let _currentInvId = null;
 
 // ── SCROLL AUTO-HIDE HEADER ──────────────────────────────
@@ -3534,6 +3565,101 @@ function _feedsShare(idx){
 }
 
 
+
+// ══════════════════════════════════════════════════════════════
+// SEARCH FULLSCREEN (reusable)
+// ══════════════════════════════════════════════════════════════
+let _searchTimer = null;
+
+function openSearchPopup(){
+  document.getElementById('search-popup')?.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('search-popup-inp')?.focus(),300);
+  _renderSearchForYou();
+}
+
+function closeSearchPopup(){
+  document.getElementById('search-popup')?.classList.remove('open');
+  document.body.style.overflow='';
+  const inp=document.getElementById('search-popup-inp');
+  if(inp) inp.value='';
+}
+
+function _renderSearchForYou(){
+  const el=document.getElementById('search-for-you');
+  if(!el) return;
+  // Show shops + top products
+  const products=(_allCatalogItems.length?_allCatalogItems:(_stkCache||_stk||[])).slice(0,8);
+  const shopName=shipperData?.name||'YB Shop';
+  el.innerHTML=`
+    <div class="search-section">For You</div>
+    <div class="search-item" onclick="closeSearchPopup();setView('catalog')">
+      <div class="search-item-img">🛍️</div>
+      <div class="search-item-info">
+        <div class="search-item-name">${e(shopName)} ${_badge('pink',12)}</div>
+        <div class="search-item-sub">Shop · ${products.length} products</div>
+      </div>
+    </div>
+    ${products.map(p=>`
+    <div class="search-item" onclick="closeSearchPopup();_shopMediaItems=[..._allCatalogItems.filter(x=>x.image_url||x.video_url)];openFbViewer(0)">
+      <div class="search-item-img">
+        ${p.image_url?`<img src="${e(p.image_url)}" style="width:100%;height:100%;object-fit:cover">`:' 📦'}
+      </div>
+      <div class="search-item-info">
+        <div class="search-item-name">${e(p.name||p.item_name||'—')}</div>
+        <div class="search-item-sub">${e(p.category||'')}</div>
+      </div>
+      <div class="search-item-badge">$${e(String(p.price||p.wholesale_price||'—'))}</div>
+    </div>`).join('')}`;
+}
+
+let _sgTimer=null;
+function _searchGlobal(q){
+  clearTimeout(_sgTimer);
+  _sgTimer=setTimeout(()=>{
+    const el=document.getElementById('search-results');
+    if(!q.trim()){ _renderSearchForYou(); return; }
+    const ql=q.toLowerCase();
+    // Search orders
+    const orders=(allOrders||[]).filter(o=>
+      (o.name||'').toLowerCase().includes(ql)||
+      (o.phone||'').includes(q)||
+      (o.ordered||'').toLowerCase().includes(ql)
+    ).slice(0,5);
+    // Search products
+    const prods=(_allCatalogItems.length?_allCatalogItems:(_stkCache||_stk||[])).filter(p=>
+      (p.name||p.item_name||'').toLowerCase().includes(ql)||
+      (p.code||'').toLowerCase().includes(ql)||
+      (p.category||'').toLowerCase().includes(ql)
+    ).slice(0,6);
+
+    el.innerHTML=`
+      ${orders.length?`<div class="search-section">📦 Orders (${orders.length})</div>
+      ${orders.map(o=>`
+        <div class="search-item" onclick="closeSearchPopup();openOrderSteps('${e(o.profileId)}')">
+          <div class="search-item-img">📦</div>
+          <div class="search-item-info">
+            <div class="search-item-name">${e(o.name||'—')}</div>
+            <div class="search-item-sub">${e(o.phone||'')} · ${e(o.ordered||'')}</div>
+          </div>
+          <div class="search-item-badge">$${e(o.pricing||'—')}</div>
+        </div>`).join('')}`:''}
+      ${prods.length?`<div class="search-section">🛍️ Products (${prods.length})</div>
+      ${prods.map(p=>`
+        <div class="search-item" onclick="closeSearchPopup();openProductDetail('${e(p.product_id||p.id||'')}')">
+          <div class="search-item-img">
+            ${p.image_url?`<img src="${e(p.image_url)}" style="width:100%;height:100%;object-fit:cover">`:'📦'}
+          </div>
+          <div class="search-item-info">
+            <div class="search-item-name">${e(p.name||p.item_name||'—')}</div>
+            <div class="search-item-sub">${e(p.category||'')} · ${e(p.code||'')}</div>
+          </div>
+          <div class="search-item-badge">$${e(String(p.price||p.wholesale_price||'—'))}</div>
+        </div>`).join('')}`:''}
+      ${!orders.length&&!prods.length?`<div style="padding:40px;text-align:center;color:var(--muted)">😕 No results for "${e(q)}"</div>`:''}`;
+  },300);
+}
+
 // ══════════════════════════════════════════════════════════════
 // SHOP MEDIA GRID + FB VIEWER
 // ══════════════════════════════════════════════════════════════
@@ -3665,6 +3791,35 @@ function _updateFbCounter(idx){
 function closeFbViewer(){
   document.getElementById('fb-viewer')?.classList.remove('open');
   document.body.style.overflow='';
+}
+
+
+// ── FB Viewer comments ────────────────────────────────────────
+function _toggleComment(idx){
+  const el=document.getElementById('fb-comment-'+idx);
+  if(!el) return;
+  const showing=el.style.display==='block';
+  el.style.display=showing?'none':'block';
+  if(!showing) setTimeout(()=>document.getElementById('fb-cmt-inp-'+idx)?.focus(),100);
+}
+
+async function _submitComment(idx, productId){
+  const inp=document.getElementById('fb-cmt-inp-'+idx);
+  const text=(inp?.value||'').trim();
+  if(!text){showToast('❌ Empty comment',true);return;}
+  try{
+    await gs('addFeedsComment',{
+      product_id: productId,
+      phone: shipperData?.phone||'',
+      name:  shipperData?.name||'Guest',
+      comment: text,
+    });
+    inp.value='';
+    showToast('✅ Comment sent!');
+    document.getElementById('fb-comment-'+idx).style.display='none';
+  }catch(err){
+    showToast('❌ '+sanitizeStr(err.message),true);
+  }
 }
 
 function shareCurrentPost(){
@@ -4993,14 +5148,28 @@ function loadingHTML(msg=''){
     const dy=Math.abs(ev.changedTouches[0].clientY-_sy);
     // Widen to 80px start zone (Telegram iOS uses ~80px for its own gesture)
     // Require dx>80 so short taps don't trigger
-    if(dx>80&&dy<60&&_sx<80&&_view!=='main'){
+    if(dx>80&&dy<60&&_sx<80){
       _sd=true;
-      if(_view==='order-detail')     {closeStepSheet();return;}
-      if(_view==='stock')            {setView('main');return;}
-      if(_view==='profile')          {setView('main');return;}
-      if(_view==='catalog')          {setView('main');return;}
-      if(_view==='product-detail')   {renderCatalog();return;}
-      setView('main');
+      // Check overlays first (highest priority)
+      const mv=document.getElementById('media-viewer');
+      const fv=document.getElementById('fb-viewer');
+      const sm=document.getElementById('shop-media-popup');
+      const sp=document.getElementById('smart-popup');
+      const fp=document.getElementById('fs-popup');
+      const fe=document.getElementById('feeds-popup');
+      if(mv&&mv.classList.contains('on')){closeMediaViewer();return;}
+      if(fv&&fv.classList.contains('open')){closeFbViewer();return;}
+      if(sm&&sm.classList.contains('open')){closeShopMediaGrid();return;}
+      if(sp&&sp.classList.contains('open')){closeSmartParser();return;}
+      if(fp&&fp.classList.contains('open')){closePopup();return;}
+      if(fe&&fe.classList.contains('open')){closeFeeds();return;}
+      // View navigation
+      if(_view==='order-detail'){closeStepSheet();return;}
+      if(_view==='stock'){setView('main');return;}
+      if(_view==='profile'){setView('main');return;}
+      if(_view==='catalog'){setView('main');return;}
+      if(_view==='product-detail'){setView('stock');return;}
+      if(_view!=='main'){setView('main');return;}
     }
   },{passive:true});
 })();
@@ -6176,6 +6345,22 @@ function _restoreStepState(){
 <style>
 #stk-viewer-popup.on{opacity:1;pointer-events:all}
 </style>
+
+
+<!-- SEARCH FULLSCREEN -->
+<div class="search-popup" id="search-popup">
+  <div class="search-hdr">
+    <div class="search-inp-wrap">
+      <span style="color:var(--muted)">🔍</span>
+      <input class="search-inp" id="search-popup-inp" placeholder="ស្វែងរក..."
+        oninput="_searchGlobal(this.value)" autocomplete="off">
+    </div>
+    <span class="search-cancel" onclick="closeSearchPopup()">បោះបង់</span>
+  </div>
+  <div class="search-results" id="search-results">
+    <div id="search-for-you"></div>
+  </div>
+</div>
 
 <!-- FEEDS FULLSCREEN POPUP -->
 <div class="feeds-popup" id="feeds-popup">
