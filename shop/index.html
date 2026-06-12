@@ -1781,6 +1781,44 @@ function _printLabelPopup(){
   },200);
 }
 
+
+// ── Share with white background ──────────────────────────────
+async function shareWithWhiteBg(element, title, text){
+  if(!element){ shareCatalogLink(); return; }
+  showToast('⏳ Preparing...');
+  try{
+    if(typeof html2canvas==='function'){
+      const canvas = await html2canvas(element,{
+        backgroundColor:'#ffffff',
+        scale:2, useCORS:true, allowTaint:true,
+        ignoreElements: el => el.classList?.contains('fb-action-btn')
+      });
+      const blob = await new Promise(res=>canvas.toBlob(res,'image/png'));
+      const file = new File([blob], 'yb-product.png',{type:'image/png'});
+      if(navigator.canShare?.({files:[file]})){
+        await navigator.share({
+          files:[file],
+          title: title||'YB Shop',
+          text:  text||''
+        });
+        showToast('✅ Shared!');
+      } else {
+        // Fallback: download
+        const a=document.createElement('a');
+        a.href=canvas.toDataURL();
+        a.download=(title||'yb-product').replace(/\s+/g,'-')+'.png';
+        a.click();
+        showToast('✅ Saved!');
+      }
+    } else {
+      // No html2canvas — share link
+      shareCatalogLink();
+    }
+  }catch(err){
+    if(err.name!=='AbortError') showToast('❌ '+sanitizeStr(err.message),true);
+  }
+}
+
 function _exportCompletedImg(){
   const el=document.getElementById('fs-popup-body');
   if(!el){showToast('❌ Nothing to export',true);return;}
