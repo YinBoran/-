@@ -175,9 +175,9 @@ body{
 
 /* ── Smart text parser popup ────────────────────────────────── */
 .smart-popup{position:fixed;inset:0;z-index:820;background:#fff;
-  display:flex;flex-direction:column;
+  display:flex;flex-direction:column;pointer-events:none;
   transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
-.smart-popup.open{transform:none}
+.smart-popup.open{transform:none;pointer-events:all}
 .smart-hdr{padding:calc(env(safe-area-inset-top,0px)+14px) 16px 14px;
   background:#f8f8f8;border-bottom:1px solid #e5e5ea;
   display:flex;align-items:center;gap:10px;flex-shrink:0}
@@ -271,9 +271,9 @@ body{
 
 /* ── Shop media grid (profile tap) ──────────────────────────── */
 .shop-media-popup{position:fixed;inset:0;z-index:810;
-  background:var(--bg);display:flex;flex-direction:column;
+  background:var(--bg);display:flex;flex-direction:column;pointer-events:none;
   transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
-.shop-media-popup.open{transform:none}
+.shop-media-popup.open{transform:none;pointer-events:all}
 .shop-media-hdr{padding:calc(env(safe-area-inset-top,0px)+12px) 16px 12px;
   background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:10px;flex-shrink:0}
@@ -287,9 +287,9 @@ body{
   background:rgba(0,0,0,.2);font-size:22px}
 /* FB-style post viewer */
 .fb-viewer{position:fixed;inset:0;z-index:820;
-  background:var(--bg);display:flex;flex-direction:column;
+  background:var(--bg);display:flex;flex-direction:column;pointer-events:none;
   transform:translateY(100%);transition:transform .3s}
-.fb-viewer.open{transform:none}
+.fb-viewer.open{transform:none;pointer-events:all}
 .fb-post-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--card)}
 .fb-post-body{padding:14px 16px;flex:1;overflow-y:auto}
 .fb-post-shop{display:flex;align-items:center;gap:10px;margin-bottom:10px}
@@ -317,9 +317,9 @@ body{
 
 /* ── Feeds fullscreen TikTok cover ──────────────────────────── */
 .feeds-popup{position:fixed;inset:0;z-index:800;background:#000;
-  display:flex;flex-direction:column;
+  display:flex;flex-direction:column;pointer-events:none;
   transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
-.feeds-popup.open{transform:none}
+.feeds-popup.open{transform:none;pointer-events:all}
 .feeds-scroll{flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;
   -webkit-overflow-scrolling:touch}
 .feeds-slide{height:100dvh;width:100%;scroll-snap-align:start;
@@ -995,10 +995,10 @@ body{
 
 
 /* ── Universal fullscreen popup ─────────────────────────────── */
-.fs-popup{position:fixed;inset:0;z-index:800;background:#fff;color:#1c1c1e;
+.fs-popup{position:fixed;inset:0;z-index:800;pointer-events:none;background:#fff;color:#1c1c1e;
   display:flex;flex-direction:column;transform:translateY(100%);
   transition:transform .3s cubic-bezier(.4,0,.2,1)}
-.fs-popup.open{transform:none}
+.fs-popup.open{transform:none;pointer-events:all}
 .fs-popup-hdr{display:flex;align-items:center;gap:10px;
   padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 14px;
   background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
