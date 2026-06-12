@@ -4045,9 +4045,7 @@ async function submitMv(){
 }
 
 // ── Add product (placeholder — extend later) ──────────────
-function openAddProduct(){
-  showToast('ℹ️ Coming soon: Create Product',false);
-}
+
 // ============================================================
 // END STOCK MODULE
 // ============================================================
@@ -5714,55 +5712,7 @@ function _canS3Confirm(){
   return false;
 }
 
-async function confirmPayment(){
-  if(!_so||!_canS3Confirm())return;
-  const btn=document.getElementById('s3-confirm');
-  if(btn){btn.disabled=true;btn.textContent='⏳...';}
-  const storeId=typeof STORE!=='undefined'?STORE:'yb9999';
-  const {total}=_calcTotal();
-  const apv=_genAPV(_so.orderDate,_so.phone);
-  const amtPaid=_s3.amount?parseFloat(_s3.amount).toFixed(2):total.toFixed(2);
-  const isPartial=parseFloat(amtPaid)<total;
-  try{
-    await gs('updateOrder',{
-      profile_id    :_so.profileId,
-      tenant_id     :storeId,
-      status        :isPartial?'Processing':'Completed',
-      payment_status:'Paid',
-      apv_codes     :apv,
-      total_paid    :amtPaid,
-      receive_date  :isPartial?'':new Date().toLocaleString('en-GB',{timeZone:'Asia/Phnom_Penh'})
-    });
-    try{tg.HapticFeedback.notificationOccurred('success');}catch(_){}
-    _s3.confirmed=!isPartial;
-    // Smart lock: only lock if fully paid
-    if(!isPartial){
-      // Lock pay type radios + amount
-      document.querySelectorAll('[name="pt"]').forEach(r=>r.disabled=true);
-      const ai=document.getElementById('s3-amt');if(ai)ai.disabled=true;
-      const uz=document.querySelector('.upload-zone');if(uz)uz.classList.add('locked');
-      showToast('✅ ទូទាត់ & ដឹកដល់!');
-      // Update local
-      const idx=allOrders.findIndex(x=>x.profileId===_so.profileId);
-      if(idx>=0)allOrders[idx]={...allOrders[idx],status:'Completed',receiveDate:new Date().toISOString()};
-      // Rebuild confirm banner
-      const rb=document.createElement('div');rb.className='paid-lock-banner';
-      rb.textContent='✅ ទូទាត់ & ដឹកដល់ — Completed';
-      document.getElementById('step-body').prepend(rb);
-      if(btn){btn.textContent='✅ Done';btn.style.background='var(--green)';}
-      setTimeout(()=>{closeStepSheet();refreshOrders(true);},1800);
-    } else {
-      showToast(`⚠️ ទូទាត់ $${amtPaid} — នៅខ $${(total-parseFloat(amtPaid)).toFixed(2)}`);
-      // Partial: disable ONLY amount field, leave radio + upload active
-      const ai=document.getElementById('s3-amt');if(ai)ai.disabled=true;
-      if(btn){btn.textContent='✅ Saved';setTimeout(()=>{if(btn){btn.disabled=false;btn.textContent='✅ បញ្ជាក់ (balance)';}},2000);}
-    }
-    applyFilter();
-  }catch(err){
-    showToast('❌ '+sanitizeStr(err.message),true);
-    if(btn){btn.disabled=false;btn.textContent='✅ បញ្ជាក់ទូទាត់';}
-  }
-}
+async 
 
 // ── Footer builder ───────────────────────────────────────
 function _buildFoot(){
@@ -5859,15 +5809,7 @@ function toggleDiscount(){
 }
 // extend _s2sync for new fields
 const _s2syncOrig=_s2sync;
-function _s2sync(inp,field){
-  if(field==='fee'){_s2.deliveryFee=inp.value;inp.className=inp.className.replace(' s2-err','');}
-  if(field==='track')_s2.trackingNumber=inp.value;
-  if(field==='ship')_s2.shipperPhone=inp.value;
-  if(field==='discAmt'){_s2.shopDiscountAmt=inp.value;}
-  try{sessionStorage.setItem('s2_'+(_so?.profileId||''),JSON.stringify({..._s2,ts:Date.now()}));}catch(_){}
-  const ca=document.getElementById('s2-calc');if(ca)ca.innerHTML=_buildCalcNew();
-  const nb=document.getElementById('s2-next');if(nb)nb.disabled=!_canS2Next();
-}
+
 function triggerVETUpload(){document.getElementById('vet-inp')?.click();}
 function handleVETUpload(ev){
   const f=ev.target.files[0];if(!f)return;
@@ -6002,12 +5944,7 @@ async function confirmPayment(){
   await _confirmPaymentOrig();
 }
 // Override selectBank to open KHQR popup
-function selectBank(bankId){
-  _s3.bank=bankId;
-  document.querySelectorAll('.bank-chip2').forEach(el=>el.classList.remove('sel'));
-  const el=document.getElementById('bc-'+bankId);if(el)el.classList.add('sel');
-  openKHQRPopup(bankId);
-}
+
 // Alert modal
 function showAlertModal(msg,ico,onClose){
   const ov=document.getElementById('alert-ov');
