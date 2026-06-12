@@ -150,6 +150,67 @@ body{
 .nav-item:active,.batch-print-btn:active{opacity:.65}
 .order-card:active{transform:scale(.99)}
 
+
+/* ── FB-style skeleton loading ──────────────────────────────── */
+@keyframes skeletonSlide{
+  from{background-position:-400px 0}
+  to{background-position:400px 0}
+}
+.skel-line{
+  border-radius:6px;
+  background:linear-gradient(90deg,var(--card) 25%,var(--surface) 50%,var(--card) 75%);
+  background-size:800px 100%;
+  animation:skeletonSlide 1.4s ease-in-out infinite;
+}
+.skel-card{
+  background:var(--surface);border-radius:14px;padding:16px;
+  margin-bottom:8px;border:1px solid var(--border);
+}
+.skel-card .skel-avatar{width:44px;height:44px;border-radius:50%;flex-shrink:0}
+.skel-card .skel-title{height:14px;width:60%;margin-bottom:8px}
+.skel-card .skel-text{height:11px;width:80%;margin-bottom:6px}
+.skel-card .skel-text-sm{height:11px;width:45%}
+.skel-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+
+
+/* ── Smart text parser popup ────────────────────────────────── */
+.smart-popup{position:fixed;inset:0;z-index:820;background:#fff;
+  display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.smart-popup.open{transform:none}
+.smart-hdr{padding:calc(env(safe-area-inset-top,0px)+14px) 16px 14px;
+  background:#f8f8f8;border-bottom:1px solid #e5e5ea;
+  display:flex;align-items:center;gap:10px;flex-shrink:0}
+.smart-hdr-title{flex:1;font-size:17px;font-weight:700;color:#1c1c1e}
+.smart-close{width:34px;height:34px;background:#e5e5ea;border:none;
+  border-radius:50%;font-size:16px;cursor:pointer;color:#1c1c1e;
+  display:flex;align-items:center;justify-content:center}
+.smart-body{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.smart-textarea{flex:1;width:100%;border:none;outline:none;resize:none;
+  font-size:16px;line-height:1.6;padding:16px;background:#fff;
+  color:#1c1c1e;font-family:-apple-system,BlinkMacSystemFont,'Khmer OS',sans-serif;
+  -webkit-overflow-scrolling:touch}
+.smart-textarea::placeholder{color:#aeaeb2}
+.smart-preview{background:#f8f8f8;border-top:1px solid #e5e5ea;
+  max-height:200px;overflow-y:auto;padding:12px 16px;flex-shrink:0}
+.smart-preview-title{font-size:11px;font-weight:700;color:#6e6e73;
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.smart-order-card{background:#fff;border:1.5px solid #e5e5ea;border-radius:12px;
+  padding:10px 12px;margin-bottom:8px}
+.smart-order-row{display:flex;gap:6px;font-size:13px;margin-bottom:3px}
+.smart-order-key{color:#6e6e73;flex-shrink:0;min-width:60px}
+.smart-order-val{color:#1c1c1e;font-weight:600;flex:1}
+.smart-ft{padding:12px 16px max(env(safe-area-inset-bottom,16px),16px);
+  background:#fff;border-top:1px solid #e5e5ea;
+  display:flex;gap:8px;flex-shrink:0}
+.smart-send-btn{flex:1;padding:14px;background:#007aff;color:#fff;border:none;
+  border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;
+  transition:opacity .15s}
+.smart-send-btn:disabled{opacity:.5;cursor:not-allowed}
+.smart-parse-btn{padding:14px 16px;background:#f0f0f3;color:#1c1c1e;border:none;
+  border-radius:12px;font-size:14px;font-weight:700;cursor:pointer}
+.smart-char-count{font-size:11px;color:#aeaeb2;text-align:right;padding:4px 16px;flex-shrink:0}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .toast{position:fixed;bottom:24px;left:50%;
@@ -786,7 +847,7 @@ body{
 
 
 /* ── Universal fullscreen popup ─────────────────────────────── */
-.fs-popup{position:fixed;inset:0;z-index:800;background:var(--bg);
+.fs-popup{position:fixed;inset:0;z-index:800;background:#fff;color:#1c1c1e;
   display:flex;flex-direction:column;transform:translateY(100%);
   transition:transform .3s cubic-bezier(.4,0,.2,1)}
 .fs-popup.open{transform:none}
@@ -847,18 +908,21 @@ body{
   @page {margin:0;size:80mm auto}
 }
 .thermal-label{
-  width:72mm;padding:3mm 4mm;border-bottom:2px dashed #000;
+  width:100%;padding:16px;border-bottom:2px dashed #000;
   page-break-inside:avoid;font-family:'Battambang','Khmer OS',Arial,sans-serif;
-  font-size:10pt;break-after:page}
+  font-size:15px;break-after:page;box-sizing:border-box}
+@media print{
+  .thermal-label{width:72mm;padding:3mm 4mm;font-size:10pt}
+}
 .thermal-label:last-child{border-bottom:none}
-.thermal-shop{font-size:11pt;font-weight:900;text-align:center;margin-bottom:2mm}
-.thermal-divider{border:none;border-top:1px solid #000;margin:1.5mm 0}
-.thermal-row{display:flex;gap:2mm;margin-bottom:1mm;align-items:flex-start}
-.thermal-key{font-size:8pt;color:#333;flex-shrink:0;min-width:14mm}
-.thermal-val{font-size:9pt;font-weight:600;flex:1;word-break:break-word}
-.thermal-price{font-size:13pt;font-weight:900;text-align:right}
-.thermal-cod{font-size:9pt;font-weight:700;background:#000;color:#fff;
-  padding:1mm 3mm;display:inline-block;border-radius:2px;margin-top:1mm}
+.thermal-shop{font-size:18px;font-weight:900;text-align:center;margin-bottom:10px}
+.thermal-divider{border:none;border-top:1.5px solid #ddd;margin:10px 0}
+.thermal-row{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start}
+.thermal-key{font-size:13px;color:#555;flex-shrink:0;min-width:70px;font-weight:500}
+.thermal-val{font-size:15px;font-weight:700;flex:1;word-break:break-word;color:#1c1c1e}
+.thermal-price{font-size:22px;font-weight:900;text-align:right;color:#1c1c1e}
+.thermal-cod{font-size:13px;font-weight:700;background:#000;color:#fff;
+  padding:4px 10px;display:inline-block;border-radius:4px;margin-top:6px}
 
 /* ── Skeleton shimmer loader ────────────────────────────── */
 @keyframes shimmer{from{background-position:-400px 0}to{background-position:400px 0}}
@@ -1421,6 +1485,8 @@ function openPopup(type, data){
   const acts   = document.getElementById('fs-popup-actions');
   if(!popup) return;
   popup.classList.add('open');
+  popup.style.background=type==='label'?'#fff':'var(--bg)';
+  popup.style.color=type==='label'?'#1c1c1e':'var(--text)';
   document.body.style.overflow='hidden';
   ft.style.display='none'; ft.innerHTML='';
   acts.innerHTML='';
@@ -1433,8 +1499,9 @@ function openPopup(type, data){
       style="background:var(--accent);color:#000;border:none;border-radius:10px;
       padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer">🖨️ Print</button>`;
     body.innerHTML=`
-      <div style="padding:16px;display:flex;justify-content:center">
-        <div class="thermal-label" style="border:1px solid var(--border);border-radius:8px">
+      <div style="padding:16px">
+        <div class="thermal-label" style="border:1px solid #ddd;border-radius:8px;
+          width:100%;max-width:100%;box-sizing:border-box">
           <div class="thermal-shop">📦 ${e(shipperData?.name||'YB Shop')}</div>
           <hr class="thermal-divider">
           <div class="thermal-row"><span class="thermal-key">ឈ្មោះ</span><span class="thermal-val">${e(o.name||'—')}</span></div>
@@ -2354,7 +2421,8 @@ body{font-family:'Battambang','Khmer OS Siemreap',sans-serif;font-size:9.5pt;col
   }catch(_){showToast('❌ Please allow popups',true);}
 }
 
-function openProfile(){ setView('profile'); }
+function openProfile(){ openSmartParser(); }
+function openProfileView(){ setView('profile'); }
 async function _openProfileOLD(){
   const el=document.getElementById('pp-content');
   el.innerHTML='<div class="loading loading-sm"><div class="spinner"></div></div>';
@@ -2843,7 +2911,66 @@ function openProductDetail(productId) {
 }
 
 
+
+// ══════════════════════════════════════════════════════════════
+// FEEDS — shop posts (products with media)
+// ══════════════════════════════════════════════════════════════
+function openFeeds(){
+  const src = _allCatalogItems.length ? _allCatalogItems : (_stkCache||_stk||[]);
+  const items = src.filter(p=>p.image_url||p.video_url).map(p=>({
+    url:   p.video_url||p.image_url,
+    thumb: p.image_url,
+    type:  p.video_url?'video':'image',
+    title: p.name,
+    price: p.price,
+    desc:  p.description||'',
+    product_id: p.product_id||p.id,
+  }));
+  if(!items.length){
+    // Load catalog first
+    if(!_allCatalogItems.length){
+      gs('getPublicProducts',{store_id:typeof STORE!=='undefined'?STORE:'yb9999'})
+        .then(r=>{
+          _allCatalogItems=Array.isArray(r)?r:(r?.products||[]);
+          openFeeds();
+        }).catch(()=>showToast('No posts yet',true));
+      return;
+    }
+    showToast('No posts yet'); return;
+  }
+  openMediaViewer(items, 0);
+}
+
 // ── Stock item → media viewer ─────────────────────────────────
+
+function _stkSkeleton(){
+  return Array(6).fill(0).map(()=>`
+    <div class="skel-card">
+      <div class="skel-row">
+        <div class="skel-line skel-avatar"></div>
+        <div style="flex:1">
+          <div class="skel-line skel-title"></div>
+          <div class="skel-line skel-text"></div>
+          <div class="skel-line skel-text-sm"></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+
+function _profileSkeleton(){
+  return `<div style="padding:16px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:20px">
+      <div class="skel-line" style="width:80px;height:80px;border-radius:50%"></div>
+      <div class="skel-line" style="width:120px;height:14px;border-radius:6px"></div>
+      <div class="skel-line" style="width:80px;height:12px;border-radius:6px"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px">
+      ${Array(9).fill('<div class="skel-line" style="aspect-ratio:1/1;border-radius:4px"></div>').join('')}
+    </div>
+  </div>`;
+}
+
 function _openStockItemViewer(productId){
   const p=(_stkCache||_stk||[]).find(x=>(x.product_id||x.id)===productId);
   if(!p){ showToast('ផលិតផលអត់ស្គាល់',true); return; }
@@ -3162,8 +3289,8 @@ function renderMain() {
 
 function _buildMainHeader(){
   return `<div class="hdr" id="main-hdr">
-    <div class="hdr-logo" onclick="openNavMenu()">YB</div>
-    <div class="hdr-info" onclick="_searchAll?clearSearch():window.scrollTo({top:0,behavior:'smooth'})" style="cursor:pointer">
+    <div class="hdr-logo" id="hdr-logo-btn" onclick="event.stopPropagation();openNavMenu()">YB</div>
+    <div class="hdr-info" onclick="_searchAll?clearSearch():window.scrollTo({top:0,behavior:'smooth'})">
       <h1>YB Shop</h1><p id="hdr-sub"></p>
     </div>
     <div style="margin-left:auto;display:flex;align-items:center;gap:8px" id="hdr-actions">
@@ -3335,7 +3462,12 @@ async function renderCatalog() {
     <div class="cat-wrap" id="cat-wrap" style="color:#1c1c1e">
       <div class="cat-top-hdr" id="cat-hdr">
         <div class="cat-top-back" onclick="setView('main')">←</div>
-        <div><div class="cat-top-title">${e(shopName)}</div><div style="font-size:10px;color:#aeaeb2;margin-top:1px">Share · Bring it to world 🌍</div></div>
+        <div><div class="cat-top-title">${e(shopName)} <span style="font-size:11px;background:#007aff;color:#fff;border-radius:20px;padding:1px 7px">✓</span></div><div style="font-size:10px;color:#aeaeb2;margin-top:1px">Share · Bring it to world 🌍</div></div>
+        <button onclick="shareCatalogLink()"
+          style="background:var(--accent);color:#000;border:none;border-radius:10px;
+          padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0">
+          🔗 Share
+        </button>
         <div class="cat-top-cart" onclick="openCart('list')" id="cat-cart-btn">
           🛒<span class="cat-top-cart-badge" id="cat-cart-count" style="display:none">0</span>
         </div>
@@ -3473,6 +3605,131 @@ function shareCatalogLink() {
 }
 // ════════════════════════════════════════════════════════════
 // END VIEW SYSTEM
+
+
+// ══════════════════════════════════════════════════════════════
+// SMART TEXT PARSER — parse multi-order text → send to bot
+// ══════════════════════════════════════════════════════════════
+let _smartParseTimer = null;
+let _smartParsed = [];
+
+function openSmartParser(){
+  document.getElementById('smart-popup')?.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>document.getElementById('smart-input')?.focus(), 400);
+}
+function closeSmartParser(){
+  document.getElementById('smart-popup')?.classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function _debounceSmartParse(){
+  clearTimeout(_smartParseTimer);
+  _smartParseTimer = setTimeout(parseSmartText, 600);
+}
+
+function parseSmartText(){
+  const raw = (document.getElementById('smart-input')?.value||'').trim();
+  if(!raw){ 
+    document.getElementById('smart-preview').style.display='none';
+    document.getElementById('smart-send-btn').disabled=true;
+    return;
+  }
+
+  // Split by lines / double newlines
+  const lines = raw.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  _smartParsed = lines.map(line=>_parseOneLine(line)).filter(Boolean);
+
+  const preview = document.getElementById('smart-preview');
+  const content = document.getElementById('smart-parsed-content');
+  const sendBtn = document.getElementById('smart-send-btn');
+
+  if(!_smartParsed.length){
+    preview.style.display='none';
+    sendBtn.disabled=true;
+    return;
+  }
+
+  preview.style.display='block';
+  content.innerHTML = _smartParsed.map(o=>`
+    <div class="smart-order-card">
+      ${o.phone?`<div class="smart-order-row"><span class="smart-order-key">📞 Phone</span><span class="smart-order-val">${e(o.phone)}</span></div>`:''}
+      ${o.location?`<div class="smart-order-row"><span class="smart-order-key">📍 ទីតាំង</span><span class="smart-order-val">${e(o.location)}</span></div>`:''}
+      ${o.product?`<div class="smart-order-row"><span class="smart-order-key">📦 ទំនិញ</span><span class="smart-order-val">${e(o.product)}</span></div>`:''}
+      ${o.price?`<div class="smart-order-row"><span class="smart-order-key">💰 ថ្លៃ</span><span class="smart-order-val">${e(o.price)}</span></div>`:''}
+      ${o.payment?`<div class="smart-order-row"><span class="smart-order-key">💳 ទូទាត់</span><span class="smart-order-val">${e(o.payment)}</span></div>`:''}
+      ${o.command?`<div class="smart-order-row"><span class="smart-order-key">⚡ Command</span><span class="smart-order-val" style="color:#007aff">${e(o.command)}</span></div>`:''}
+    </div>`).join('');
+  sendBtn.disabled = false;
+  sendBtn.textContent = `📤 Send ${_smartParsed.length} order${_smartParsed.length>1?'s':''} to Bot`;
+}
+
+function _parseOneLine(line){
+  if(!line) return null;
+  const result = { raw: line, phone:'', location:'', product:'', price:'', payment:'', command:'' };
+
+  // Extract phone (Cambodia: 0XX XXX XXXX or 0XXXXXXXXX)
+  const phoneM = line.match(/(?<![0-9])0[1-9][0-9]{7,8}(?![0-9])/);
+  if(phoneM) result.phone = phoneM[0].replace(/\s/g,'');
+
+  // Extract price ($XX or XX$)
+  const priceM = line.match(/\$?(\d+(?:\.\d{1,2})?)\s*\$|\$(\d+(?:\.\d{1,2})?)/);
+  if(priceM) result.price = '$'+(priceM[1]||priceM[2]);
+
+  // Extract payment type
+  if(/\bcod\b/i.test(line)) result.payment = 'COD';
+  else if(/\bpaid\b/i.test(line)) result.payment = 'Paid';
+  else if(/\bkhqr\b/i.test(line)) result.payment = 'KHQR';
+
+  // Extract command
+  const cmdM = line.match(/#(ok|paid|cancel|new\s*(?:record|order)|update\s*\w+(?:\s+\S+)?)/i);
+  if(cmdM) result.command = '#'+cmdM[1];
+
+  // Extract product (known models)
+  const prodM = line.match(/\b(S53-V[12]|S75|J98|CL18|200W|RGB|3in1|Q9|Earpod|Type[\s-]C[^\s,]*|MIC-S53)\s*(?:[+&,]\s*(?:S53-V[12]|S75|J98|CL18|200W|RGB|3in1))?/gi);
+  if(prodM) result.product = prodM.join(' + ').toUpperCase();
+
+  // Extract qty
+  const qtyM = line.match(/(\d+)\s*(?:គ្រឿង|pcs|units?)/i);
+  if(qtyM && result.product) result.product += ' x'+qtyM[1];
+
+  // Extract location (Khmer text after phone, before product/price)
+  if(result.phone){
+    const afterPhone = line.slice(line.indexOf(result.phone)+result.phone.length).trim();
+    const locM = afterPhone.match(/^([\u1780-\u17FF\s,]+?)(?=\s*(?:S53|S75|J98|CL18|200W|\$|#|\d+\$))/);
+    if(locM) result.location = locM[1].trim();
+  }
+  if(!result.location){
+    const locM2 = line.match(/^([\u1780-\u17FF]+(?:\s+[\u1780-\u17FF]+)*)/);
+    if(locM2 && !result.phone.startsWith(locM2[1])) result.location = locM2[1].trim();
+  }
+
+  return (result.phone||result.product||result.command) ? result : null;
+}
+
+async function sendSmartToBot(){
+  if(!_smartParsed.length) return;
+  const btn = document.getElementById('smart-send-btn');
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Sending...'; }
+
+  try{
+    // Send each parsed line to bot as a raw message
+    const raw = document.getElementById('smart-input')?.value||'';
+    const r = await gs('sendSmartMessage',{
+      raw,
+      parsed: _smartParsed,
+      source: 'shop',
+      phone: shipperData?.phone||'',
+    });
+    showToast('✅ Sent to bot!');
+    closeSmartParser();
+    document.getElementById('smart-input').value='';
+    _smartParsed=[];
+  }catch(err){
+    showToast('❌ '+sanitizeStr(err.message),true);
+    if(btn){ btn.disabled=false; btn.textContent='📤 Retry'; }
+  }
+}
 
 // ── Media grid builder (TikTok style) ────────────────────────
 function buildMediaGrid(items){
@@ -4943,7 +5200,7 @@ function _restoreStepState(){
       <div class="nav-item-ico" style="background:rgba(34,197,94,.15)">📦</div>
       <div><div class="nav-item-lbl">Stock</div><div class="nav-item-sub">Products & inventory</div></div>
     </div>
-    <div class="nav-item" onclick="closeNavMenu();setView('profile')">
+    <div class="nav-item" onclick="closeNavMenu();openProfileView()">
       <div class="nav-item-ico" style="background:rgba(240,165,0,.15)">👤</div>
       <div><div class="nav-item-lbl">Account</div><div class="nav-item-sub" id="nav-user-name">—</div></div>
     </div>
@@ -4975,6 +5232,37 @@ function _restoreStepState(){
   </div>
 </div>
 
+
+
+<!-- SMART TEXT PARSER POPUP -->
+<div class="smart-popup" id="smart-popup">
+  <div class="smart-hdr">
+    <button class="smart-close" onclick="closeSmartParser()">✕</button>
+    <div class="smart-hdr-title">📝 Smart Parser → Bot</div>
+    <button class="smart-parse-btn" onclick="parseSmartText()" id="parse-btn">Parse</button>
+  </div>
+  <div class="smart-char-count" id="smart-char">0 / 2500</div>
+  <div class="smart-body">
+    <textarea class="smart-textarea" id="smart-input" maxlength="2500"
+      placeholder="វាយ ឬ paste ការបញ្ជាទិញ...
+
+ឧ:
+វង្វង់ ខ.ក. 0966566967 200w 25$ cod #ok
+081493062 ផ្សារគគ្រួស J98 2គ្រឿង 25$ paid #new order
+010433003 ទីតាំងតាខ្មៅ S53-V1 + CL18 75$ #update price 70$"
+      oninput="document.getElementById('smart-char').textContent=this.value.length+' / 2500';_debounceSmartParse()">
+    </textarea>
+    <div class="smart-preview" id="smart-preview" style="display:none">
+      <div class="smart-preview-title">📋 Extracted Orders</div>
+      <div id="smart-parsed-content"></div>
+    </div>
+  </div>
+  <div class="smart-ft">
+    <button class="smart-send-btn" id="smart-send-btn" onclick="sendSmartToBot()" disabled>
+      📤 Send to Bot
+    </button>
+  </div>
+</div>
 
 </body>
 </html>
